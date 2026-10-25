@@ -17,14 +17,18 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 3. The editor's top-right status reads **MCP: Agent Active** once Claude Code
    and the editor are talking.
 
-## Playing the proof of concept
+## Playing
 
-`npm run game` opens the castle proof of concept. Walk the paved path, take the
-sword from the stone beside it, and head for the castle.
+`npm run game` opens the grass field and its sector grid: 20 x 20 sectors of
+10 x 10 m, named A1 to T20. You start in A1 at the south-west corner; letters
+grow east and numbers grow north, ahead of you. The top-left corner shows the
+sector you're in. `npm run game -- --sector=C4` starts you in C4.
 
-WASD move, Shift sprint, Space jump, E take the sword, left click swing, mouse
-look (click the window first; Esc frees the mouse), wheel zoom, F3 performance
-overlay, F12 screenshot. A gamepad works too.
+WASD move, Shift sprint, Space jump, mouse look (click the window first; Esc
+frees the mouse), wheel zoom, F3 performance overlay, F12 screenshot. A
+gamepad works too.
+
+The earlier castle proof of concept is kept at git tag `poc-castle`.
 
 ## Commands
 

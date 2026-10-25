@@ -1,9 +1,10 @@
 @tool
 extends Node3D
-## Soft low-poly clouds drifting slowly east across the PoC sky, wrapping
-## around at the edge of the world. Generated children have no owner, so the
+## Soft low-poly clouds drifting slowly east across the sky, wrapping around
+## `span` metres from this node. Generated children have no owner, so the
 ## editor never saves them.
 
+@export var cloud_seed: int = 2026
 @export var count: int = 16
 @export var drift_speed: float = 1.2
 @export var span: float = 320.0
@@ -13,7 +14,7 @@ var _clouds: Array[Node3D] = []
 
 func _ready() -> void:
 	var rng := RandomNumberGenerator.new()
-	rng.seed = PocLayout.SEED + 40
+	rng.seed = cloud_seed
 	var material := MeshKit.lowpoly_material(Color(0.97, 0.97, 1.0), 1.0)
 	for i in count:
 		var parts: Array[Mesh] = []

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="godotDEMO"
 config/description="Working title of a 3D RPG built with Godot and Claude Code."
-run/main_scene="res://src/world/poc_castle/castle_poc.tscn"
+run/main_scene="res://src/world/field/field.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 

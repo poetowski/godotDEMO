@@ -1,15 +1,20 @@
 class_name Hud
 extends CanvasLayer
-## On-screen text for the castle PoC: the interaction prompt, a line of
+## On-screen text: the current sector, the interaction prompt, a line of
 ## controls, and a hint to click the window for mouse look. Placeholder style.
 
 const CONTROLS := "WASD move    Shift sprint    Space jump    E interact    Left click swing    Wheel zoom    Esc free the mouse"
 
 var _prompt: Label
 var _mouse_hint: Label
+var _sector: Label
 
 
 func _ready() -> void:
+	_sector = _label(34, Color(0.75, 0.95, 1.0))
+	_sector.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_sector.offset_left = 28.0
+	_sector.offset_top = 20.0
 	_prompt = _label(40, Color(1.0, 0.9, 0.6))
 	_prompt.anchor_left = 0.0
 	_prompt.anchor_right = 1.0
@@ -34,6 +39,15 @@ func _ready() -> void:
 ## Shows the player's prompts.
 func track(player: Player) -> void:
 	player.prompt_changed.connect(_on_prompt_changed)
+
+
+## Shows the sector the player stands in; an empty name means off the grid.
+func show_sector(sector_name: String) -> void:
+	_sector.text = "Off the grid" if sector_name.is_empty() else "Sector " + sector_name
+
+
+func sector_text() -> String:
+	return _sector.text
 
 
 func _process(_delta: float) -> void:

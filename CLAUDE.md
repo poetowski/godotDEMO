@@ -26,7 +26,7 @@ working title and the game's design is not decided yet.
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
-| `npm run game -- [scene]` | Plays until the window is closed. It blocks, so don't run it unless asked. |
+| `npm run game -- [scene] [--sector=C4]` | Plays until the window is closed, starting in the given sector. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
 `tools/dev.mjs`. The `GODOT` environment variable overrides it.
@@ -68,6 +68,15 @@ Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
 - `map_project` starts a visualizer on port 6510 that listens on all network
   interfaces. Use it only on a trusted network.
 
+## Sectors
+
+The world is built sector by sector. Sectors are 10 x 10 m, named A1 to T20:
+A1 is the south-west corner sector and the start, letters grow east (+X) and
+numbers north (-Z). Use `SectorMap` for all sector maths and names, and
+`--sector=<name>` with `npm run game` or `npm run shot` to start there. When a
+sector gets content, record what was decided for it in
+`docs/DESIGN_DECISIONS.md`, under its name.
+
 ## Editing while the editor is open
 
 The editor keeps open scenes in memory. A scene edited on disk while it's open
@@ -84,7 +93,7 @@ there can be overwritten the next time the editor saves.
 ```
 src/autoload/    global singletons (DevTools; MCPRuntime comes from the add-on)
 src/shared/      reusable code, components and shaders
-src/world/       levels; poc_castle/ is the main scene (a PoC), sandbox/ the dev test ground
+src/world/       levels; field/ is the main scene (the sector grid), sandbox/ the dev test ground
 src/player/      the player character
 src/items/       items such as the sword
 src/ui/          HUD and menus
