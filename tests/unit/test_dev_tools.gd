@@ -20,6 +20,18 @@ func test_waits_at_least_one_frame() -> void:
 	assert_eq(options.shot_frames, 1)
 
 
+func test_reads_a_shot_camera_and_target() -> void:
+	var options := DevToolsScript.parse_args(PackedStringArray(["--shot-camera=1,2.5,-3", "--shot-look=0,1,0"]))
+	assert_true(options.has_shot_camera)
+	assert_eq(options.shot_camera, Vector3(1.0, 2.5, -3.0))
+	assert_eq(options.shot_look, Vector3(0.0, 1.0, 0.0))
+
+
+func test_no_shot_camera_by_default() -> void:
+	var options := DevToolsScript.parse_args(PackedStringArray(["--shot=a.png"]))
+	assert_false(options.has_shot_camera)
+
+
 func test_ignores_unknown_args() -> void:
 	var options := DevToolsScript.parse_args(PackedStringArray(["--verbose", "level=3"]))
 	assert_eq(options.shot_path, "")

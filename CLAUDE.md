@@ -22,6 +22,7 @@ working title and the game's design is not decided yet.
 | `npm test` | Runs the GUT suite headless. Add `-- -gselect=test_fly_camera` to run one file. |
 | `npm run verify` | `check`, then `test`. |
 | `npm run shot -- [scene] [--out=x.png] [--frames=60] [--size=1280x720]` | Plays a scene (default: the main scene) in a window, saves `.shots/<scene>.png` and quits. Read the PNG to see it. |
+| `npm run shot -- --camera=x,y,z --look=x,y,z --out=.shots/view.png` | The same, shot from a temporary camera at any viewpoint. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
@@ -55,6 +56,11 @@ Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
 - Pass `take_screenshot {save_to: "res://.shots/<name>.png"}`. The default
   folder is inside `addons/`, where the editor would import every PNG.
 - Run `stop_scene` before editing scripts the running game uses.
+- `send_input` actions go through the input map's 0.2 dead zone, so a
+  strength `s` acts as `(s - 0.2) / 0.8`. Use 1.0 for full input.
+- `call_method {runtime: true}` calls methods on live game nodes. For
+  example, `Player.look_toward` aims the hero at a waypoint before walking
+  there with `move_forward`.
 - `mcp_undo` undoes changes made through MCP; Ctrl+Z in the editor doesn't.
 - `validate_script` can't report diagnostics for `class_name` scripts, so treat
   `npm run check` as the source of truth.
@@ -78,7 +84,10 @@ there can be overwritten the next time the editor saves.
 ```
 src/autoload/    global singletons (DevTools; MCPRuntime comes from the add-on)
 src/shared/      reusable code, components and shaders
-src/world/       levels and world scenes; sandbox/ is the dev test ground
+src/world/       levels; poc_castle/ is the main scene (a PoC), sandbox/ the dev test ground
+src/player/      the player character
+src/items/       items such as the sword
+src/ui/          HUD and menus
 data/            game data as Resources (.tres)
 assets/          imported art and audio: models/ textures/ materials/ audio/ fonts/
 tests/unit/      logic tests
@@ -120,6 +129,13 @@ folder, like `src/world/sandbox/`.
   `.godot-api/doc/classes/<Class>.xml` (run `npm run api` first if it's
   missing) or use `classdb_query`.
 - Physics runs on Jolt (a project setting), not Godot Physics.
+- Code-generated content lives in `@tool` scripts that add children without an
+  owner, so the editor shows the result but never saves it into the scene.
+  Don't set generated data on nodes that are saved in the `.tscn`.
+- Vertex and MultiMesh colours aren't converted from sRGB automatically. The
+  low-poly shader converts them; on a StandardMaterial3D, set
+  `vertex_color_is_srgb`.
+- On battery this laptop caps games at 30 fps. Measure performance on AC power.
 - Folders starting with `.` (`.shots/`, `.godot-api/`) are invisible to Godot.
 
 ## Git

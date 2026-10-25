@@ -10,7 +10,12 @@ design arrives.
 | Engine | Godot 4.7.2, Forward+, Jolt physics | Pinned in `tools/dev.mjs` and `project.godot` |
 | DevTools autoload | `src/autoload/dev_tools.gd` | `--shot` screenshots for `npm run shot`, F12 screenshots, F3 performance overlay. Frees itself in release builds. |
 | MCPRuntime autoload | `addons/godot_mcp/runtime/` | Lets the MCP server screenshot, drive input in and inspect the running game. Editor builds only (local patch). |
-| Sandbox | `src/world/sandbox/` | Main scene for now: greybox blocks with collision, a 1.8 m human-scale marker, sun, sky, fog and a fly camera. |
+| Castle PoC | `src/world/poc_castle/` | The main scene, a proof of concept (see the design record). Code-generated world: `PocLayout` holds the layout and the terrain height field; `terrain.gd`, `path_stones.gd`, `castle.gd`, `nature.gd` and `clouds.gd` build from it. |
+| Player | `src/player/` | PoC third-person hero: SpringArm camera, camera-relative movement, sprint, jump, procedural walk cycle, sword pickup and swing with a swoosh trail. |
+| Sword | `src/items/sword/` | The sword model, and the sword-in-the-stone pickup that offers it to the player. |
+| HUD | `src/ui/hud/` | Interaction prompt, controls line, mouse-capture hint. |
+| Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material. |
+| Sandbox | `src/world/sandbox/` | Dev test ground: greybox blocks with collision, a 1.8 m human-scale marker, sun, sky, fog and a fly camera. |
 | Prototype grid shader | `src/shared/shaders/prototype_grid.gdshader` | World-space metre grid for greybox geometry, so scale reads at a glance. |
 | Tests | `tests/`, GUT 9.7.1 | `npm test`; failing asserts, engine errors and `push_error` all fail a run. |
 | Project check | `tools/check_project.gd` | `npm run check` loads everything and fails on parse, load and typing errors. |
@@ -20,18 +25,35 @@ opening at 1280x720 (`canvas_items` stretch, `expand` aspect), MSAA 2x,
 occlusion culling enabled, untyped GDScript declarations are errors, and unsafe
 property and method access are warnings.
 
+Physics layers: 1 `world` (terrain, castle, trees, rocks), 2 `player`. The
+camera's spring arm only collides with `world`; the sword pickup only sees
+`player`.
+
+PoC controls: WASD or the left stick to move, Shift to sprint, Space to jump,
+E to interact, left click to swing, the mouse to look (click the window to
+capture it, Esc to release), the wheel to zoom. Gamepad: A jump, Y interact,
+X swing, right stick look.
+
 Sandbox controls: WASD or the left stick to move, E/Q to rise and sink, Shift
 for speed, hold the right mouse button (or use the right stick) to look, the
-mouse wheel to change speed, F3 for the overlay, F12 for a screenshot.
+mouse wheel to change speed. F3 (overlay) and F12 (screenshot) work everywhere.
+
+The PoC world is generated when its scene loads (about a second). The
+generator scripts are `@tool`, so the editor shows the world too. Their
+generated children have no owner, so the editor never saves them into the
+scene file.
+
+Battery note: on battery this laptop caps games at 30 fps (NVIDIA Battery
+Boost or Windows power saving). Measure performance on AC power.
 
 ## Open technical questions
 
 Each depends on design decisions. Each has a recommended default, which isn't
 decided until the author says so.
 
-1. **Camera and controls.** Third-person, isometric or first-person shapes the
-   player controller, the input map and level scale. This is the first
-   gameplay decision to make.
+1. **Camera and controls.** The PoC is third-person, as requested. Whether
+   the game stays third-person, and its real controls, are still the author's
+   call.
 2. **World structure.** Separate zones loaded with
    `ResourceLoader.load_threaded_request` (simple and robust), or seamless
    streaming of world chunks (open world, much more work). Recommended: start

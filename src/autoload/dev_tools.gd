@@ -4,6 +4,8 @@ extends Node
 ## Command-line user arguments (after `--`), used by `npm run shot`:
 ##   --shot=<path>         save a PNG of the window once the scene settles, then quit
 ##   --shot-frames=<n>     frames to wait before that capture (default 60)
+##   --shot-camera=x,y,z   take the shot from a temporary camera at this point
+##   --shot-look=x,y,z     ...looking at this point (default: the world origin)
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
 ## the editor); F3 (dev_overlay) toggles the performance overlay.
@@ -15,6 +17,9 @@ const DEFAULT_SHOT_FRAMES := 60
 class Options:
 	var shot_path: String = ""
 	var shot_frames: int = DEFAULT_SHOT_FRAMES
+	var has_shot_camera: bool = false
+	var shot_camera := Vector3.ZERO
+	var shot_look := Vector3.ZERO
 
 
 var _overlay_layer: CanvasLayer
@@ -28,7 +33,17 @@ static func parse_args(args: PackedStringArray) -> Options:
 			options.shot_path = arg.trim_prefix("--shot=")
 		elif arg.begins_with("--shot-frames="):
 			options.shot_frames = maxi(1, arg.trim_prefix("--shot-frames=").to_int())
+		elif arg.begins_with("--shot-camera="):
+			options.shot_camera = _parse_vector(arg.trim_prefix("--shot-camera="))
+			options.has_shot_camera = true
+		elif arg.begins_with("--shot-look="):
+			options.shot_look = _parse_vector(arg.trim_prefix("--shot-look="))
 	return options
+
+
+static func _parse_vector(text: String) -> Vector3:
+	var parts := text.split_floats(",")
+	return Vector3(parts[0], parts[1], parts[2]) if parts.size() == 3 else Vector3.ZERO
 
 
 func _ready() -> void:
@@ -92,6 +107,13 @@ func save_screenshot(path: String) -> Error:
 
 func _capture_and_quit(options: Options) -> void:
 	for i in options.shot_frames:
+		await get_tree().process_frame
+	if options.has_shot_camera and get_tree().current_scene is Node3D:
+		var camera := Camera3D.new()
+		get_tree().current_scene.add_child(camera)
+		camera.global_position = options.shot_camera
+		camera.look_at(options.shot_look)
+		camera.make_current()
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	var error := save_screenshot(options.shot_path)

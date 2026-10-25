@@ -9,7 +9,9 @@
 //   npm test [-- <gut args>]     run the GUT suite headless, e.g.
 //                                npm test -- -gselect=test_fly_camera
 //   npm run shot [-- <scene>] [--out=<png>] [--frames=<n>] [--size=<WxH>]
-//                                play a scene in a window, save a PNG, quit
+//                [--camera=x,y,z --look=x,y,z]
+//                                play a scene in a window, save a PNG, quit;
+//                                with --camera, shoot from that viewpoint
 //   npm run api                  dump the engine's class reference to .godot-api/
 //   npm run where                print the Godot binary in use
 //
@@ -159,6 +161,7 @@ const commands = {
     const args = ['--path', ROOT, '--resolution', options.size ?? '1280x720'];
     if (scene) args.push(scene);
     args.push('--', `--shot=${out}`, `--shot-frames=${options.frames ?? 60}`);
+    if (options.camera) args.push(`--shot-camera=${options.camera}`, `--shot-look=${options.look ?? '0,0,0'}`);
     const ok = report('shot', await godot(args, { timeoutMs: 3 * 60_000 }));
     if (!existsSync(out) || statSync(out).size === 0) {
       console.log('[dev] no screenshot was written');

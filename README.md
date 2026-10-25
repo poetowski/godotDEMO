@@ -17,6 +17,15 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 3. The editor's top-right status reads **MCP: Agent Active** once Claude Code
    and the editor are talking.
 
+## Playing the proof of concept
+
+`npm run game` opens the castle proof of concept. Walk the paved path, take the
+sword from the stone beside it, and head for the castle.
+
+WASD move, Shift sprint, Space jump, E take the sword, left click swing, mouse
+look (click the window first; Esc frees the mouse), wheel zoom, F3 performance
+overlay, F12 screenshot. A gamepad works too.
+
 ## Commands
 
 ```
@@ -24,6 +33,7 @@ npm run check     load everything, fail on any error
 npm test          run the GUT tests headless
 npm run verify    check + test
 npm run shot      play the main scene, save .shots/main.png, quit
+                  (add -- --camera=x,y,z --look=x,y,z for any viewpoint)
 npm run game      play the game
 npm run import    import new assets without the editor
 npm run api       dump the engine class reference to .godot-api/
