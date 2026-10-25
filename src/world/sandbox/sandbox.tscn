@@ -1,0 +1,199 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://src/shared/shaders/prototype_grid.gdshader" id="1_grid"]
+[ext_resource type="Script" path="res://src/world/sandbox/fly_camera.gd" id="2_camera"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.3, 0.46, 0.72, 1)
+sky_horizon_color = Color(0.66, 0.72, 0.8, 1)
+ground_horizon_color = Color(0.66, 0.72, 0.8, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 4
+ssao_enabled = true
+glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(0.66, 0.72, 0.8, 1)
+fog_density = 0.004
+fog_sky_affect = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+render_priority = 0
+shader = ExtResource("1_grid")
+shader_parameter/base_color = null
+shader_parameter/line_color = null
+shader_parameter/major_line_color = null
+shader_parameter/minor_size = null
+shader_parameter/major_size = null
+shader_parameter/minor_width_px = null
+shader_parameter/major_width_px = null
+shader_parameter/checker_strength = null
+shader_parameter/surface_roughness = null
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector2(400, 400)
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_ground"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_orange"]
+render_priority = 0
+shader = ExtResource("1_grid")
+shader_parameter/base_color = Color(0.82, 0.47, 0.2, 1)
+shader_parameter/line_color = Color(0.56, 0.29, 0.1, 1)
+shader_parameter/major_line_color = Color(0.36, 0.17, 0.05, 1)
+shader_parameter/minor_size = null
+shader_parameter/major_size = null
+shader_parameter/minor_width_px = null
+shader_parameter/major_width_px = null
+shader_parameter/checker_strength = null
+shader_parameter/surface_roughness = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blue"]
+render_priority = 0
+shader = ExtResource("1_grid")
+shader_parameter/base_color = Color(0.3, 0.47, 0.74, 1)
+shader_parameter/line_color = Color(0.17, 0.29, 0.5, 1)
+shader_parameter/major_line_color = Color(0.09, 0.17, 0.32, 1)
+shader_parameter/minor_size = null
+shader_parameter/major_size = null
+shader_parameter/minor_width_px = null
+shader_parameter/major_width_px = null
+shader_parameter/checker_strength = null
+shader_parameter/surface_roughness = null
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_human"]
+albedo_color = Color(0.3, 0.78, 0.5, 1)
+roughness = 0.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_human"]
+material = SubResource("StandardMaterial3D_human")
+radius = 0.3
+height = 1.8
+
+[node name="Sandbox" type="Node3D"]
+editor_description = "Developer test ground: greybox blocks in metres, a sun, a sky and a fly camera. Not game content."
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, 0.368688, -0.439385, 0, 0.766044, 0.642788, 0.573576, -0.526541, 0.627507, 0, 12, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 1.4
+shadow_enabled = true
+directional_shadow_max_distance = 150.0
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_ground")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("WorldBoundaryShape3D_ground")
+
+[node name="Greybox" type="Node3D" parent="."]
+
+[node name="Cube1m" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.5, -1)
+use_collision = true
+size = Vector3(1, 1, 1)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="Cube2m" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1, -1)
+use_collision = true
+size = Vector3(2, 2, 2)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="Cube4m" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2, -1)
+use_collision = true
+size = Vector3(4, 4, 4)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="Steps" type="Node3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -1)
+
+[node name="Step1" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0)
+use_collision = true
+size = Vector3(3, 0.25, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Step2" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -0.5)
+use_collision = true
+size = Vector3(3, 0.5, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Step3" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, -1)
+use_collision = true
+size = Vector3(3, 0.75, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Step4" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.5)
+use_collision = true
+size = Vector3(3, 1, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Step5" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.625, -2)
+use_collision = true
+size = Vector3(3, 1.25, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Step6" type="CSGBox3D" parent="Greybox/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -2.5)
+use_collision = true
+size = Vector3(3, 1.5, 0.5)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="Ramp" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 10, 1, -4)
+use_collision = true
+size = Vector3(3, 0.4, 8)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="PillarLeft" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 3, -12)
+use_collision = true
+size = Vector3(1, 6, 1)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="PillarRight" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3, -14)
+use_collision = true
+size = Vector3(1, 6, 1)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="PillarFar" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -24)
+use_collision = true
+size = Vector3(1, 6, 1)
+material = SubResource("ShaderMaterial_orange")
+
+[node name="Wall" type="CSGBox3D" parent="Greybox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -32)
+use_collision = true
+size = Vector3(24, 4, 1)
+material = SubResource("ShaderMaterial_blue")
+
+[node name="HumanScale" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+editor_description = "1.8 m tall, 0.6 m wide: a human-sized reference marker, not a character."
+mesh = SubResource("CapsuleMesh_human")
+
+[node name="FlyCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9702957, 0.2419219, 0, -0.2419219, 0.9702957, 0, 3.2, 11)
+current = true
+script = ExtResource("2_camera")

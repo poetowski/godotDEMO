@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Placeholder icon until the game has its own. -->
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#20242c"/>
+  <path d="M64 26 98 45 64 64 30 45Z" fill="#e0913a"/>
+  <path d="M64 64 98 45v38L64 102Z" fill="#4f7bbf"/>
+  <path d="M64 64 30 45v38l34 19Z" fill="#3a5d93"/>
+</svg>

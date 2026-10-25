@@ -1,0 +1,10 @@
+{
+  "godotTools.editorPath.godot4": "C:\\Users\\jakub\\AppData\\Local\\Programs\\Godot\\4.7.2\\Godot_v4.7.2-stable_win64.exe",
+  "files.exclude": {
+    ".godot": true
+  },
+  "search.exclude": {
+    ".godot-api": true,
+    ".shots": true
+  }
+}

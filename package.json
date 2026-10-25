@@ -1,0 +1,20 @@
+{
+  "name": "godotdemo",
+  "private": true,
+  "description": "Dev commands for the godotDEMO Godot project. No dependencies; see tools/dev.mjs.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "editor": "node tools/dev.mjs editor",
+    "game": "node tools/dev.mjs game",
+    "import": "node tools/dev.mjs import",
+    "check": "node tools/dev.mjs check",
+    "test": "node tools/dev.mjs test",
+    "verify": "node tools/dev.mjs check && node tools/dev.mjs test",
+    "shot": "node tools/dev.mjs shot",
+    "api": "node tools/dev.mjs api",
+    "where": "node tools/dev.mjs where"
+  }
+}

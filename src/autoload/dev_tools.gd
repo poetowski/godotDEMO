@@ -1,0 +1,119 @@
+extends Node
+## Developer hooks. Present in debug builds only; frees itself in release.
+##
+## Command-line user arguments (after `--`), used by `npm run shot`:
+##   --shot=<path>         save a PNG of the window once the scene settles, then quit
+##   --shot-frames=<n>     frames to wait before that capture (default 60)
+##
+## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
+## the editor); F3 (dev_overlay) toggles the performance overlay.
+
+const DEFAULT_SHOT_FRAMES := 60
+
+
+## Options read from the command line.
+class Options:
+	var shot_path: String = ""
+	var shot_frames: int = DEFAULT_SHOT_FRAMES
+
+
+var _overlay_layer: CanvasLayer
+var _overlay_label: Label
+
+
+static func parse_args(args: PackedStringArray) -> Options:
+	var options := Options.new()
+	for arg in args:
+		if arg.begins_with("--shot="):
+			options.shot_path = arg.trim_prefix("--shot=")
+		elif arg.begins_with("--shot-frames="):
+			options.shot_frames = maxi(1, arg.trim_prefix("--shot-frames=").to_int())
+	return options
+
+
+func _ready() -> void:
+	if not OS.is_debug_build():
+		queue_free()
+		return
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
+	var options := parse_args(OS.get_cmdline_user_args())
+	if not options.shot_path.is_empty():
+		_capture_and_quit(options)
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("dev_screenshot"):
+		save_screenshot(_hotkey_shot_path())
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("dev_overlay"):
+		_toggle_overlay()
+		get_viewport().set_input_as_handled()
+
+
+func _process(_delta: float) -> void:
+	var camera := get_viewport().get_camera_3d()
+	var where := camera.global_position if camera else Vector3.ZERO
+	_overlay_label.text = "\n".join([
+		"%d fps   process %.1f ms   physics %.1f ms" % [
+			Engine.get_frames_per_second(),
+			Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0,
+			Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0,
+		],
+		"%d draw calls   %d primitives   %d objects" % [
+			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
+			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
+			RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME),
+		],
+		"%d nodes   video %.0f MB   static %.0f MB" % [
+			Performance.get_monitor(Performance.OBJECT_NODE_COUNT),
+			Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0,
+			Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0,
+		],
+		"camera %.1f, %.1f, %.1f" % [where.x, where.y, where.z],
+	])
+
+
+## Saves the window's current frame as a PNG at `path` (absolute or res://).
+func save_screenshot(path: String) -> Error:
+	if DisplayServer.get_name() == "headless":
+		push_error("[DevTools] screenshots need a window; headless runs cannot render")
+		return ERR_UNAVAILABLE
+	var image := get_viewport().get_texture().get_image()
+	var absolute_path := ProjectSettings.globalize_path(path)
+	DirAccess.make_dir_recursive_absolute(absolute_path.get_base_dir())
+	var error := image.save_png(absolute_path)
+	if error == OK:
+		print("[DevTools] screenshot saved: ", absolute_path)
+	else:
+		push_error("[DevTools] could not save %s: %s" % [absolute_path, error_string(error)])
+	return error
+
+
+func _capture_and_quit(options: Options) -> void:
+	for i in options.shot_frames:
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var error := save_screenshot(options.shot_path)
+	get_tree().quit(0 if error == OK else 1)
+
+
+func _hotkey_shot_path() -> String:
+	var stamp := Time.get_datetime_string_from_system().replace(":", "-")
+	var folder := "res://.shots" if OS.has_feature("editor") else "user://shots"
+	return folder.path_join("shot-%s.png" % stamp)
+
+
+func _toggle_overlay() -> void:
+	if _overlay_layer == null:
+		_overlay_layer = CanvasLayer.new()
+		_overlay_layer.layer = 128
+		_overlay_label = Label.new()
+		_overlay_label.position = Vector2(12.0, 8.0)
+		_overlay_label.add_theme_color_override("font_outline_color", Color.BLACK)
+		_overlay_label.add_theme_constant_override("outline_size", 4)
+		_overlay_layer.add_child(_overlay_label)
+		add_child(_overlay_layer)
+	else:
+		_overlay_layer.visible = not _overlay_layer.visible
+	set_process(_overlay_layer.visible)
