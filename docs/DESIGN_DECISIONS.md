@@ -115,3 +115,27 @@ equipable. the srod should be flame katana".
 Placeholders: the chest's look and place; the katana's look, size and glow;
 the chest staying closed; the katana's flames being only visual (no fire
 damage, since there is nothing to hit yet).
+
+## 2026-10-26: Sectors D1, D2, E1, E2: Bratislava Castle
+
+The brief, as given to `/environment-design`:
+
+> in sector D1 D2 E1 E2 generate bratislava castle on the hill
+
+Built in `src/world/field/sectors/d1_e2_castle/`, a stylised, low-poly take
+on the real castle:
+
+- A hill about 3 m high fills the four sectors, with a flat top around
+  x 40, z -11.
+- The palace: a white rectangular block of four wings around a courtyard,
+  about 8 x 6 m and 4 m to the eaves, with rows of dark windows and a red
+  hipped roof. A square white tower at each corner rises to about 6 m under
+  a red pyramid roof and a gold finial. The gateway is in the south wing.
+- A low white wall runs along the hilltop's edges, open where the road
+  arrives.
+- A dirt road climbs the south slope from near D1's start to the gate.
+- Round-crowned trees, bushes, rocks and grass cover the slopes.
+
+Placeholders: all proportions and sizes (the real castle is far larger
+than four sectors allow), the window rows, the colours, the road's route, the
+trees, and the courtyard and interior, which can't be entered.

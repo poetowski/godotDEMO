@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://src/ui/hud/hud.tscn" id="6_hud"]
 [ext_resource type="Script" path="res://src/world/field/sectors/a1_a3_stream/a1_a3_stream.gd" id="7_stream"]
 [ext_resource type="Script" path="res://src/world/field/sectors/c2_archer_tower/c2_archer_tower.gd" id="8_tower"]
+[ext_resource type="Script" path="res://src/world/field/sectors/d1_e2_castle/d1_e2_castle.gd" id="9_castle"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -60,6 +61,12 @@ editor_description = "A brick archer tower with an outside spiral staircase, a b
 script = ExtResource("8_tower")
 sectors = PackedStringArray("C2")
 design_seed = 21
+
+[node name="D1E2Castle" type="Node3D" parent="Sectors"]
+editor_description = "Bratislava Castle, stylised, on a hill with a road up to its gate."
+script = ExtResource("9_castle")
+sectors = PackedStringArray("D1", "D2", "E1", "E2")
+design_seed = 33
 
 [node name="Terrain" type="StaticBody3D" parent="." node_paths=PackedStringArray("designs_root")]
 script = ExtResource("2_terrain")
