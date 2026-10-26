@@ -6,6 +6,7 @@ extends Node
 ##   --shot-frames=<n>     frames to wait before that capture (default 60)
 ##   --shot-camera=x,y,z   take the shot from a temporary camera at this point
 ##   --shot-look=x,y,z     ...looking at this point (default: the world origin)
+##   --shot-frame=A1:C3    ...or from a camera framing those sectors from above
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
 ## the editor); F3 (dev_overlay) toggles the performance overlay.
@@ -38,7 +39,33 @@ static func parse_args(args: PackedStringArray) -> Options:
 			options.has_shot_camera = true
 		elif arg.begins_with("--shot-look="):
 			options.shot_look = _parse_vector(arg.trim_prefix("--shot-look="))
+		elif arg.begins_with("--shot-frame="):
+			var view := frame_view(arg.trim_prefix("--shot-frame="))
+			if not view.is_empty():
+				options.has_shot_camera = true
+				options.shot_camera = view[0]
+				options.shot_look = view[1]
 	return options
+
+
+## A camera position and the point it looks at, framing the sectors from one
+## named corner to the other ("A1:C3", or one sector) from above and across
+## their longer side. Empty when a name is no sector.
+static func frame_view(sectors: String) -> PackedVector3Array:
+	var names := sectors.split(":")
+	var first := SectorMap.cell_named(names[0])
+	var last := SectorMap.cell_named(names[names.size() - 1])
+	if first == SectorMap.NONE or last == SectorMap.NONE:
+		return PackedVector3Array()
+	var low := SectorMap.corner_of(Vector2i(mini(first.x, last.x), mini(first.y, last.y)))
+	var high := SectorMap.corner_of(Vector2i(maxi(first.x, last.x) + 1, maxi(first.y, last.y) + 1))
+	var centre := (low + high) * 0.5
+	var width := high.x - low.x
+	var depth := low.z - high.z
+	var across := Vector3(1.0, 0.0, 0.3) if depth > width else Vector3(0.3, 0.0, 1.0)
+	var distance := maxf(width, depth) * 0.5 + 5.0
+	var camera := centre + (across.normalized() + Vector3.UP * 0.85).normalized() * distance
+	return PackedVector3Array([camera, centre])
 
 
 static func _parse_vector(text: String) -> Vector3:

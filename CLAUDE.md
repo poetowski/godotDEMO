@@ -23,6 +23,7 @@ working title and the game's design is not decided yet.
 | `npm run verify` | `check`, then `test`. |
 | `npm run shot -- [scene] [--out=x.png] [--frames=60] [--size=1280x720]` | Plays a scene (default: the main scene) in a window, saves `.shots/<scene>.png` and quits. Read the PNG to see it. |
 | `npm run shot -- --camera=x,y,z --look=x,y,z --out=.shots/view.png` | The same, shot from a temporary camera at any viewpoint. |
+| `npm run shot -- --frame=A1:C3 --out=.shots/area.png` | The same, from a camera framing those sectors from above. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
@@ -77,6 +78,14 @@ numbers north (-Z). Use `SectorMap` for all sector maths and names, and
 sector gets content, record what was decided for it in
 `docs/DESIGN_DECISIONS.md`, under its name.
 
+Sector content is built with the `/environment-design <sectors> <brief>`
+skill (`.claude/skills/environment-design/`). Each design is a `SectorDesign`
+in `src/world/field/sectors/<slug>/`, registered under the field's `Sectors`
+node. It owns its sectors and shapes only them: their ground, water and
+props. `FieldTerrain` turns the designs into the ground, and
+`tests/smoke/test_sector_designs.gd` checks that every design stays inside its
+sectors.
+
 ## Editing while the editor is open
 
 The editor keeps open scenes in memory. A scene edited on disk while it's open
@@ -92,8 +101,9 @@ there can be overwritten the next time the editor saves.
 
 ```
 src/autoload/    global singletons (DevTools; MCPRuntime comes from the add-on)
-src/shared/      reusable code, components and shaders
+src/shared/      reusable code, components and shaders; nature/ holds the rocks, plants, water and stream kit
 src/world/       levels; field/ is the main scene (the sector grid), sandbox/ the dev test ground
+src/world/field/sectors/   one folder per sector design
 src/player/      the player character
 src/items/       items such as the sword
 src/ui/          HUD and menus
@@ -144,10 +154,19 @@ folder, like `src/world/sandbox/`.
 - Vertex and MultiMesh colours aren't converted from sRGB automatically. The
   low-poly shader converts them; on a StandardMaterial3D, set
   `vertex_color_is_srgb`.
+- Interpolated vertex colours dip below 0 at triangle edges (MSAA shades pixel
+  centres outside the triangle). Clamp them before `pow()`, or the NaN blooms
+  into white blobs with a black centre.
+- Headless runs (the tests) can't read MultiMesh transforms back: the dummy
+  renderer keeps no buffers. Sector designs remember theirs
+  (`instance_transforms`).
+- Packed arrays are values: one stored in a Dictionary or Array must be read,
+  changed and stored back.
 - On battery this laptop caps games at 30 fps. Measure performance on AC power.
 - Folders starting with `.` (`.shots/`, `.godot-api/`) are invisible to Godot.
 
 ## Git
 
-There's no repo yet. Once there is: run `git lfs install` once per machine;
-`.gitattributes` already routes binary assets through Git LFS.
+The repo is github.com/poetowski/godotDEMO, branch `main`. Run
+`git lfs install` once per machine; `.gitattributes` routes binary assets
+through Git LFS.

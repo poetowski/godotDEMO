@@ -10,8 +10,11 @@ design arrives.
 | Engine | Godot 4.7.2, Forward+, Jolt physics | Pinned in `tools/dev.mjs` and `project.godot` |
 | DevTools autoload | `src/autoload/dev_tools.gd` | `--shot` screenshots for `npm run shot`, F12 screenshots, F3 performance overlay. Frees itself in release builds. |
 | MCPRuntime autoload | `addons/godot_mcp/runtime/` | Lets the MCP server screenshot, drive input in and inspect the running game. Editor builds only (local patch). |
-| Field | `src/world/field/` | The main scene: flat grass everywhere and the sector grid (see the design record). `grass_grid.gdshader` paints the grass and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names, and `field.gd` starts the player in A1 (or the `--sector` given). |
-| SectorMap | `src/world/field/sector_map.gd` | Sector maths: which sector a point is in, names to cells and back, sector centres. Everything that talks about sectors goes through it. |
+| Field | `src/world/field/` | The main scene: grass everywhere, the sector grid, and the sector designs under `Sectors` (see the design record). `grass_grid.gdshader` paints the grass, designed ground's colours and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names (not in designed sectors), and `field.gd` starts the player on dry ground in A1 (or the `--sector` given). |
+| SectorMap | `src/world/field/sector_map.gd` | Sector maths: which sector a point is in, names to cells and back, sector centres, corners and start points. Everything that talks about sectors goes through it. |
+| Sector designs | `src/world/field/sector_design.gd`, `src/world/field/sectors/` | A `SectorDesign` owns some sectors and shapes only them: its hooks describe ground height, water level and flow, and ground colour, sampled every 0.25 m; it places its own props. The ground eases back to flat within 2 m of every edge shared with a sector it doesn't own. Built with the `/environment-design` skill. |
+| FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground and collision: one flat mesh for undesigned sectors plus a 900 m ring around the grid, and one shaped mesh per designed sector. Answers height and water questions for the whole field. |
+| Nature kit | `src/shared/nature/` | Low-poly rocks, bushes, grass tufts and lily pads (`NatureKit`), stream courses (`StreamPath`), and shaders for flowing water, swaying grass and floating things. |
 | Player | `src/player/` | Third-person hero from the castle PoC: SpringArm camera, camera-relative movement, sprint, jump, procedural walk cycle, sword pickup and swing with a swoosh trail. |
 | Sword | `src/items/sword/` | The sword model and the sword-in-the-stone pickup. Not placed in the world at the moment. |
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint. |
@@ -31,8 +34,8 @@ The camera's spring arm only collides with `world`; the sword pickup only
 sees `player`.
 
 Sectors: 10 x 10 m, 20 x 20 of them (A to T, 1 to 20). A1's south-west corner
-is the world origin; letters grow east (+X), numbers north (-Z). The grass
-plane is 2 km wide, so it continues well past the grid.
+is the world origin; letters grow east (+X), numbers north (-Z). The flat
+grass continues 900 m past the grid on every side.
 
 Player controls: WASD or the left stick to move, Shift to sprint, Space to jump,
 E to interact, left click to swing, the mouse to look (click the window to
@@ -43,8 +46,9 @@ Sandbox controls: WASD or the left stick to move, E/Q to rise and sink, Shift
 for speed, hold the right mouse button (or use the right stick) to look, the
 mouse wheel to change speed. F3 (overlay) and F12 (screenshot) work everywhere.
 
-Code-generated parts of the world (the curtains, sector names and clouds)
-are built by `@tool` scripts, so the editor shows them too. Their generated
+Code-generated parts of the world (the ground, sector designs, curtains,
+sector names and clouds) are built by `@tool` scripts, so the editor shows
+them too. Their generated
 children have no owner, so the editor never saves them into the scene file.
 
 The castle proof of concept (terrain, castle, path, trees) was removed when
@@ -84,6 +88,13 @@ decided until the author says so.
    GTX 1650).
 9. **Art pipeline.** Blender to glTF (`.glb`) into `assets/models/`. Blender
    isn't installed. Godot can import `.blend` files directly once it is.
-10. **Exports.** No export presets yet. When adding them, exclude `tests/*`,
+10. **Generated content at scale.** Sector designs are generated in
+    GDScript every time the field loads: about 100 ms per designed sector on
+    the dev machine (A1 to A3 take about 300 ms of the field's
+    400 ms). A fully designed 400-sector world would take most of a minute.
+    Before then: bake each design's meshes into resources at edit time, or
+    build sectors near the player only. Recommended: baking, since it keeps
+    designs deterministic and loads fastest.
+11. **Exports.** No export presets yet. When adding them, exclude `tests/*`,
     `tools/*` and `addons/gut/*`. The export templates are a separate download
     from the editor (Editor > Manage Export Templates).

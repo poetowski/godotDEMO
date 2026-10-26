@@ -31,3 +31,15 @@ func test_every_name_round_trips() -> void:
 			var cell := Vector2i(column, row)
 			assert_eq(SectorMap.cell_named(SectorMap.name_of(cell)), cell)
 			assert_eq(SectorMap.cell_at(SectorMap.center_of(cell)), cell)
+
+
+func test_corners_and_starts() -> void:
+	assert_eq(SectorMap.corner_of(Vector2i.ZERO), Vector3.ZERO)
+	assert_eq(SectorMap.corner_of(SectorMap.cell_named("B2")), Vector3(10.0, 0.0, -10.0))
+	assert_eq(SectorMap.start_of(Vector2i.ZERO), Vector3(5.0, 0.0, -2.5))
+
+
+func test_unbounded_cells_continue_past_the_grid() -> void:
+	assert_eq(SectorMap.unbounded_cell_at(Vector2(15.0, -5.0)), Vector2i(1, 0))
+	assert_eq(SectorMap.unbounded_cell_at(Vector2(-0.5, 0.5)), Vector2i(-1, -1))
+	assert_eq(SectorMap.unbounded_cell_at(Vector2(10.0, -10.0)), Vector2i(1, 1))

@@ -43,3 +43,34 @@ sectors that we build one by one.
 Placeholders: the light colour (pale cyan), the curtains' height (3 m) and
 strength, how the sector names are painted, the HUD readout, and keeping the
 third-person hero and the clouds.
+
+## 2026-10-26: Sectors A1 to A3: a small stream
+
+The brief, as given to `/environment-design`:
+
+> Sector A1, A2, A3. Put there small river with floating water, some lillies
+> and small bushes. make terrain little bumpy and put some rocks and grass
+> around.
+
+"Floating water" was read as flowing water.
+
+Built in `src/world/field/sectors/a1_a3_stream/`:
+
+- A small stream, about 1.2 m wide, rises from a spring among rocks in A3
+  (around x 6, z -26), winds south through A2 and opens into a pond about
+  3 m across in A1 (around x 4, z -6). Its course stays inside the three
+  sectors, since the neighbouring sectors are still flat grass. The water
+  visibly flows downstream, slower in the pond.
+- Lily pads float on the pond and the spring pool, some with white and pink
+  flowers.
+- The ground rolls gently, by about 0.2 m, with three low mounds, each topped
+  by a boulder. Muddy banks line the water.
+- Small bushes grow along the banks and a few out in the grass. Rocks sit
+  around the spring, along the banks, two in the stream itself, and scattered
+  over the grass. Tufts of grass grow in patches, lusher along the banks.
+
+Placeholders: the stream's course, width and depth; the spring and the pond;
+the mounds; every count, size and colour; the flow speed; the drifting flecks
+of foam that show the flow. The painted sector names are hidden in designed
+sectors, where they would hover over the water; the HUD still names the
+sector.

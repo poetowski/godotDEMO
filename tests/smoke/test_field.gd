@@ -1,6 +1,7 @@
 extends GutTest
-## The field builds, the player starts on the ground in A1 facing its name,
-## and the grass is solid well beyond the grid.
+## The field builds, the player starts on the ground in A1, sector names are
+## painted where the grass is still flat, and the grass is solid well beyond
+## the grid.
 
 const SCENE_PATH := "res://src/world/field/field.tscn"
 const FieldScript := preload("res://src/world/field/field.gd")
@@ -34,6 +35,12 @@ func test_every_sector_has_a_painted_name() -> void:
 	assert_not_null(grid.get_node_or_null("LabelA1"))
 	assert_not_null(grid.get_node_or_null("LabelT20"))
 	assert_eq(grid.get_children().filter(func(child: Node) -> bool: return child is Label3D).size(), SectorMap.COLUMNS * SectorMap.ROWS)
+
+
+func test_names_are_hidden_where_a_design_shapes_the_ground() -> void:
+	var grid := _world.get_node("SectorGrid")
+	assert_false((grid.get_node("LabelA1") as Label3D).visible, "A1 has a design")
+	assert_true((grid.get_node("LabelB1") as Label3D).visible, "B1 is still flat grass")
 
 
 func test_grass_is_solid_far_beyond_the_grid() -> void:

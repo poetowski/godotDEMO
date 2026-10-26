@@ -1,9 +1,11 @@
 shader_type spatial;
 
-// Flat grass ground with the sector grid painted on it as glowing lines.
-// The grass varies in soft world-space patches. Lines have a fixed width in
-// metres, cover only the grid's area, and thin out with distance instead of
-// shimmering.
+// Grass ground with the sector grid painted on it as glowing lines. The grass
+// varies in soft world-space patches. Designed sectors paint their own ground
+// through vertex colours: alpha is how much grass shows, and the colour (in
+// sRGB) what shows instead, such as mud under a stream; the lines fade with
+// the grass. Lines have a fixed width in metres, cover only the grid's area,
+// and thin out with distance instead of shimmering.
 
 uniform vec3 grass_light : source_color = vec3(0.44, 0.62, 0.26);
 uniform vec3 grass_dark : source_color = vec3(0.27, 0.46, 0.18);
@@ -19,6 +21,14 @@ varying vec3 world_position;
 
 void vertex() {
 	world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+}
+
+// Interpolated colours can overshoot below 0 at triangle edges (MSAA shades
+// pixel centres outside the triangle), and pow() of a negative is NaN, which
+// bloom spreads into a white blob. Hence the max().
+vec3 srgb_to_linear(vec3 c) {
+	c = max(c, vec3(0.0));
+	return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c));
 }
 
 float hash(vec2 p) {
@@ -41,6 +51,9 @@ void fragment() {
 	float patches = value_noise(p * 0.045) * 0.65 + value_noise(p * 0.21) * 0.35;
 	vec3 grass = mix(grass_dark, grass_light, patches);
 	grass *= 0.95 + 0.1 * value_noise(p * 2.7);
+	vec3 earth = srgb_to_linear(COLOR.rgb) * (0.88 + 0.24 * value_noise(p * 3.3));
+	float grassiness = clamp(COLOR.a, 0.0, 1.0);
+	vec3 ground = mix(earth, grass, grassiness);
 
 	// Metres east and north of A1's corner.
 	vec2 grid = vec2(p.x - grid_origin.x, grid_origin.y - p.y);
@@ -52,9 +65,9 @@ void fragment() {
 	on_line *= clamp(line_width / per_pixel, 0.0, 1.0);
 	float inside_x = step(-line_width, grid.x) * step(grid.x, extent.x + line_width);
 	float inside_y = step(-line_width, grid.y) * step(grid.y, extent.y + line_width);
-	float line = max(on_line.x, on_line.y) * inside_x * inside_y;
+	float line = max(on_line.x, on_line.y) * inside_x * inside_y * grassiness;
 
-	ALBEDO = mix(grass, line_color * 0.5, line);
+	ALBEDO = mix(ground, line_color * 0.5, line);
 	EMISSION = line_color * line_energy * line;
 	ROUGHNESS = 0.95;
 }

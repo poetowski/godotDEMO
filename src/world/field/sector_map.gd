@@ -13,12 +13,21 @@ const ROWS := 20
 const ORIGIN := Vector3.ZERO
 const LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const NONE := Vector2i(-1, -1)
+## Where a player starting in a sector stands, from its centre: to the south,
+## so the sector's painted name lies just ahead.
+const START_OFFSET := Vector3(0.0, 0.0, 2.5)
 
 
 ## The sector containing a point, or NONE outside the grid.
 static func cell_at(point: Vector3) -> Vector2i:
 	var cell := Vector2i(floori((point.x - ORIGIN.x) / SIZE), floori((ORIGIN.z - point.z) / SIZE))
 	return cell if is_valid(cell) else NONE
+
+
+## The cell under a ground point given as world x and z, even outside the
+## grid, where `is_valid` is false.
+static func unbounded_cell_at(xz: Vector2) -> Vector2i:
+	return Vector2i(floori((xz.x - ORIGIN.x) / SIZE), floori((ORIGIN.z - xz.y) / SIZE))
 
 
 ## "A1", "T20"..., or "" for a cell outside the grid.
@@ -49,3 +58,13 @@ static func center_of(cell: Vector2i) -> Vector3:
 ## The grid's size in metres: x to the east, y to the north.
 static func extent() -> Vector2:
 	return Vector2(COLUMNS, ROWS) * SIZE
+
+
+## The sector's south-west corner on the ground.
+static func corner_of(cell: Vector2i) -> Vector3:
+	return ORIGIN + Vector3(cell.x * SIZE, 0.0, -cell.y * SIZE)
+
+
+## Where a player starting in this sector stands.
+static func start_of(cell: Vector2i) -> Vector3:
+	return center_of(cell) + START_OFFSET

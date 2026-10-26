@@ -24,6 +24,11 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 grow east and numbers grow north, ahead of you. The top-left corner shows the
 sector you're in. `npm run game -- --sector=C4` starts you in C4.
 
+A1 to A3 are the first designed sectors: a spring, a small stream and a lily
+pond. New sectors are designed with the `/environment-design` skill in Claude
+Code, for example `/environment-design B1, B2: a birch grove around a
+clearing`.
+
 WASD move, Shift sprint, Space jump, mouse look (click the window first; Esc
 frees the mouse), wheel zoom, F3 performance overlay, F12 screenshot. A
 gamepad works too.
@@ -37,7 +42,8 @@ npm run check     load everything, fail on any error
 npm test          run the GUT tests headless
 npm run verify    check + test
 npm run shot      play the main scene, save .shots/main.png, quit
-                  (add -- --camera=x,y,z --look=x,y,z for any viewpoint)
+                  (add -- --camera=x,y,z --look=x,y,z for any viewpoint,
+                  or -- --frame=A1:A3 to frame sectors from above)
 npm run game      play the game
 npm run import    import new assets without the editor
 npm run api       dump the engine class reference to .godot-api/
