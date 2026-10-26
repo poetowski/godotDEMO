@@ -139,3 +139,28 @@ on the real castle:
 Placeholders: all proportions and sizes (the real castle is far larger
 than four sectors allow), the window rows, the colours, the road's route, the
 trees, and the courtyard and interior, which can't be entered.
+
+## 2026-10-26: Sector A5: a cottage in the rain
+
+The brief, as given to `/environment-design`:
+
+> generate medieval cottage with open door and closed wooden windows in
+> sector A5. i want to have a static cloud over sector A5 which rains
+> moderately.
+
+Built in `src/world/field/sectors/a5_rainy_cottage/`:
+
+- A medieval half-timbered cottage, about 4.6 x 3.4 m: white plaster walls
+  in dark oak framing on a stone foundation, a steep thatched gable roof,
+  and a stone chimney at the east end.
+- The door, facing south toward the sector's start point, stands open
+  outward; the player can walk inside, under a plank ceiling.
+- Five windows, each shut with two plank shutters with iron straps.
+- A dark grey cloud hangs still about 14 m above the sector and rains
+  moderately. The rain stops on the roof and the ground, and the grass
+  under the cloud is darker with wet. A dirt path leads to the door.
+- Bushes and grass around.
+
+Placeholders: the cottage's size, colours and layout; the thatch; the rain's
+amount, speed and look (no sound, splashes or puddles yet); the cloud's
+height and shape; the bright, empty interior.
