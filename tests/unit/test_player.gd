@@ -26,7 +26,7 @@ func test_takes_the_sword_from_the_stone() -> void:
 	add_child_autofree(stone)
 	watch_signals(player)
 	player.offer_pickup(stone)
-	assert_signal_emitted_with_parameters(player, "prompt_changed", [Player.TAKE_PROMPT])
+	assert_signal_emitted_with_parameters(player, "prompt_changed", [stone.prompt()])
 	player.interact()
 	assert_true(player.has_sword)
 	assert_false(stone.has_sword())

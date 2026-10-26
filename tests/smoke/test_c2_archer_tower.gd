@@ -52,3 +52,27 @@ func test_the_player_can_climb_the_stairs_to_the_top() -> void:
 			break
 	Input.action_release("move_forward")
 	assert_gt(highest, design.tower_height - 0.5, "reached the top, highest %.1f m" % highest)
+
+
+func test_the_flame_katana_waits_in_the_chest_on_top_and_can_be_wielded() -> void:
+	var chest := _design.get_node("Chest") as SwordChest
+	assert_true(chest.has_sword())
+	assert_gt(chest.global_position.y - _design.height_at(TowerDesign.TOWER), 9.0, "the chest is on top of the tower")
+	var player := _world.get_node("Player") as Player
+	watch_signals(player)
+	player.global_position = chest.global_position + chest.global_basis.z * 0.9 + Vector3.UP * 0.1
+	player.velocity = Vector3.ZERO
+	await wait_physics_frames(6)
+	assert_signal_emitted_with_parameters(player, "prompt_changed", ["[E]  Take the flame katana"])
+	player.interact()
+	assert_true(player.has_sword)
+	assert_false(chest.has_sword())
+	assert_eq(_find_katanas(player), 1, "the player holds the flame katana")
+	assert_true(player.try_attack(), "and swings it")
+
+
+func _find_katanas(node: Node) -> int:
+	var found := 1 if node is FlameKatana else 0
+	for child in node.get_children():
+		found += _find_katanas(child)
+	return found

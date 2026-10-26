@@ -16,7 +16,7 @@ design arrives.
 | FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground and collision: one flat mesh for undesigned sectors plus a 900 m ring around the grid, and one shaped mesh per designed sector. Answers height and water questions for the whole field. |
 | Nature kit | `src/shared/nature/` | Low-poly rocks, bushes, grass tufts and lily pads (`NatureKit`), stream courses (`StreamPath`), and shaders for flowing water, swaying grass and floating things. |
 | Player | `src/player/` | Third-person hero from the castle PoC: SpringArm camera, camera-relative movement, sprint, jump, procedural walk cycle, sword pickup and swing with a swoosh trail. |
-| Sword | `src/items/sword/` | The sword model and the sword-in-the-stone pickup. Not placed in the world at the moment. |
+| Swords | `src/items/sword/`, `src/items/flame_katana/` | `SwordHolder` offers a blade to the player: the sword-in-the-stone (not placed now) and `SwordChest`, which holds the `FlameKatana` on top of the C2 tower. The katana is built in code: burning blade shader, flame particles, flickering light. |
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint. |
 | Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material (the clouds use it). |
 | Sandbox | `src/world/sandbox/` | Dev test ground: greybox blocks with collision, a 1.8 m human-scale marker, sun, sky, fog and a fly camera. |

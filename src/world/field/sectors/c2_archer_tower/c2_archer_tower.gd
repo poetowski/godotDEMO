@@ -2,7 +2,7 @@
 extends SectorDesign
 ## Sector C2: a round archer tower of stone bricks, with arrow slits, a
 ## doorway facing the start, and a staircase spiralling up its outside to an
-## open battlement. A big pine stands in the north-west corner, and bushes,
+## open battlement, where a chest holds a flame katana to take. A big pine stands in the north-west corner, and bushes,
 ## ferns and grass grow around. The brief is in docs/DESIGN_DECISIONS.md; the
 ## sizes, colours and layout are placeholders.
 
@@ -59,6 +59,7 @@ func _populate() -> void:
 	_build_walls(batch)
 	_build_battlement(batch)
 	_build_stairs(batch)
+	_place_chest()
 	claim(TOWER, _outer_radius())
 	commit_merged("Tower", MeshKit.lowpoly_material(Color.WHITE, 0.9))
 	_build_pine()
@@ -163,6 +164,17 @@ func _build_battlement(batch: NatureKit.Batch) -> void:
 	batch.add(flag, flag_place, Color(0.7, 0.16, 0.14))
 	flag.reverse()
 	batch.add(flag, flag_place, Color(0.7, 0.16, 0.14))
+
+
+## A chest on the battlement, across from where the stairs arrive, its lock
+## facing the middle, with the flame katana lying on its lid.
+func _place_chest() -> void:
+	var angle := _stair_angle(1.0) + PI
+	var chest := SwordChest.new()
+	chest.name = "Chest"
+	chest.item_name = "the flame katana"
+	chest.transform = Transform3D(_ring_box(angle), _around(angle, 1.0, tower_height + 0.3))
+	add_child(chest)
 
 
 ## The stairs' angle a fraction of the way from the bottom to the top.

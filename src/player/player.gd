@@ -11,7 +11,6 @@ signal prompt_changed(text: String)
 signal sword_equipped
 signal swung
 
-const TAKE_PROMPT := "[E]  Take the sword"
 const SWORD_REST := Vector3(0.45, 0.0, 0.0)
 const SWING_RAISED := Vector3(2.6, 0.0, 0.7)
 const SWING_STRUCK := Vector3(0.55, 0.0, -1.1)
@@ -36,7 +35,7 @@ const SWING_STRUCK := Vector3(0.55, 0.0, -1.1)
 var has_sword: bool = false
 var is_swinging: bool = false
 
-var _offered: SwordStone
+var _offered: SwordHolder
 var _gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
 var _yaw: float = 0.0
 var _pitch: float = 0.0
@@ -131,20 +130,20 @@ func look_toward(target: Vector3) -> void:
 	_turn_camera(0.0, 0.0)
 
 
-func offer_pickup(stone: SwordStone) -> void:
+func offer_pickup(holder: SwordHolder) -> void:
 	if has_sword:
 		return
-	_offered = stone
-	prompt_changed.emit(TAKE_PROMPT)
+	_offered = holder
+	prompt_changed.emit(holder.prompt())
 
 
-func withdraw_pickup(stone: SwordStone) -> void:
-	if _offered == stone:
+func withdraw_pickup(holder: SwordHolder) -> void:
+	if _offered == holder:
 		_offered = null
 		prompt_changed.emit("")
 
 
-## Takes whatever is on offer; today that's only the sword.
+## Takes the sword on offer.
 func interact() -> void:
 	if _offered == null or has_sword:
 		return

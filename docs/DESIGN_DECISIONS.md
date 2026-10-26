@@ -97,3 +97,21 @@ Built in `src/world/field/sectors/c2_archer_tower/`:
 Placeholders: every size, position and colour; the stairs running outside
 rather than inside; the pennant; the doorway left open with a dark
 interior that can't be entered.
+
+## 2026-10-26: Sector C2: a flame katana in a chest on the tower
+
+The brief: "add chest with a sword on the top of archer tower. sword must be
+equipable. the srod should be flame katana".
+
+- An iron-banded wooden chest stands on the tower's battlement, across from
+  where the stairs arrive, with a flame katana lying on its lid.
+- Walking up to it shows "[E]  Take the flame katana". E puts the katana in
+  the hero's hand, and left click swings it, like the plain sword.
+- The katana: a gently curved blade that burns, glowing orange at the edge
+  with flames flickering up it, sparks of fire streaming off it as it
+  moves, a warm flickering light, a round dark guard, and a red and black
+  wrapped grip with gold fittings.
+
+Placeholders: the chest's look and place; the katana's look, size and glow;
+the chest staying closed; the katana's flames being only visual (no fire
+damage, since there is nothing to hit yet).

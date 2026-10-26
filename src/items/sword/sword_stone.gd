@@ -1,7 +1,6 @@
 class_name SwordStone
-extends Node3D
-## A sword stuck in a rock. Offers the sword to a player who walks up and
-## hands it over through take_sword(). Placeholder for the castle PoC.
+extends SwordHolder
+## A sword stuck in a rock. Placeholder from the castle PoC.
 
 @onready var _sword: Node3D = $Sword
 @onready var _glint: OmniLight3D = $Glint
@@ -10,8 +9,7 @@ extends Node3D
 
 
 func _ready() -> void:
-	_pickup_area.body_entered.connect(_on_body_entered)
-	_pickup_area.body_exited.connect(_on_body_exited)
+	watch(_pickup_area)
 
 
 func has_sword() -> bool:
@@ -29,14 +27,3 @@ func take_sword() -> Node3D:
 	_sparkles.emitting = false
 	return sword
 
-
-func _on_body_entered(body: Node3D) -> void:
-	var player := body as Player
-	if player and has_sword():
-		player.offer_pickup(self)
-
-
-func _on_body_exited(body: Node3D) -> void:
-	var player := body as Player
-	if player:
-		player.withdraw_pickup(self)
