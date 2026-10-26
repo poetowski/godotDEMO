@@ -74,3 +74,26 @@ the mounds; every count, size and colour; the flow speed; the drifting flecks
 of foam that show the flow. The painted sector names are hidden in designed
 sectors, where they would hover over the water; the HUD still names the
 sector.
+
+## 2026-10-26: Sector C2: an archer tower
+
+The brief, as given to `/environment-design`:
+
+> in segment C2 generate an archer fantasy tower built from bricks with
+> staircase. put foliage and big pine in the same segment.
+
+Built in `src/world/field/sectors/c2_archer_tower/`:
+
+- A round tower of stone bricks, about 3.6 m across and 9.5 m tall, near the
+  middle of C2 (x 24, z -16.6). It has a doorway facing south toward the
+  sector's start, arrow slits at two heights, and an open battlement with
+  merlons and a red pennant.
+- A staircase of stone steps spirals 1.25 turns up the outside to the
+  battlement, which the player can climb.
+- A big pine, about 11 m tall, in the north-west corner (x 22, z -12).
+- Foliage: bushes around the pine and the tower, ferns in the shade, grass
+  in patches, a few rocks, and trodden earth at the tower's foot.
+
+Placeholders: every size, position and colour; the stairs running outside
+rather than inside; the pennant; the doorway left open with a dark
+interior that can't be entered.

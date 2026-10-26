@@ -70,3 +70,17 @@ static func multimesh_instance(mesh: Mesh, material: Material, count: int) -> Mu
 	instance.multimesh = multimesh
 	instance.material_override = material
 	return instance
+
+
+## A mesh's first surface as a flat triangle list (three vertices per
+## triangle), ready for NatureKit.Batch.
+static func triangles(mesh: Mesh) -> PackedVector3Array:
+	var arrays := mesh.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	if arrays[Mesh.ARRAY_INDEX] == null:
+		return vertices
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var result := PackedVector3Array()
+	for index in indices:
+		result.append(vertices[index])
+	return result
