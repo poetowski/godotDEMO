@@ -43,10 +43,13 @@ func transforms() -> Array[Transform3D]:
 	return result
 
 
-## Hands the stored copies to the MultiMesh.
+## Hands the stored copies to the MultiMesh. Another copy of the same baked
+## scene may share it and have filled it already; the format can only change
+## while it's empty.
 func fill() -> void:
 	if multimesh == null:
 		return
+	multimesh.instance_count = 0
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.use_colors = true
 	multimesh.instance_count = copy_count()

@@ -21,6 +21,7 @@ design arrives.
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint; opens the inventory on I and freezes the hero while it's open. |
 | Inventory | `src/items/inventory.gd`, `src/items/item_data.gd`, `src/ui/inventory/`, `data/items/` | `Inventory` (4 x 6 slots, on the player) holds `ItemData` resources: name, description, facts and model. `InventoryPanel` is the drawer sliding in from the right over 40% of the screen, with 3D slot pictures and a viewer (`ItemPreview`, a model in its own small world, dragged to turn). |
 | Interaction | `src/items/interactable.gd`, `src/items/item_pickup.gd`, `src/items/gesture_spot.gd` | `Interactable` offers itself to the player inside its area with a prompt, and acts on E. `ItemPickup` puts an item in the inventory; `SwordHolder` hands over a blade; `GestureSpot` asks the player to choose a gesture (pray, cry) and has the hero perform it. |
+| Save and load | `src/save/save_game.gd`, `src/ui/game_menu/`, `Field.capture` / `Field.apply`, `src/items/item_catalog.gd` | JSON saves in `user://saves/slot_<name>.json` (a quicksave and slots 1 to 3): the player's position, facing and sword, the inventory by item id, and `WorldState`. Loading happens in place: the world state, inventory and sword are restored, then every streamed design reloads around the player. The game menu (Esc) pauses the game; F5 quicksaves, F9 quickloads. |
 | Choices and gestures | `src/ui/choice/choice_menu.gd`, `Player.ask`, `Player.perform` | `Player.ask` raises a choice the HUD's `ChoiceMenu` shows (numbered buttons, Esc cancels). `Player.perform` plays a timed gesture (kneeling prayer, crying with tears) while the hero stands still. |
 | Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material (the clouds use it). |
 | Sandbox | `src/world/sandbox/` | Dev test ground: greybox blocks with collision, a 1.8 m human-scale marker, sun, sky, fog and a fly camera. |
@@ -72,9 +73,18 @@ decided until the author says so.
    call.
 2. **World structure.** Streaming is in (see above), at the scale of sector
    designs. Still open: distant designs vanish beyond the unload radius
-   (about 50 m), leaving only their ground. The next step is a simple far
-   model per design (a merged, decimated mesh baked alongside), shown in
-   place of the content. Attaching a design costs 5 to 25 ms on the main
+   (about 50 m), leaving only their ground. Proposed fix, a far model per
+   design: the bake merges the content's large meshes (anything over about
+   2 m: buildings, trees, rocks; not grass, ivy or small props) into one
+   mesh, simplifies it with Godot's built-in LOD generation
+   (`ImporterMesh.generate_lods`, keeping the coarsest level), and saves it
+   as `<design>.far.res`. These are small (tens of KB) and stay loaded; each
+   shows between the unload radius and a far radius of about 150 m, fading
+   in and out with visibility ranges, and hides while the full content is
+   loaded. Alternatives: rendered billboard impostors (cheaper at extreme
+   distances, but they look flat up close and need a capture step), or
+   merging whole regions into one far model (fewer draw calls once the world
+   is full; worth adding on top later). Attaching a design costs 5 to 25 ms on the main
    thread (mostly collision for its ground and nodes that build their own
    parts); spreading that over frames is the next optimisation.
 3. **Terrain.** For large outdoor areas, the Terrain3D add-on (GDExtension,
@@ -86,8 +96,10 @@ decided until the author says so.
 5. **Game data.** Items, stats and abilities as typed custom `Resource`
    classes in `data/`: editable in the inspector, diffable as `.tres`, and
    testable.
-6. **Saves.** Serialize state to plain dictionaries or JSON in `user://`.
-   Don't load saves as Resources, because a crafted `.tres` can run code.
+6. **Saves.** In: plain JSON with a format number (`SaveGame.FORMAT`), never
+   Resources, since a crafted `.tres` can run code. When the format changes,
+   bump the number and convert older saves on read rather than refusing
+   them, once saves matter to players.
 7. **Dialogue and quests.** Dialogic 2, or a small Resource-based system.
    Decide when writing starts.
 8. **Performance budget.** Visibility ranges (HLOD), automatic mesh LODs,

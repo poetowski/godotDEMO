@@ -243,3 +243,18 @@ Built:
 Placeholders: the prompt and menu wording, the durations, the poses (the
 hero's limbs are single pieces, so the kneel is approximated), the tears,
 and that neither choice has any effect beyond the gesture yet.
+
+## 2026-10-27: Saving and loading
+
+The brief: "implement save and load with user interface for that."
+
+- Esc opens a game menu and pauses the game: Resume, Save game, Load game,
+  Quit. Save and Load list a quicksave and three slots, each showing the
+  sector, the date and time, and how many items were carried.
+- F5 quicksaves and F9 quickloads; a short message confirms either.
+- A save keeps where the player stands and faces, the sword in hand, the
+  inventory, and what was taken from the world. Loading puts all of it back.
+
+Placeholders: the keys (Esc used to only free the mouse; the menu frees it
+too), the number of slots, the menu's look and wording, and Quit leaving
+the game at once without asking.

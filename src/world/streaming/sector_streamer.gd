@@ -71,6 +71,12 @@ func load_all_now() -> void:
 		_load_now(design)
 
 
+## Unloads every design, for loading a save somewhere else.
+func unload_all() -> void:
+	for design in _designs():
+		unload(design)
+
+
 func unload(design: SectorDesign) -> void:
 	_pending.erase(design)
 	if design.is_content_loaded():

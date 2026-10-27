@@ -19,3 +19,15 @@ static func mark_taken(id: String) -> void:
 
 static func is_taken(id: String) -> bool:
 	return _taken.has(id)
+
+
+## The ids of everything taken, for saving.
+static func taken_ids() -> PackedStringArray:
+	return PackedStringArray(_taken.keys())
+
+
+## Replaces the record with a saved one.
+static func restore(ids: Array) -> void:
+	_taken.clear()
+	for id: String in ids:
+		_taken[id] = true

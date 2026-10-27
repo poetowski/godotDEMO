@@ -34,6 +34,25 @@ func add(item: ItemData) -> bool:
 	return true
 
 
+## Puts an item in a given slot, replacing what was there; null empties it.
+func put(slot: int, item: ItemData) -> void:
+	_slots[slot] = item
+	changed.emit()
+
+
+func clear() -> void:
+	_slots.fill(null)
+	changed.emit()
+
+
+## Each slot's item id, "" for an empty slot, for saving.
+func ids() -> PackedStringArray:
+	var result := PackedStringArray()
+	for item in _slots:
+		result.append(String(item.id) if item else "")
+	return result
+
+
 ## Takes the item out of a slot and returns it, or null if it was empty.
 func remove_at(slot: int) -> ItemData:
 	var item := _slots[slot]

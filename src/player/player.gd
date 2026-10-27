@@ -224,6 +224,31 @@ func interact() -> void:
 	target.interact(self)
 
 
+## The sword in hand, or null.
+func sword() -> Node3D:
+	return _hand.get_child(0) as Node3D if _hand.get_child_count() > 0 else null
+
+
+## Drops the sword in hand, if any; it's gone, not put in the world.
+func unequip_sword() -> void:
+	for child in _hand.get_children():
+		_hand.remove_child(child)
+		child.queue_free()
+	has_sword = false
+	_right_arm.rotation = Vector3.ZERO
+
+
+## The direction the hero and camera face, in radians around the vertical.
+func facing() -> float:
+	return _yaw
+
+
+func face(yaw: float) -> void:
+	_yaw = yaw
+	_model.rotation.y = yaw
+	_turn_camera(0.0, 0.0)
+
+
 ## Puts `sword` in the right hand, blade forward.
 func equip_sword(sword: Node3D) -> void:
 	_hand.add_child(sword)

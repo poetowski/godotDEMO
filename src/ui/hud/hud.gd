@@ -3,9 +3,14 @@ extends CanvasLayer
 ## On-screen text: the current sector, the interaction prompt, a line of
 ## controls and a hint to click the window for mouse look; and the inventory,
 ## opened with I. While it's open the hero stands still and the mouse is
-## free. Placeholder style.
+## free. Esc opens the game menu, which pauses the game and saves and loads;
+## F5 quicksaves and F9 quickloads. The field does the saving and loading
+## through `save_requested` and `load_requested`. Placeholder style.
 
-const CONTROLS := "WASD move    Shift sprint    Space jump    E interact    I inventory    Left click swing    Wheel zoom    Esc free the mouse"
+signal save_requested(slot: String)
+signal load_requested(slot: String)
+
+const CONTROLS := "WASD move    Shift sprint    Space jump    E interact    I inventory    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load"
 
 var _prompt: Label
 var _mouse_hint: Label
@@ -13,6 +18,9 @@ var _controls: Label
 var _sector: Label
 var _inventory: InventoryPanel
 var _choices: ChoiceMenu
+var _menu: GameMenu
+var _toast: Label
+var _toast_left := 0.0
 var _on_chosen: Callable
 var _player: Player
 
@@ -50,6 +58,17 @@ func _ready() -> void:
 	_choices.name = "Choices"
 	add_child(_choices)
 	_choices.chosen.connect(_on_choice_made)
+	_toast = _label(30, Color(1.0, 1.0, 1.0, 0.95))
+	_toast.anchor_right = 1.0
+	_toast.offset_top = 80.0
+	_toast.offset_bottom = 120.0
+	_menu = GameMenu.new()
+	_menu.name = "GameMenu"
+	add_child(_menu)
+	_menu.opened.connect(_on_menu_opened)
+	_menu.closed.connect(_on_menu_closed)
+	_menu.save_requested.connect(func(slot: String) -> void: save_requested.emit(slot))
+	_menu.load_requested.connect(func(slot: String) -> void: load_requested.emit(slot))
 
 
 ## Shows the player's prompts and inventory.
@@ -68,6 +87,29 @@ func choice_menu() -> ChoiceMenu:
 	return _choices
 
 
+func game_menu() -> GameMenu:
+	return _menu
+
+
+## Shows a short message for a moment, and in the game menu if it's open.
+func notify(text: String) -> void:
+	_toast.text = text
+	_toast_left = 2.5
+	_menu.note(text)
+
+
+func toast_text() -> String:
+	return _toast.text if _toast_left > 0.0 else ""
+
+
+## Closes every menu and panel, as after loading a save.
+func close_menus() -> void:
+	_menu.close()
+	_inventory.close()
+	if _choices.is_open():
+		_choices.pick(-1)
+
+
 ## Shows the sector the player stands in; an empty name means off the grid.
 func show_sector(sector_name: String) -> void:
 	_sector.text = "Off the grid" if sector_name.is_empty() else "Sector " + sector_name
@@ -77,15 +119,26 @@ func sector_text() -> String:
 	return _sector.text
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_toast_left -= delta
+	_toast.visible = _toast_left > 0.0
 	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _inventory.is_open()
 	_controls.visible = not _inventory.is_open() and not _choices.is_open()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _choices.is_open():
+	if _choices.is_open() or _menu.is_open():
 		return
-	if event.is_action_pressed("inventory"):
+	if event.is_action_pressed("quick_save"):
+		save_requested.emit(SaveGame.QUICK)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("quick_load"):
+		load_requested.emit(SaveGame.QUICK)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel") and not _inventory.is_open():
+		_menu.open()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("inventory"):
 		_inventory.toggle()
 		get_viewport().set_input_as_handled()
 	elif _inventory.is_open() and event.is_action_pressed("ui_cancel"):
@@ -109,6 +162,16 @@ func _on_choice_made(choice: int) -> void:
 	_on_chosen = Callable()
 	if reply.is_valid():
 		reply.call(choice)
+
+
+func _on_menu_opened() -> void:
+	_inventory.close()
+	get_tree().paused = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
+func _on_menu_closed() -> void:
+	get_tree().paused = false
 
 
 func _on_inventory_opened() -> void:
