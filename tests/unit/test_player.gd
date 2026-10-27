@@ -57,3 +57,36 @@ func test_walks_where_the_camera_faces() -> void:
 	await wait_physics_frames(20)
 	assert_lt(player.velocity.z, -0.5)
 	assert_almost_eq(player.velocity.x, 0.0, 0.01)
+
+
+func test_praying_kneels_for_its_time_then_stands() -> void:
+	var player := _spawn_player()
+	watch_signals(player)
+	player.perform(&"pray", 1.5)
+	assert_true(player.is_performing())
+	assert_eq(player.gesture(), &"pray")
+	await wait_seconds(0.8)
+	assert_lt((player.get_node("Model") as Node3D).position.y, -0.2, "kneeling")
+	await wait_seconds(1.0)
+	assert_false(player.is_performing())
+	assert_signal_emitted_with_parameters(player, "gesture_finished", [&"pray"])
+	assert_eq((player.get_node("Model") as Node3D).position.y, 0.0, "standing again")
+
+
+func test_crying_sheds_tears_then_stops() -> void:
+	var player := _spawn_player()
+	player.perform(&"cry", 1.5)
+	var tears := player.get_node("Model/LeftEye/Tears") as GPUParticles3D
+	assert_true(tears.emitting)
+	await wait_seconds(1.8)
+	assert_false(player.is_performing())
+	assert_false(tears.emitting)
+
+
+func test_the_hero_stands_still_while_performing() -> void:
+	var player := _spawn_player()
+	player.perform(&"pray", 1.0)
+	Input.action_press("move_forward")
+	await wait_physics_frames(20)
+	Input.action_release("move_forward")
+	assert_almost_eq(Vector2(player.velocity.x, player.velocity.z).length(), 0.0, 0.01)

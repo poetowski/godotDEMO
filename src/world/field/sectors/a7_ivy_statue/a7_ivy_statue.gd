@@ -3,7 +3,8 @@ extends SectorDesign
 ## Sector A7: a big, weathered phallic statue in the manner of ancient
 ## fertility stones, on a stepped plinth, overgrown with ivy: leaves thick
 ## at its foot and thinning toward the top, vines spiralling up the shaft,
-## and ivy creeping over the ground around it. Rubble and grass around. The
+## and ivy creeping over the ground around it. Rubble and grass around. In
+## front of it the player can choose to pray (kneeling) or cry. The
 ## brief is in docs/DESIGN_DECISIONS.md; the shape, size and colours are
 ## placeholders.
 
@@ -18,6 +19,8 @@ const BALL_RADIUS := 0.58
 const STONE := Color(0.6, 0.58, 0.53)
 const MOSSY := Color(0.46, 0.5, 0.38)
 const VINE := Color(0.3, 0.24, 0.15)
+## Where the player stands to pray or cry: in front of the plinth, facing it.
+const SHRINE_SPOT := Vector2(5.0, -63.6)
 const IVY_GREENS: Array[Color] = [Color(0.16, 0.34, 0.14), Color(0.22, 0.42, 0.16), Color(0.28, 0.48, 0.2), Color(0.19, 0.38, 0.18)]
 
 ## Leaves on the statue and the plinth.
@@ -51,6 +54,7 @@ func _populate() -> void:
 	claim(STATUE, 1.8)
 	commit_merged("Statue", MeshKit.lowpoly_material(Color.WHITE, 0.95))
 	_place_ivy()
+	_place_shrine_spot()
 	_place_rubble()
 	commit_merged("Rocks", MeshKit.lowpoly_material(Color.WHITE, 0.95))
 	_place_grass()
@@ -125,6 +129,21 @@ func _add_twig(batch: NatureKit.Batch, a: Vector3, b: Vector3, radius: float) ->
 	var basis := Basis(side, up, side.cross(up)).orthonormalized()
 	var twig := MeshKit.triangles(MeshKit.cylinder(radius, radius, direction.length() + 0.02, 5))
 	batch.add(twig, Transform3D(basis, (a + b) * 0.5), VINE)
+
+
+## The place in front of the statue where the player can pray or cry.
+func _place_shrine_spot() -> void:
+	var spot := GestureSpot.new()
+	spot.name = "ShrineSpot"
+	spot.prompt_text = "[E]  Stand before the statue"
+	spot.title = "Before the statue"
+	spot.labels = PackedStringArray(["Pray", "Cry"])
+	spot.gestures = [&"pray", &"cry"] as Array[StringName]
+	spot.seconds = PackedFloat32Array([5.0, 4.0])
+	spot.face_toward = _at(0.0, 2.0, 0.0)
+	spot.position = surface(SHRINE_SPOT)
+	add_child(spot)
+	claim(SHRINE_SPOT, 0.8)
 
 
 ## Ivy leaves lying on the statue's surface, thick at the foot and thinning

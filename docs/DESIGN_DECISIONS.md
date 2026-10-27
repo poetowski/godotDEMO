@@ -219,3 +219,27 @@ Placeholders: the inventory's look, slide speed and layout; the viewer's
 place; the flower's text and facts, which Claude wrote; the cornflower being
 larger than a real one so it can be found; the meadow; no way yet to drop or
 use items, stack them, or keep them between sessions.
+
+## 2026-10-27: Praying or crying before the A7 statue
+
+The brief:
+
+> I want to have interaction option in front of A7 statue. player can
+> choose between crying in front of statue or praying. based on that player
+> protagonist will either knee or cry for few seconds and then stop.
+
+Built:
+
+- Standing in front of the statue shows "[E]  Stand before the statue". E
+  turns the hero to face it and opens a choice, "Before the statue":
+  1 Pray, 2 Cry (click or press the number; Esc cancels).
+- Pray: the hero kneels, bows slightly and holds the hands together for
+  5 seconds, then stands up.
+- Cry: the hero hunches, covers the face with the hands and sobs, tears
+  falling, for 4 seconds, then stops.
+- The hero can't move during either; afterwards the statue offers the
+  choice again.
+
+Placeholders: the prompt and menu wording, the durations, the poses (the
+hero's limbs are single pieces, so the kneel is approximated), the tears,
+and that neither choice has any effect beyond the gesture yet.

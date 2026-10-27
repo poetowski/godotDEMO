@@ -49,3 +49,25 @@ func test_the_statue_is_solid() -> void:
 	var from := Vector3(StatueDesign.STATUE.x, 10.0, StatueDesign.STATUE.y)
 	var hit := _world.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 20.0))
 	assert_gt((hit.position as Vector3).y, 3.5, "a ray from above stops on its head")
+
+
+func test_before_the_statue_the_player_can_pray_or_cry() -> void:
+	var spot := _design.get_node("ShrineSpot") as GestureSpot
+	assert_eq(spot.labels, PackedStringArray(["Pray", "Cry"]))
+	var player := _world.get_node("Player") as Player
+	watch_signals(player)
+	player.global_position = spot.global_position + Vector3.UP * 0.2
+	player.velocity = Vector3.ZERO
+	await wait_physics_frames(8)
+	assert_signal_emitted_with_parameters(player, "prompt_changed", ["[E]  Stand before the statue"])
+	player.interact()
+	assert_signal_emitted(player, "choice_requested")
+	var menu := (_world.get_node("Hud") as Hud).choice_menu()
+	assert_true(menu.is_open())
+	menu.pick(0)
+	assert_false(menu.is_open())
+	assert_eq(player.gesture(), &"pray", "kneels to pray")
+	await wait_until(func() -> bool: return not player.is_performing(), 8.0)
+	assert_signal_emitted_with_parameters(player, "gesture_finished", [&"pray"])
+	await wait_physics_frames(2)
+	assert_signal_emit_count(player, "prompt_changed", 3, "offered again afterwards")

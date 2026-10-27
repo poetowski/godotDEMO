@@ -12,6 +12,8 @@ var _mouse_hint: Label
 var _controls: Label
 var _sector: Label
 var _inventory: InventoryPanel
+var _choices: ChoiceMenu
+var _on_chosen: Callable
 var _player: Player
 
 
@@ -44,17 +46,26 @@ func _ready() -> void:
 	add_child(_inventory)
 	_inventory.opened.connect(_on_inventory_opened)
 	_inventory.closed.connect(_on_inventory_closed)
+	_choices = ChoiceMenu.new()
+	_choices.name = "Choices"
+	add_child(_choices)
+	_choices.chosen.connect(_on_choice_made)
 
 
 ## Shows the player's prompts and inventory.
 func track(player: Player) -> void:
 	_player = player
 	player.prompt_changed.connect(_on_prompt_changed)
+	player.choice_requested.connect(_on_choice_requested)
 	_inventory.bind(player.inventory)
 
 
 func inventory_panel() -> InventoryPanel:
 	return _inventory
+
+
+func choice_menu() -> ChoiceMenu:
+	return _choices
 
 
 ## Shows the sector the player stands in; an empty name means off the grid.
@@ -68,16 +79,36 @@ func sector_text() -> String:
 
 func _process(_delta: float) -> void:
 	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _inventory.is_open()
-	_controls.visible = not _inventory.is_open()
+	_controls.visible = not _inventory.is_open() and not _choices.is_open()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _choices.is_open():
+		return
 	if event.is_action_pressed("inventory"):
 		_inventory.toggle()
 		get_viewport().set_input_as_handled()
 	elif _inventory.is_open() and event.is_action_pressed("ui_cancel"):
 		_inventory.close()
 		get_viewport().set_input_as_handled()
+
+
+func _on_choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable) -> void:
+	_inventory.close()
+	_on_chosen = on_chosen
+	_choices.ask(title, labels)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if _player:
+		_player.input_enabled = false
+
+
+func _on_choice_made(choice: int) -> void:
+	if _player:
+		_player.input_enabled = true
+	var reply := _on_chosen
+	_on_chosen = Callable()
+	if reply.is_valid():
+		reply.call(choice)
 
 
 func _on_inventory_opened() -> void:

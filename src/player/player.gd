@@ -10,10 +10,27 @@ extends CharacterBody3D
 signal prompt_changed(text: String)
 signal sword_equipped
 signal swung
+## Something asks the player to choose; the HUD shows the choices and calls
+## `on_chosen` with the pick's index, or -1 when cancelled.
+signal choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable)
+signal gesture_finished(gesture: StringName)
 
 const SWORD_REST := Vector3(0.45, 0.0, 0.0)
 const SWING_RAISED := Vector3(2.6, 0.0, 0.7)
 const SWING_STRUCK := Vector3(0.55, 0.0, -1.1)
+## Gestures the hero can perform with perform().
+const GESTURES: Array[StringName] = [&"pray", &"cry"]
+## Seconds a gesture takes to blend in and out.
+const GESTURE_BLEND := 0.6
+## Kneeling: the legs fold to this share of their length and tilt back a
+## little, the body sinks onto them and bows.
+const KNEEL_FOLD := 0.55
+const KNEEL_LEGS := -0.3
+const KNEEL_DROP := 0.4
+const PRAY_BOW := 0.12
+const PRAY_ARMS := Vector3(0.95, 0.0, 0.75)
+const CRY_ARMS := Vector3(2.05, 0.0, 0.7)
+const CRY_HUNCH := 0.1
 
 @export_group("Movement")
 @export var walk_speed: float = 4.5
@@ -47,6 +64,10 @@ var _pitch: float = 0.0
 var _walk_phase: float = 0.0
 var _stride: float = 0.0
 var _swoosh_material: StandardMaterial3D
+var _gesture: StringName = &""
+var _gesture_time: float = 0.0
+var _gesture_length: float = 0.0
+var _tears: Array[GPUParticles3D] = []
 
 @onready var _model: Node3D = $Model
 @onready var _camera_pivot: Node3D = $CameraPivot
@@ -73,10 +94,14 @@ func _ready() -> void:
 	_swoosh.mesh = _build_swoosh_mesh()
 	_swoosh.material_override = _swoosh_material
 	_swoosh.visible = false
+	for eye: Node3D in [$Model/LeftEye, $Model/RightEye]:
+		var tears := _build_tears()
+		eye.add_child(tears)
+		_tears.append(tears)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not input_enabled:
+	if not input_enabled or is_performing():
 		return
 	var button := event as InputEventMouseButton
 	if button and button.pressed:
@@ -105,16 +130,17 @@ func _notification(what: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down") if input_enabled else Vector2.ZERO
+	var free := input_enabled and not is_performing()
+	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down") if free else Vector2.ZERO
 	if look != Vector2.ZERO:
 		_turn_camera(-look.x * stick_look_speed * delta, -look.y * stick_look_speed * delta)
 
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	elif input_enabled and Input.is_action_just_pressed("jump"):
+	elif free and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_velocity
 
-	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") if input_enabled else Vector2.ZERO
+	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") if free else Vector2.ZERO
 	var direction := Basis(Vector3.UP, _yaw) * Vector3(input.x, 0.0, input.y)
 	var speed := sprint_speed if Input.is_action_pressed("sprint") else walk_speed
 	var rate := acceleration if is_on_floor() else air_acceleration
@@ -126,7 +152,13 @@ func _physics_process(delta: float) -> void:
 	if direction.length_squared() > 0.01:
 		var facing := atan2(-direction.x, -direction.z)
 		_model.rotation.y = lerp_angle(_model.rotation.y, facing, 1.0 - exp(-turn_speed * delta))
-	_animate(delta)
+	if is_performing():
+		_gesture_time += delta
+		_pose_gesture()
+		if _gesture_time >= _gesture_length:
+			_finish_gesture()
+	else:
+		_animate(delta)
 
 
 ## Points the camera (and the hero) at a world position, e.g. when spawning.
@@ -135,6 +167,36 @@ func look_toward(target: Vector3) -> void:
 	_yaw = atan2(-to_target.x, -to_target.z)
 	_model.rotation.y = _yaw
 	_turn_camera(0.0, 0.0)
+
+
+## Asks the player to choose between `labels`; `on_chosen` gets the pick's
+## index, or -1 when the player cancels.
+func ask(title: String, labels: PackedStringArray, on_chosen: Callable) -> void:
+	choice_requested.emit(title, labels, on_chosen)
+
+
+## Performs a gesture for some seconds, standing still meanwhile: &"pray"
+## kneels with hands together, &"cry" covers the face and sobs with tears.
+## Emits gesture_finished when done.
+func perform(gesture: StringName, seconds: float) -> void:
+	if gesture not in GESTURES:
+		push_error("Player: no gesture named %s" % gesture)
+		return
+	_gesture = gesture
+	_gesture_time = 0.0
+	_gesture_length = maxf(seconds, GESTURE_BLEND * 2.0)
+	velocity = Vector3(0.0, velocity.y, 0.0)
+	for tears in _tears:
+		tears.emitting = gesture == &"cry"
+
+
+func is_performing() -> bool:
+	return _gesture != &""
+
+
+## The gesture being performed, or &"".
+func gesture() -> StringName:
+	return _gesture
 
 
 ## Puts an interactable on offer: its prompt shows until the player uses it
@@ -213,6 +275,72 @@ func _animate(delta: float) -> void:
 		var rest := SWORD_REST.x + swing * 0.25 if has_sword else swing * 0.8
 		_right_arm.rotation = Vector3(rest, 0.0, 0.0)
 	_model.position.y = absf(sin(_walk_phase)) * 0.05 * _stride
+
+
+## Blends the body into the gesture's pose at its start and back out at its
+## end.
+func _pose_gesture() -> void:
+	var t := _gesture_time
+	var weight := minf(smoothstep(0.0, GESTURE_BLEND, t), 1.0 - smoothstep(_gesture_length - GESTURE_BLEND, _gesture_length, t))
+	var arms := PRAY_ARMS if _gesture == &"pray" else CRY_ARMS
+	_left_arm.rotation = Vector3(arms.x, 0.0, arms.z) * weight
+	_right_arm.rotation = Vector3(arms.x, 0.0, -arms.z) * weight
+	if _gesture == &"pray":
+		var fold := lerpf(1.0, KNEEL_FOLD, weight)
+		for leg: Node3D in [_left_leg, _right_leg]:
+			leg.rotation.x = KNEEL_LEGS * weight
+			leg.scale.y = fold
+		_model.position.y = -KNEEL_DROP * weight
+		_model.rotation.x = -PRAY_BOW * weight
+	else:
+		_left_leg.rotation.x = 0.0
+		_right_leg.rotation.x = 0.0
+		var sob := sin(t * 13.0) * (0.6 + 0.4 * sin(t * 2.7))
+		_model.position.y = (-0.04 + sob * 0.018) * weight
+		_model.rotation.x = (-CRY_HUNCH + sob * 0.02) * weight
+
+
+func _finish_gesture() -> void:
+	var done := _gesture
+	_gesture = &""
+	_model.position.y = 0.0
+	_model.rotation.x = 0.0
+	_left_leg.scale.y = 1.0
+	_right_leg.scale.y = 1.0
+	for tears in _tears:
+		tears.emitting = false
+	_right_arm.rotation = SWORD_REST if has_sword else Vector3.ZERO
+	gesture_finished.emit(done)
+
+
+## Small drops falling from an eye while crying.
+func _build_tears() -> GPUParticles3D:
+	var process := ParticleProcessMaterial.new()
+	process.direction = Vector3(0.0, -1.0, -0.4)
+	process.spread = 15.0
+	process.initial_velocity_min = 0.1
+	process.initial_velocity_max = 0.25
+	process.gravity = Vector3(0.0, -4.0, 0.0)
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.albedo_color = Color(0.7, 0.85, 1.0, 0.85)
+	var drop := SphereMesh.new()
+	drop.radius = 0.008
+	drop.height = 0.02
+	drop.radial_segments = 6
+	drop.rings = 3
+	drop.material = material
+	var tears := GPUParticles3D.new()
+	tears.name = "Tears"
+	tears.amount = 10
+	tears.lifetime = 0.6
+	tears.local_coords = false
+	tears.emitting = false
+	tears.process_material = process
+	tears.draw_pass_1 = drop
+	tears.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return tears
 
 
 func _flash_swoosh() -> void:

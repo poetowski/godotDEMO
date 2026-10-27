@@ -88,8 +88,13 @@ sectors.
 
 ## Editing while the editor is open
 
-The editor keeps open scenes in memory. A scene edited on disk while it's open
-there can be overwritten the next time the editor saves.
+The editor keeps open scenes and the project settings in memory. A scene or
+`project.godot` edited on disk while the editor is open can be overwritten
+the next time the editor saves; this once dropped two sector designs and the
+inventory key. `tests/unit/test_project_setup.gd` checks that every input
+action and sector design is still there. Check `tasklist` for a running
+Godot before editing those files, and ask the author to close the editor
+first.
 
 - `.gd` files: edit on disk freely; the editor reloads them.
 - Scenes and resources open in the editor: change them through MCP tools, or
