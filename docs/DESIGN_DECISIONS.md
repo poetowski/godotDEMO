@@ -164,3 +164,24 @@ Built in `src/world/field/sectors/a5_rainy_cottage/`:
 Placeholders: the cottage's size, colours and layout; the thatch; the rain's
 amount, speed and look (no sound, splashes or puddles yet); the cloud's
 height and shape; the bright, empty interior.
+
+## 2026-10-27: Sector A7: an ivy-covered phallic statue
+
+The brief, as given to `/environment-design`:
+
+> in sector A7 create big falus statue overgrown by ivy.
+
+Built in `src/world/field/sectors/a7_ivy_statue/`, styled like a weathered
+ancient fertility monument:
+
+- A stone phallus about 4.8 m tall (5 m with its two stone steps) in the
+  middle of A7 (x 5, z -66), facing south toward the sector's start. It is
+  solid to the player.
+- Ivy covers it: about 5,000 three-lobed leaves on the statue and plinth,
+  thickest at the foot and thinning toward the head, six woody vines
+  spiralling up the shaft, and ivy creeping over the dark earth around
+  the plinth.
+- Rubble and grass around.
+
+Placeholders: the statue's shape, size and stone colour; how much ivy and
+where; the plinth; the rubble.

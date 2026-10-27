@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://src/world/field/sectors/c2_archer_tower/c2_archer_tower.gd" id="8_tower"]
 [ext_resource type="Script" path="res://src/world/field/sectors/d1_e2_castle/d1_e2_castle.gd" id="9_castle"]
 [ext_resource type="Script" path="res://src/world/field/sectors/a5_rainy_cottage/a5_rainy_cottage.gd" id="10_cottage"]
+[ext_resource type="Script" path="res://src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd" id="11_statue"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -74,6 +75,12 @@ editor_description = "A medieval cottage with its door open and shutters closed,
 script = ExtResource("10_cottage")
 sectors = PackedStringArray("A5")
 design_seed = 45
+
+[node name="A7IvyStatue" type="Node3D" parent="Sectors"]
+editor_description = "A big phallic fertility statue on a plinth, overgrown with ivy."
+script = ExtResource("11_statue")
+sectors = PackedStringArray("A7")
+design_seed = 57
 
 [node name="Terrain" type="StaticBody3D" parent="." node_paths=PackedStringArray("designs_root")]
 script = ExtResource("2_terrain")
