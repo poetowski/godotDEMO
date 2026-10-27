@@ -19,6 +19,7 @@ const SWORD_SCENE := preload("res://src/items/sword/sword.tscn")
 ## A new field is a new game.
 func _init() -> void:
 	WorldState.reset()
+	WorldShape.configure(0.0)
 
 
 func _ready() -> void:

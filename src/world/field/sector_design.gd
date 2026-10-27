@@ -79,7 +79,8 @@ func _setup() -> void:
 	pass
 
 
-## Ground height before easing at the edges. 0 is the flat field.
+## Ground height before easing at the edges, above the world's own shape
+## (WorldShape; flat in the main field). 0 is the land as it lies.
 func _ground(_xz: Vector2) -> float:
 	return 0.0
 
@@ -230,10 +231,12 @@ func edge_weight(xz: Vector2) -> float:
 	return smoothstep(0.0, edge_blend, nearest)
 
 
-## Ground height at a point, on the same triangles the ground mesh draws; 0
-## outside the design.
+## Ground height at a point, on the same triangles the ground mesh draws; the
+## world's own shape outside the design.
 func height_at(xz: Vector2) -> float:
 	bake()
+	if not owns(xz):
+		return WorldShape.height(xz)
 	return _interpolate(_heights, xz, 0.0)
 
 
@@ -441,7 +444,7 @@ func _sample() -> void:
 			for i in SAMPLES:
 				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
 				var weight := edge_weight(xz)
-				heights.append(_ground(xz) * weight)
+				heights.append(WorldShape.height(xz) + _ground(xz) * weight)
 				water.append(_water_level(xz))
 				flows.append(_flow(xz))
 				var tint := _ground_tint(xz)

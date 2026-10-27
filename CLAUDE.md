@@ -28,6 +28,7 @@ working title and the game's design is not decided yet.
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
+| `npm run game -- src/world/stress/stress_field.tscn` | The stress-test world: woodland in all 400 sectors on Perlin hills. Regenerate it with `python tools/make_stress_field.py`. |
 | `npm run game -- [scene] [--sector=C4]` | Plays until the window is closed, starting in the given sector. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in

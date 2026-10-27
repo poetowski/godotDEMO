@@ -104,6 +104,29 @@ static func add_bush(batch: Batch, rng: RandomNumberGenerator, where: Transform3
 		batch.add(lumpy_sphere(rng, radius, 0.3, 6, 4), where * Transform3D(Basis(), centre), color)
 
 
+## Adds a round-crowned tree `height` metres to the top of its trunk, standing
+## at `foot`: a tapering trunk under a few leafy lumps.
+static func add_round_tree(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, height: float) -> void:
+	batch.add(MeshKit.triangles(MeshKit.cylinder(0.1, 0.18, height, 6)), Transform3D(Basis(), foot + Vector3.UP * height * 0.5), Color(0.38, 0.27, 0.18))
+	for lump in rng.randi_range(3, 4):
+		var radius := rng.randf_range(0.7, 1.1) * height / 3.5
+		var offset := Vector3(rng.randf_range(-0.45, 0.45), height + rng.randf_range(-0.3, 0.5), rng.randf_range(-0.45, 0.45)) * Vector3(height / 3.5, 1.0, height / 3.5)
+		batch.add(lumpy_sphere(rng, radius, 0.25, 7, 4), Transform3D(Basis(), foot + offset), LEAF_GREENS[rng.randi() % LEAF_GREENS.size()])
+
+
+## Adds a pine `height` metres tall standing at `foot`: a trunk under tiers of
+## dark cones.
+static func add_pine(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, height: float) -> void:
+	batch.add(MeshKit.triangles(MeshKit.cylinder(0.08, 0.2, height * 0.85, 6)), Transform3D(Basis(), foot + Vector3.UP * height * 0.425), Color(0.36, 0.25, 0.17))
+	var tiers := 4
+	for t in tiers:
+		var f := float(t) / (tiers - 1)
+		var radius := lerpf(0.32, 0.09, f) * height
+		var cone := MeshKit.triangles(MeshKit.cone(radius, lerpf(0.28, 0.18, f) * height, 7))
+		var green := Color(0.15, 0.3, 0.17).lerp(Color(0.2, 0.38, 0.2), f) * rng.randf_range(0.95, 1.05)
+		batch.add(cone, Transform3D(Basis(Vector3.UP, rng.randf() * TAU), foot + Vector3.UP * lerpf(0.3, 0.88, f) * height), green)
+
+
 ## A tuft of grass blades about 0.3 m tall, for MultiMesh use with
 ## `grass_material()`. UV.y runs from 0 at the roots to 1 at the tips.
 static func grass_tuft(rng: RandomNumberGenerator, blades: int = 7) -> ArrayMesh:

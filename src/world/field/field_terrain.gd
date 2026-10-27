@@ -64,7 +64,7 @@ func design_at(xz: Vector2) -> SectorDesign:
 
 func height_at(xz: Vector2) -> float:
 	var design := design_at(xz)
-	return design.height_at(xz) if design else 0.0
+	return design.height_at(xz) if design else WorldShape.height(xz)
 
 
 ## Height of the water surface at a point, or SectorDesign.NO_WATER.
@@ -134,9 +134,13 @@ func _build_flat() -> void:
 	for row in SectorMap.ROWS:
 		for column in SectorMap.COLUMNS:
 			var cell := Vector2i(column, row)
-			if not _owners.has(cell):
-				var corner := SectorMap.corner_of(cell)
+			if _owners.has(cell):
+				continue
+			var corner := SectorMap.corner_of(cell)
+			if WorldShape.is_flat():
 				_add_quad(faces, corner.x, corner.z, corner.x + SectorMap.SIZE, corner.z - SectorMap.SIZE)
+			else:
+				_add_shaped(faces, corner, func(xz: Vector2) -> float: return WorldShape.height(xz))
 	var west := SectorMap.ORIGIN.x
 	var south := SectorMap.ORIGIN.z
 	var east := west + SectorMap.extent().x
@@ -146,8 +150,9 @@ func _build_flat() -> void:
 	_add_quad(faces, west - margin, south, west, north)
 	_add_quad(faces, east, south, east + margin, north)
 	var normals := PackedVector3Array()
-	normals.resize(faces.size())
-	normals.fill(Vector3.UP)
+	for t in range(0, faces.size(), 3):
+		var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()
+		normals.append_array(PackedVector3Array([normal, normal, normal]))
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = faces
@@ -164,22 +169,26 @@ func _add_quad(faces: PackedVector3Array, x0: float, z0: float, x1: float, z1: f
 	faces.append_array(PackedVector3Array([south_west, north_west, south_east, south_east, north_west, north_east]))
 
 
-## A designed sector's ground at 1 m, following its surface (water lies flat).
-func _build_stand_in(cell: Vector2i, design: SectorDesign) -> void:
+## A sector's ground at 1 m between samples, heights from `height`.
+func _add_shaped(faces: PackedVector3Array, corner: Vector3, height: Callable) -> void:
 	var step := SectorMap.SIZE / (FAR_SAMPLES - 1)
-	var corner := SectorMap.corner_of(cell)
 	var points := PackedVector3Array()
 	for j in FAR_SAMPLES:
 		for i in FAR_SAMPLES:
 			var xz := Vector2(corner.x + i * step, corner.z - j * step)
-			points.append(Vector3(xz.x, maxf(design.height_at(xz), design.water_level_at(xz)), xz.y))
-	var faces := PackedVector3Array()
+			points.append(Vector3(xz.x, float(height.call(xz)), xz.y))
 	for j in FAR_SAMPLES - 1:
 		for i in FAR_SAMPLES - 1:
 			var south_west := j * FAR_SAMPLES + i
 			var north_west := south_west + FAR_SAMPLES
 			for index: int in [south_west, north_west, south_west + 1, south_west + 1, north_west, north_west + 1]:
 				faces.append(points[index])
+
+
+## A designed sector's ground at 1 m, following its surface (water lies flat).
+func _build_stand_in(cell: Vector2i, design: SectorDesign) -> void:
+	var faces := PackedVector3Array()
+	_add_shaped(faces, SectorMap.corner_of(cell), func(xz: Vector2) -> float: return maxf(design.height_at(xz), design.water_level_at(xz)))
 	var normals := PackedVector3Array()
 	for t in range(0, faces.size(), 3):
 		var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()

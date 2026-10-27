@@ -1,14 +1,16 @@
 extends SceneTree
 ## Generates every sector design's content, ground and far model once and
 ## saves them in res://baked/sectors, so the game loads them in the
-## background instead of generating them while the player walks. Run it through `npm run bake`;
-## `npm run game`, `shot` and `test` run it when the files are stale.
+## background instead of generating them while the player walks. Run it
+## through `npm run bake`; `npm run game`, `shot` and `test` run it when the
+## files are stale.
 ##
 ## A node a design added is saved with the scene; nodes that build their own
 ## children (a chest, a pickup) are saved without those children, since they
 ## build them again when they enter the tree.
 
-const FIELD := "res://src/world/field/field.tscn"
+## The worlds whose designs are baked; design names are unique across them.
+const WORLDS: Array[String] = ["res://src/world/field/field.tscn", "res://src/world/stress/stress_field.tscn"]
 
 
 func _initialize() -> void:
@@ -16,8 +18,24 @@ func _initialize() -> void:
 	DirAccess.make_dir_recursive_absolute(folder)
 	for file in DirAccess.get_files_at(folder):
 		DirAccess.remove_absolute(folder.path_join(file))
-	var field := (load(FIELD) as PackedScene).instantiate()
 	var failures := 0
+	var started := Time.get_ticks_msec()
+	for world in WORLDS:
+		failures += _bake_world(world)
+	if failures == 0:
+		var stamp := FileAccess.open(BakedSectors.STAMP, FileAccess.WRITE)
+		stamp.store_string(Time.get_datetime_string_from_system() + "\n")
+		stamp.close()
+	print("bake: done in %d ms" % (Time.get_ticks_msec() - started))
+	quit(1 if failures > 0 else 0)
+
+
+## Bakes one world's designs; returns how many failed.
+func _bake_world(path: String) -> int:
+	# Instancing runs the root's _init, which sets the world's shape.
+	var field := (load(path) as PackedScene).instantiate()
+	var failures := 0
+	var count := 0
 	var started := Time.get_ticks_msec()
 	for child in field.get_node("Sectors").get_children():
 		var design := child as SectorDesign
@@ -37,14 +55,10 @@ func _initialize() -> void:
 			printerr("bake: could not save %s: %s, %s" % [design.name, error_string(saved), error_string(grounded)])
 			failures += 1
 		else:
-			print("bake: %s" % design.name)
+			count += 1
 	field.free()
-	if failures == 0:
-		var stamp := FileAccess.open(BakedSectors.STAMP, FileAccess.WRITE)
-		stamp.store_string(Time.get_datetime_string_from_system() + "\n")
-		stamp.close()
-	print("bake: done in %d ms" % (Time.get_ticks_msec() - started))
-	quit(1 if failures > 0 else 0)
+	print("bake: %s, %d designs in %d ms" % [path.get_file(), count, Time.get_ticks_msec() - started])
+	return failures
 
 
 ## Makes `root` the owner of everything under `node`, except what scripted
