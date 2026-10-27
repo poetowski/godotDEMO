@@ -1,7 +1,7 @@
 extends SceneTree
-## Generates every sector design's content and ground once and saves them in
-## res://baked/sectors, so the game loads them in the background instead of
-## generating them while the player walks. Run it through `npm run bake`;
+## Generates every sector design's content, ground and far model once and
+## saves them in res://baked/sectors, so the game loads them in the
+## background instead of generating them while the player walks. Run it through `npm run bake`;
 ## `npm run game`, `shot` and `test` run it when the files are stale.
 ##
 ## A node a design added is saved with the scene; nodes that build their own
@@ -29,6 +29,9 @@ func _initialize() -> void:
 		var packed := scene.pack(content)
 		var saved := ResourceSaver.save(scene, BakedSectors.scene_path(design.name), ResourceSaver.FLAG_COMPRESS) if packed == OK else packed
 		var grounded := ResourceSaver.save(design.ground(), BakedSectors.ground_path(design.name), ResourceSaver.FLAG_COMPRESS)
+		var far := FarModel.build(content)
+		if far and grounded == OK:
+			grounded = ResourceSaver.save(far, BakedSectors.far_path(design.name), ResourceSaver.FLAG_COMPRESS)
 		content.free()
 		if saved != OK or grounded != OK:
 			printerr("bake: could not save %s: %s, %s" % [design.name, error_string(saved), error_string(grounded)])

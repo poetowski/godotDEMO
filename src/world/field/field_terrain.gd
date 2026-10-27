@@ -5,7 +5,9 @@ extends StaticBody3D
 ## undesigned sectors and a wide ring around the grid), and for each designed
 ## sector a coarse stand-in, 1 m between samples, shown while its design's
 ## content isn't loaded, so distant hills keep their shape and nothing is
-## left open. Loaded designs bring their own detailed ground. Answers height
+## left open, and the design's far model (FarModel) out to `far_distance`, so
+## its landmarks stay on the horizon. Loaded designs bring their own detailed
+## ground and hide both. Answers height
 ## and water questions for the whole field. Generated children have no
 ## owner, so the editor never saves them.
 
@@ -17,6 +19,8 @@ const FAR_SAMPLES := 11
 @export var designs_root: Node3D
 ## How far the flat grass reaches past the grid on every side, in metres.
 @export var margin: float = 900.0
+## Metres out to which far models show, fading out over the last tenth.
+@export var far_distance: float = 150.0
 
 static var _material: ShaderMaterial
 
@@ -25,6 +29,7 @@ var _designs: Array[SectorDesign] = []
 var _owners: Dictionary[Vector2i, SectorDesign] = {}
 ## Each designed cell's stand-in mesh and its collision.
 var _stand_ins: Dictionary[Vector2i, Array] = {}
+var _far_models: Dictionary[SectorDesign, MeshInstance3D] = {}
 
 
 ## The grass-and-grid material every piece of ground shares.
@@ -41,6 +46,7 @@ func _ready() -> void:
 	for cell: Vector2i in _owners.keys():
 		_build_stand_in(cell, _owners[cell])
 	for design in _designs:
+		_build_far_model(design)
 		design.content_changed.connect(_show_stand_ins.bind(design))
 		_show_stand_ins(design.is_content_loaded(), design)
 
@@ -91,6 +97,11 @@ func find_dry_spot(xz: Vector2, search_radius: float = 8.0) -> Vector2:
 				return candidate
 		radius += 0.5
 	return xz
+
+
+## The far model shown for a design while its content is away, or null.
+func far_model(design: SectorDesign) -> MeshInstance3D:
+	return _far_models.get(design)
 
 
 ## True if a designed cell is showing its coarse stand-in.
@@ -199,9 +210,27 @@ func _add_ground(node_name: String, arrays: Array, faces: PackedVector3Array, sh
 	return [instance, collision]
 
 
-## Shows a design's stand-ins while its content is away, and hides them (and
-## their collision) while it's loaded.
+func _build_far_model(design: SectorDesign) -> void:
+	var mesh: Mesh = null if Engine.is_editor_hint() else BakedSectors.load_far(design.name)
+	if mesh == null:
+		return
+	var instance := MeshInstance3D.new()
+	instance.name = "Far" + design.name
+	instance.mesh = mesh
+	instance.material_override = MeshKit.lowpoly_material(Color.WHITE, 0.9)
+	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	instance.visibility_range_end = far_distance
+	instance.visibility_range_end_margin = far_distance * 0.1
+	instance.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	add_child(instance)
+	_far_models[design] = instance
+
+
+## Shows a design's stand-ins and far model while its content is away, and
+## hides them (and the stand-ins' collision) while it's loaded.
 func _show_stand_ins(loaded: bool, design: SectorDesign) -> void:
+	if _far_models.has(design):
+		_far_models[design].visible = not loaded
 	for cell in design.cells():
 		if not _stand_ins.has(cell):
 			continue

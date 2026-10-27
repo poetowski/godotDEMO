@@ -13,7 +13,7 @@ design arrives.
 | Field | `src/world/field/` | The main scene: grass everywhere, the sector grid, and the sector designs under `Sectors` (see the design record). `grass_grid.gdshader` paints the grass, designed ground's colours and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names (not in designed sectors), and `field.gd` starts the player on dry ground in A1 (or the `--sector` given). |
 | SectorMap | `src/world/field/sector_map.gd` | Sector maths: which sector a point is in, names to cells and back, sector centres, corners and start points. Everything that talks about sectors goes through it. |
 | Sector designs | `src/world/field/sector_design.gd`, `src/world/field/sectors/` | A `SectorDesign` owns some sectors and shapes only them: its hooks describe ground height, water level and flow, and ground colour, sampled every 0.25 m; it places its own props. The ground eases back to flat within 2 m of every edge shared with a sector it doesn't own. Built with the `/environment-design` skill. |
-| FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground: one flat mesh and collision for the undesigned sectors plus a 900 m ring around the grid, and a coarse (1 m) stand-in for each designed sector, shown while its design's content isn't loaded. Answers height and water questions for the whole field. |
+| FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground: one flat mesh and collision for the undesigned sectors plus a 900 m ring around the grid, and a coarse (1 m) stand-in for each designed sector and a far model (`FarModel`) for each design, shown while its content isn't loaded. Answers height and water questions for the whole field. |
 | Streaming | `src/world/streaming/` | `SectorStreamer` loads a design's content while one of its sectors is within `load_radius` (4) sectors of the player or the camera, nearest first, and unloads it beyond `unload_radius` (5). Content comes from scenes baked by `tools/bake_sectors.gd` (`npm run bake`) into `baked/sectors/`, read on a background thread, or is generated live when the bake is stale. `SectorGround` keeps every design's heights, water and flow loaded. `WorldState` remembers what the player took, so reloaded content stays changed. |
 | Nature kit | `src/shared/nature/` | Low-poly rocks, bushes, grass tufts and lily pads (`NatureKit`), stream courses (`StreamPath`), and shaders for flowing water, swaying grass and floating things. |
 | Player | `src/player/` | Third-person hero from the castle PoC: SpringArm camera, camera-relative movement, sprint, jump, procedural walk cycle, sword pickup and swing with a swoosh trail. |
@@ -72,21 +72,19 @@ decided until the author says so.
    the game stays third-person, and its real controls, are still the author's
    call.
 2. **World structure.** Streaming is in (see above), at the scale of sector
-   designs. Still open: distant designs vanish beyond the unload radius
-   (about 50 m), leaving only their ground. Proposed fix, a far model per
-   design: the bake merges the content's large meshes (anything over about
-   2 m: buildings, trees, rocks; not grass, ivy or small props) into one
-   mesh, simplifies it with Godot's built-in LOD generation
-   (`ImporterMesh.generate_lods`, keeping the coarsest level), and saves it
-   as `<design>.far.res`. These are small (tens of KB) and stay loaded; each
-   shows between the unload radius and a far radius of about 150 m, fading
-   in and out with visibility ranges, and hides while the full content is
-   loaded. Alternatives: rendered billboard impostors (cheaper at extreme
-   distances, but they look flat up close and need a capture step), or
-   merging whole regions into one far model (fewer draw calls once the world
-   is full; worth adding on top later). Attaching a design costs 5 to 25 ms on the main
-   thread (mostly collision for its ground and nodes that build their own
-   parts); spreading that over frames is the next optimisation.
+   designs, with far models for distant views: the bake merges each
+   design's meshes (not ground, water or MultiMesh copies such as grass and
+   ivy), simplifies them with Godot's LOD generation to about a quarter of
+   the triangles, and saves `<design>.far.res` (40 to 200 KB each now).
+   `FieldTerrain` keeps them loaded and shows each one out to
+   `far_distance` (150 m), fading out, while its design's content is away.
+   Far models cast no shadows and leave out particles such as rain.
+   Still open: attaching a design costs 5 to 25 ms on the main thread
+   (mostly collision for its ground and nodes that build their own parts);
+   spreading that over frames is the next optimisation. Far model files
+   could shrink by dropping vertices their simplified triangles no longer
+   use. Once the world is full, merging the far models of a whole region
+   would cut draw calls.
 3. **Terrain.** For large outdoor areas, the Terrain3D add-on (GDExtension,
    clipmap terrain with sculpting and painting in the editor). For mostly built
    spaces, meshes from a DCC tool.

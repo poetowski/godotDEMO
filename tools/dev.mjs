@@ -126,8 +126,9 @@ function isBakeFresh() {
 
 async function bake() {
   if (!(await ensureImported())) return false;
+  // A script error leaves Godot running, so don't wait long.
   const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/bake_sectors.gd'], {
-    timeoutMs: 10 * 60_000,
+    timeoutMs: 3 * 60_000,
   });
   return report('bake', result);
 }

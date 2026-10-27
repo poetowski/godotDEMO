@@ -20,6 +20,18 @@ static func scene_path(design_name: String) -> String:
 	return "%s/%s.scn" % [FOLDER, design_name]
 
 
+static func far_path(design_name: String) -> String:
+	return "%s/%s.far.res" % [FOLDER, design_name]
+
+
+## The baked far model of a design, or null when there is none or it's stale.
+static func load_far(design_name: String) -> Mesh:
+	var path := far_path(design_name)
+	if not is_fresh() or not ResourceLoader.exists(path):
+		return null
+	return load(path) as Mesh
+
+
 static func ground_path(design_name: String) -> String:
 	return "%s/%s.ground.res" % [FOLDER, design_name]
 

@@ -32,6 +32,21 @@ func test_1_designs_near_the_start_are_loaded_and_far_ones_not() -> void:
 	assert_false(_terrain.shows_stand_in(SectorMap.cell_named("A1")))
 
 
+func test_1b_far_models_stand_in_for_unloaded_designs() -> void:
+	var statue := _terrain.far_model(_design("A7IvyStatue"))
+	assert_not_null(statue, "A7 has a far model")
+	assert_true(statue.visible, "shown while A7 is away")
+	assert_false(_terrain.far_model(_design("A1A3Stream")).visible, "hidden while A1 to A3 are loaded")
+	var castle := _terrain.far_model(_design("D1E2Castle"))
+	assert_gt(castle.get_aabb().size.y, 9.0, "the castle's towers stand tall from afar")
+	var content := _design("D1E2Castle").content()
+	var full := 0
+	for node in content.find_children("*", "MeshInstance3D", true, false):
+		if not String(node.name).begins_with("Ground") and node.name != &"Water":
+			full += FarModel.triangle_count((node as MeshInstance3D).mesh)
+	assert_lt(FarModel.triangle_count(castle.mesh), full, "lighter than the content")
+
+
 func test_2_heights_are_known_while_unloaded() -> void:
 	var castle := _design("D1E2Castle")
 	var hilltop := Vector2(40.0, -10.8)
