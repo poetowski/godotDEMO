@@ -29,7 +29,7 @@ pond. New sectors are designed with the `/environment-design` skill in Claude
 Code, for example `/environment-design B1, B2: a birch grove around a
 clearing`.
 
-WASD move, Shift sprint, Space jump, mouse look (click the window first; Esc
+WASD move, Shift sprint, Space jump, E interact, I inventory, mouse look (click the window first; Esc
 frees the mouse), wheel zoom, F3 performance overlay, F12 screenshot. A
 gamepad works too.
 

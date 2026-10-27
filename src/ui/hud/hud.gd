@@ -1,13 +1,18 @@
 class_name Hud
 extends CanvasLayer
 ## On-screen text: the current sector, the interaction prompt, a line of
-## controls, and a hint to click the window for mouse look. Placeholder style.
+## controls and a hint to click the window for mouse look; and the inventory,
+## opened with I. While it's open the hero stands still and the mouse is
+## free. Placeholder style.
 
-const CONTROLS := "WASD move    Shift sprint    Space jump    E interact    Left click swing    Wheel zoom    Esc free the mouse"
+const CONTROLS := "WASD move    Shift sprint    Space jump    E interact    I inventory    Left click swing    Wheel zoom    Esc free the mouse"
 
 var _prompt: Label
 var _mouse_hint: Label
+var _controls: Label
 var _sector: Label
+var _inventory: InventoryPanel
+var _player: Player
 
 
 func _ready() -> void:
@@ -22,23 +27,34 @@ func _ready() -> void:
 	_prompt.anchor_bottom = 1.0
 	_prompt.offset_top = -230.0
 	_prompt.offset_bottom = -170.0
-	var controls := _label(24, Color(1.0, 1.0, 1.0, 0.85))
-	controls.text = CONTROLS
-	controls.anchor_top = 1.0
-	controls.anchor_bottom = 1.0
-	controls.anchor_right = 1.0
-	controls.offset_top = -56.0
-	controls.offset_bottom = -20.0
+	_controls = _label(24, Color(1.0, 1.0, 1.0, 0.85))
+	_controls.text = CONTROLS
+	_controls.anchor_top = 1.0
+	_controls.anchor_bottom = 1.0
+	_controls.anchor_right = 1.0
+	_controls.offset_top = -56.0
+	_controls.offset_bottom = -20.0
 	_mouse_hint = _label(26, Color(1.0, 1.0, 1.0, 0.9))
 	_mouse_hint.text = "Click to look around with the mouse"
 	_mouse_hint.anchor_right = 1.0
 	_mouse_hint.offset_top = 24.0
 	_mouse_hint.offset_bottom = 60.0
+	_inventory = InventoryPanel.new()
+	_inventory.name = "Inventory"
+	add_child(_inventory)
+	_inventory.opened.connect(_on_inventory_opened)
+	_inventory.closed.connect(_on_inventory_closed)
 
 
-## Shows the player's prompts.
+## Shows the player's prompts and inventory.
 func track(player: Player) -> void:
+	_player = player
 	player.prompt_changed.connect(_on_prompt_changed)
+	_inventory.bind(player.inventory)
+
+
+func inventory_panel() -> InventoryPanel:
+	return _inventory
 
 
 ## Shows the sector the player stands in; an empty name means off the grid.
@@ -51,7 +67,28 @@ func sector_text() -> String:
 
 
 func _process(_delta: float) -> void:
-	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED
+	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _inventory.is_open()
+	_controls.visible = not _inventory.is_open()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("inventory"):
+		_inventory.toggle()
+		get_viewport().set_input_as_handled()
+	elif _inventory.is_open() and event.is_action_pressed("ui_cancel"):
+		_inventory.close()
+		get_viewport().set_input_as_handled()
+
+
+func _on_inventory_opened() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if _player:
+		_player.input_enabled = false
+
+
+func _on_inventory_closed() -> void:
+	if _player:
+		_player.input_enabled = true
 
 
 func _on_prompt_changed(text: String) -> void:

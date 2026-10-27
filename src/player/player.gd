@@ -34,8 +34,13 @@ const SWING_STRUCK := Vector3(0.55, 0.0, -1.1)
 
 var has_sword: bool = false
 var is_swinging: bool = false
+## What the hero carries.
+var inventory := Inventory.new()
+## False while a menu such as the inventory is open: the hero stands still
+## and ignores movement, look and action input.
+var input_enabled: bool = true
 
-var _offered: SwordHolder
+var _offered: Interactable
 var _gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
 var _yaw: float = 0.0
 var _pitch: float = 0.0
@@ -71,6 +76,8 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
 	var button := event as InputEventMouseButton
 	if button and button.pressed:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and button.button_index == MOUSE_BUTTON_LEFT:
@@ -98,16 +105,16 @@ func _notification(what: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down")
+	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down") if input_enabled else Vector2.ZERO
 	if look != Vector2.ZERO:
 		_turn_camera(-look.x * stick_look_speed * delta, -look.y * stick_look_speed * delta)
 
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	elif Input.is_action_just_pressed("jump"):
+	elif input_enabled and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_velocity
 
-	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") if input_enabled else Vector2.ZERO
 	var direction := Basis(Vector3.UP, _yaw) * Vector3(input.x, 0.0, input.y)
 	var speed := sprint_speed if Input.is_action_pressed("sprint") else walk_speed
 	var rate := acceleration if is_on_floor() else air_acceleration
@@ -130,28 +137,29 @@ func look_toward(target: Vector3) -> void:
 	_turn_camera(0.0, 0.0)
 
 
-func offer_pickup(holder: SwordHolder) -> void:
-	if has_sword:
+## Puts an interactable on offer: its prompt shows until the player uses it
+## or walks away.
+func offer_pickup(target: Interactable) -> void:
+	if not target.can_interact(self):
 		return
-	_offered = holder
-	prompt_changed.emit(holder.prompt())
+	_offered = target
+	prompt_changed.emit(target.prompt())
 
 
-func withdraw_pickup(holder: SwordHolder) -> void:
-	if _offered == holder:
+func withdraw_pickup(target: Interactable) -> void:
+	if _offered == target:
 		_offered = null
 		prompt_changed.emit("")
 
 
-## Takes the sword on offer.
+## Uses whatever is on offer.
 func interact() -> void:
-	if _offered == null or has_sword:
+	if _offered == null:
 		return
-	var sword := _offered.take_sword()
+	var target := _offered
 	_offered = null
 	prompt_changed.emit("")
-	if sword:
-		equip_sword(sword)
+	target.interact(self)
 
 
 ## Puts `sword` in the right hand, blade forward.

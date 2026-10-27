@@ -160,6 +160,9 @@ folder, like `src/world/sandbox/`.
 - Headless runs (the tests) can't read MultiMesh transforms back: the dummy
   renderer keeps no buffers. Sector designs remember theirs
   (`instance_transforms`).
+- `Control.set_anchors_preset()` keeps the control's current rectangle by
+  moving its offsets, so a new control stays 0 x 0. Use
+  `set_anchors_and_offsets_preset()` to fill the parent.
 - Packed arrays are values: one stored in a Dictionary or Array must be read,
   changed and stored back.
 - On battery this laptop caps games at 30 fps. Measure performance on AC power.

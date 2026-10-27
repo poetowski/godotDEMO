@@ -40,7 +40,7 @@ func test_every_sector_has_a_painted_name() -> void:
 func test_names_are_hidden_where_a_design_shapes_the_ground() -> void:
 	var grid := _world.get_node("SectorGrid")
 	assert_false((grid.get_node("LabelA1") as Label3D).visible, "A1 has a design")
-	assert_true((grid.get_node("LabelB1") as Label3D).visible, "B1 is still flat grass")
+	assert_true((grid.get_node("LabelT20") as Label3D).visible, "T20 is still flat grass")
 
 
 func test_grass_is_solid_far_beyond_the_grid() -> void:

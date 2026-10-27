@@ -185,3 +185,37 @@ ancient fertility monument:
 
 Placeholders: the statue's shape, size and stone colour; how much ivy and
 where; the plinth; the rubble.
+
+## 2026-10-27: Inventory, and a cornflower in B1
+
+The brief:
+
+> i want you to build inventory system. opened on clicking button I. it
+> should cover 40% of screen, poping from right screen corner. wide 4
+> objects, tall for 6 objects. generate in B1 sector a flower which can be
+> picked up to inventory and then observable. show basic info about the
+> flower in inventory
+
+Built:
+
+- The inventory holds 24 items in a grid 4 wide and 6 tall. I (or the
+  gamepad's Back button) slides it in from the right edge over 40% of the
+  screen's width, full height; I or Esc closes it. While it's open the hero
+  stands still and the mouse is free.
+- Each filled slot shows a small 3D picture of its item. Clicking it opens
+  a viewer on the left: the item's model turning slowly (drag to turn it),
+  its name, a short description and a list of facts.
+- Items are data (`data/items/*.tres`): name, description, facts and model.
+  Anything carrying an item in the world offers it with "[E]  Pick up
+  <name>"; E puts it in the first free slot.
+- B1 is a small meadow of white and yellow wildflowers with one cornflower,
+  sparkling faintly, a few steps ahead of the sector's start.
+- The cornflower's info: "A slender wildflower with a head of frilled, deep
+  blue florets. It grows in sunny meadows and among grain, and keeps its
+  colour long after it is picked." Kind: Wildflower. Found in: Sector B1, a
+  sunny meadow. Colour: Cornflower blue. Height: About 70 cm. Rarity: Common.
+
+Placeholders: the inventory's look, slide speed and layout; the viewer's
+place; the flower's text and facts, which Claude wrote; the cornflower being
+larger than a real one so it can be found; the meadow; no way yet to drop or
+use items, stack them, or keep them between sessions.
