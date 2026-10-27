@@ -29,9 +29,10 @@ pond. New sectors are designed with the `/environment-design` skill in Claude
 Code, for example `/environment-design B1, B2: a birch grove around a
 clearing`.
 
-WASD move, Shift sprint, Space jump, E interact, I inventory, Esc game menu (save, load), F5 quicksave, F9 quickload, mouse look (click the window first; Esc
-frees the mouse), wheel zoom, F3 performance overlay, F12 screenshot. A
-gamepad works too.
+WASD move, Shift sprint, Space jump, E interact, I inventory, mouse look
+(click the window first), wheel zoom. Esc opens the game menu, which pauses
+the game and saves and loads; F5 quicksaves and F9 quickloads. F3 shows the
+performance overlay and F12 takes a screenshot. A gamepad works too.
 
 The earlier castle proof of concept is kept at git tag `poc-castle`.
 
