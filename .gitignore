@@ -7,6 +7,8 @@
 
 # Dev output
 .shots/
+# Sector designs baked by `npm run bake`, rebuilt whenever stale
+/baked/
 .godot-api/
 addons/godot_mcp/cache/
 

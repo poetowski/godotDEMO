@@ -142,7 +142,7 @@ func _place_shrine_spot() -> void:
 	spot.seconds = PackedFloat32Array([5.0, 4.0])
 	spot.face_toward = _at(0.0, 2.0, 0.0)
 	spot.position = surface(SHRINE_SPOT)
-	add_child(spot)
+	add_content(spot)
 	claim(SHRINE_SPOT, 0.8)
 
 

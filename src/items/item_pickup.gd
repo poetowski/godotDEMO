@@ -11,9 +11,15 @@ signal picked_up(item: ItemData)
 @export var item: ItemData
 ## Metres from which the player is offered the item.
 @export var reach: float = 1.4
+## Names this pickup in WorldState, so it stays gone once taken; empty for
+## none.
+@export var persist_id: String = ""
 
 
 func _ready() -> void:
+	if not Engine.is_editor_hint() and not persist_id.is_empty() and WorldState.is_taken(persist_id):
+		queue_free()
+		return
 	if item == null or item.model == null:
 		return
 	var model := item.model.instantiate() as Node3D
@@ -46,6 +52,8 @@ func prompt() -> String:
 
 func interact(player: Player) -> void:
 	if player.inventory.add(item):
+		if not persist_id.is_empty():
+			WorldState.mark_taken(persist_id)
 		picked_up.emit(item)
 		queue_free()
 

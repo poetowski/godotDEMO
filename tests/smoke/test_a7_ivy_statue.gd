@@ -12,6 +12,7 @@ var _design: SectorDesign
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_design = _world.get_node("Sectors/A7IvyStatue") as SectorDesign
 
 
@@ -24,7 +25,7 @@ func test_owns_a7() -> void:
 
 
 func test_the_statue_is_big() -> void:
-	var statue := (_design.get_node("StatueA7") as MeshInstance3D).get_aabb()
+	var statue := (_design.part("StatueA7") as MeshInstance3D).get_aabb()
 	assert_gt(statue.size.y, 4.5, "taller than two people")
 
 
@@ -52,7 +53,7 @@ func test_the_statue_is_solid() -> void:
 
 
 func test_before_the_statue_the_player_can_pray_or_cry() -> void:
-	var spot := _design.get_node("ShrineSpot") as GestureSpot
+	var spot := _design.part("ShrineSpot") as GestureSpot
 	assert_eq(spot.labels, PackedStringArray(["Pray", "Cry"]))
 	var player := _world.get_node("Player") as Player
 	watch_signals(player)

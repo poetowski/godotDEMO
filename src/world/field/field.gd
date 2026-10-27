@@ -1,7 +1,8 @@
 extends Node3D
 ## The sector-grid field: grass everywhere, the grid of 10 m sectors with their
 ## light curtains and names, the sector designs under `Sectors` shaping the
-## sectors they own, and the player starting in A1 facing north. Pass
+## sectors they own and streamed in around the player by `Streamer`, and the
+## player starting in A1 facing north. Pass
 ## `--sector=C4` after `--` on the command line to start in another sector.
 
 var _sector := Vector2i(-2, -2)
@@ -9,6 +10,12 @@ var _sector := Vector2i(-2, -2)
 @onready var _player: Player = $Player
 @onready var _hud: Hud = $Hud
 @onready var _terrain: FieldTerrain = $Terrain
+@onready var _streamer: SectorStreamer = $Streamer
+
+
+## A new field is a new game.
+func _init() -> void:
+	WorldState.reset()
 
 
 func _ready() -> void:
@@ -19,6 +26,7 @@ func _ready() -> void:
 	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.look_toward(_player.global_position + Vector3.FORWARD)
+	_streamer.load_around_now()
 	_hud.track(_player)
 
 

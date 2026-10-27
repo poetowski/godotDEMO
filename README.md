@@ -46,6 +46,8 @@ npm run shot      play the main scene, save .shots/main.png, quit
                   or -- --frame=A1:A3 to frame sectors from above)
 npm run game      play the game
 npm run import    import new assets without the editor
+npm run bake      bake the sector designs for streaming (game, shot and
+                  test do it when needed)
 npm run api       dump the engine class reference to .godot-api/
 ```
 

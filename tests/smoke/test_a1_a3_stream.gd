@@ -13,6 +13,7 @@ var _design: SectorDesign
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_design = _world.get_node("Sectors/A1A3Stream") as SectorDesign
 
 
@@ -41,7 +42,7 @@ func test_water_flows_from_the_spring_to_the_pond() -> void:
 
 func test_lilies_float_on_the_water() -> void:
 	var pads := 0
-	for node in _design.get_children():
+	for node in _design.content().get_children():
 		var multi := node as MultiMeshInstance3D
 		if multi == null or not (node.name.begins_with("LilyPads") or node.name.begins_with("WaterLilies")):
 			continue
@@ -68,11 +69,11 @@ func test_the_ground_is_bumpy() -> void:
 
 func test_rocks_bushes_and_grass_grow_in_every_sector() -> void:
 	for sector_name: String in ["A1", "A2", "A3"]:
-		assert_not_null(_design.get_node_or_null("Rocks" + sector_name), "rocks in %s" % sector_name)
-		assert_not_null(_design.get_node_or_null("Bushes" + sector_name), "bushes in %s" % sector_name)
+		assert_not_null(_design.part(NodePath("Rocks" + sector_name)), "rocks in %s" % sector_name)
+		assert_not_null(_design.part(NodePath("Bushes" + sector_name)), "bushes in %s" % sector_name)
 		var tufts := 0
 		for variant in 2:
-			var grass := _design.get_node_or_null("Grass%d%s" % [variant, sector_name]) as MultiMeshInstance3D
+			var grass := _design.part(NodePath("Grass%d%s" % [variant, sector_name])) as MultiMeshInstance3D
 			tufts += grass.multimesh.instance_count if grass else 0
 		assert_gt(tufts, 300, "grass in %s" % sector_name)
 

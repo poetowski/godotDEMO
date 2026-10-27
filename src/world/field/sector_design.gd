@@ -4,13 +4,23 @@ extends Node3D
 ## One environment design: it owns some sectors of the field and shapes only
 ## those. A subclass describes the place through the hooks (`_setup`,
 ## `_ground`, `_water_level`, `_flow`, `_ground_tint`) and places its props in
-## `_populate`. The base samples the hooks on a fine grid, eases the ground back
-## to flat grass at every edge shared with a sector it doesn't own, and builds
-## the water surface; FieldTerrain turns the samples into the ground.
+## `_populate`. The base samples the hooks on a fine grid and eases the ground
+## back to flat grass at every edge shared with a sector it doesn't own.
+##
+## Two parts, so the world can stream: the ground (heights and water) is
+## always known, from `npm run bake`'s files or by sampling the hooks; the
+## content (the ground's meshes and collision, the water, the props) is built
+## by `generate_content` into a node outside the tree and attached with
+## `attach_content`. In the editor it is attached at once; in the game the
+## SectorStreamer attaches it, from the baked scene when fresh, while the
+## player is near, and detaches it when they leave.
 ##
 ## A design node stays at the world origin and works in world coordinates;
 ## ground points are Vector2(x, z). Generated children have no owner, so the
 ## editor never saves them.
+
+## Emitted when content is attached (true) or detached (false).
+signal content_changed(loaded: bool)
 
 ## Metres between ground samples.
 const RESOLUTION := 0.25
@@ -39,7 +49,9 @@ const CLAIM_BUCKET := 2.0
 ## Seeded with `design_seed` before `_populate`; use it for every random choice.
 var rng := RandomNumberGenerator.new()
 
-var _baked := false
+var _ground_known := false
+var _sampled := false
+var _set_up := false
 var _cells: Array[Vector2i] = []
 var _owned: Dictionary[Vector2i, bool] = {}
 var _heights: Dictionary[Vector2i, PackedFloat32Array] = {}
@@ -47,18 +59,19 @@ var _water: Dictionary[Vector2i, PackedFloat32Array] = {}
 var _flows: Dictionary[Vector2i, PackedVector2Array] = {}
 var _tints: Dictionary[Vector2i, PackedColorArray] = {}
 var _merged: Dictionary[String, NatureKit.Batch] = {}
-var _instances: Dictionary[StringName, Array] = {}
 ## Claimed ground as x, z and radius, filed under every CLAIM_BUCKET-sized
 ## square each claim touches.
 var _claims: Dictionary[Vector2i, Array] = {}
 var _colliders: StaticBody3D
+## The content being generated, and the content attached.
+var _building: Node3D
+var _content: Node3D
 
 
 func _ready() -> void:
 	bake()
-	_build_water()
-	rng.seed = design_seed
-	_populate()
+	if Engine.is_editor_hint():
+		attach_content(generate_content())
 
 
 ## Prepares whatever the hooks need, before any sampling: noise, paths...
@@ -88,45 +101,94 @@ func _ground_tint(_xz: Vector2) -> Color:
 	return GRASS
 
 
-## Places the design's props, after the ground and water exist.
+## Places the design's props with `add_content` and the helpers below, after
+## the ground and water exist.
 func _populate() -> void:
 	pass
 
 
-## Samples the hooks over every owned sector, once. FieldTerrain calls it too,
-## so the order of nodes in the tree doesn't matter.
+## Makes the ground known, once: from the baked file when fresh, otherwise by
+## sampling the hooks. Anything asking about heights calls it, so the order
+## of nodes in the tree doesn't matter.
 func bake() -> void:
-	if _baked:
+	if _ground_known:
 		return
-	_baked = true
-	for sector_name in sectors:
-		var cell := SectorMap.cell_named(sector_name)
-		if cell == SectorMap.NONE:
-			push_error("%s: there is no sector named '%s'" % [name, sector_name])
-		elif not _owned.has(cell):
-			_owned[cell] = true
-			_cells.append(cell)
-	_setup()
-	for cell in _cells:
-		var heights := PackedFloat32Array()
-		var water := PackedFloat32Array()
-		var flows := PackedVector2Array()
-		var tints := PackedColorArray()
-		var corner := SectorMap.corner_of(cell)
-		for j in SAMPLES:
-			for i in SAMPLES:
-				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
-				var weight := edge_weight(xz)
-				heights.append(_ground(xz) * weight)
-				water.append(_water_level(xz))
-				flows.append(_flow(xz))
-				var tint := _ground_tint(xz)
-				tint.a = lerpf(1.0, tint.a, weight)
-				tints.append(tint)
-		_heights[cell] = heights
-		_water[cell] = water
-		_flows[cell] = flows
-		_tints[cell] = tints
+	_ground_known = true
+	_read_sectors()
+	var ground: SectorGround = null if Engine.is_editor_hint() else BakedSectors.load_ground(name)
+	if ground:
+		_heights = ground.heights
+		_water = ground.water
+		_flows = ground.flows
+	else:
+		_sample()
+
+
+## Builds the content, the same every time, into a new node named "Content"
+## that isn't in the tree: the ground's meshes and collision, the water, and
+## whatever `_populate` adds.
+func generate_content() -> Node3D:
+	bake()
+	if not _sampled:
+		_sample()
+	_merged.clear()
+	_claims.clear()
+	_colliders = null
+	_building = Node3D.new()
+	_building.name = "Content"
+	rng.seed = design_seed
+	_build_ground()
+	_build_water()
+	_populate()
+	var built := _building
+	_building = null
+	return built
+
+
+## Shows content built by `generate_content` or loaded from a baked scene,
+## replacing any attached before.
+func attach_content(content: Node3D) -> void:
+	if _content:
+		_drop_content()
+	content.name = "Content"
+	_content = content
+	add_child(content)
+	content_changed.emit(true)
+
+
+func detach_content() -> void:
+	if _content:
+		_drop_content()
+		content_changed.emit(false)
+
+
+func is_content_loaded() -> bool:
+	return _content != null
+
+
+## The attached content, or null.
+func content() -> Node3D:
+	return _content
+
+
+## A node in the attached content by path, or null.
+func part(path: NodePath) -> Node:
+	return _content.get_node_or_null(path) if _content else null
+
+
+## The ground to bake.
+func ground() -> SectorGround:
+	bake()
+	var data := SectorGround.new()
+	data.heights = _heights
+	data.water = _water
+	data.flows = _flows
+	return data
+
+
+## A stable name for something in the content, for WorldState.
+func content_id(node_name: String) -> String:
+	return "%s/%s" % [name, node_name]
 
 
 ## The cells of the owned sectors.
@@ -168,7 +230,7 @@ func edge_weight(xz: Vector2) -> float:
 	return smoothstep(0.0, edge_blend, nearest)
 
 
-## Ground height at a point, on the same triangles FieldTerrain draws; 0
+## Ground height at a point, on the same triangles the ground mesh draws; 0
 ## outside the design.
 func height_at(xz: Vector2) -> float:
 	bake()
@@ -181,7 +243,8 @@ func water_level_at(xz: Vector2) -> float:
 	return _interpolate(_water, xz, NO_WATER)
 
 
-## The water's flow at the nearest sample, in metres per second along x and z.
+## The water's flow at the nearest sample, in metres per second along x and
+## z.
 func flow_at(xz: Vector2) -> Vector2:
 	bake()
 	var cell := SectorMap.unbounded_cell_at(xz)
@@ -258,16 +321,12 @@ func random_point() -> Vector2:
 	return Vector2(corner.x + rng.randf() * SectorMap.SIZE, corner.z - rng.randf() * SectorMap.SIZE)
 
 
-## The baked samples FieldTerrain draws, SAMPLES x SAMPLES per cell, row by
-## row from the south-west corner going east, then north.
-func heights_of(cell: Vector2i) -> PackedFloat32Array:
-	bake()
-	return _heights[cell]
-
-
-func tints_of(cell: Vector2i) -> PackedColorArray:
-	bake()
-	return _tints[cell]
+## Adds a node to the content being generated. Only for `_populate`.
+func add_content(node: Node) -> void:
+	if _building == null:
+		push_error("%s: add_content works only while generating content" % name)
+		return
+	_building.add_child(node)
 
 
 ## The batch merging `group` props in the sector under a point, so each
@@ -295,11 +354,11 @@ func add_mesh(node_name: String, mesh: Mesh, material: Material, shadows: bool =
 	instance.material_override = material
 	if not shadows:
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(instance)
+	add_content(instance)
 	return instance
 
 
-## Adds many copies of a mesh, one MultiMeshInstance3D per sector so distant
+## Adds many copies of a mesh, one BakedMultiMesh per sector so distant
 ## sectors can be culled. `colors` tints each copy; `visible_distance` (when
 ## above 0) hides them farther from the camera.
 func add_multimesh(node_name: String, mesh: Mesh, material: Material, transforms: Array[Transform3D], colors: PackedColorArray, visible_distance: float = 0.0) -> void:
@@ -311,29 +370,36 @@ func add_multimesh(node_name: String, mesh: Mesh, material: Material, transforms
 		by_cell[cell].append(i)
 	for cell: Vector2i in by_cell.keys():
 		var picks: Array = by_cell[cell]
-		var instance := MeshKit.multimesh_instance(mesh, material, picks.size())
+		var multimesh := MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_colors = true
+		multimesh.mesh = mesh
+		var instance := BakedMultiMesh.new()
+		instance.multimesh = multimesh
+		instance.material_override = material
 		instance.name = node_name + SectorMap.name_of(cell)
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if visible_distance > 0.0:
 			instance.visibility_range_end = visible_distance
 			instance.visibility_range_end_margin = visible_distance * 0.15
 			instance.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-		var placed: Array[Transform3D] = []
+		var picked: Array[Transform3D] = []
+		var tints := PackedColorArray()
 		for k in picks.size():
 			var i: int = picks[k]
-			instance.multimesh.set_instance_transform(k, transforms[i])
-			instance.multimesh.set_instance_color(k, colors[i])
-			placed.append(transforms[i])
-		add_child(instance)
-		_instances[instance.name] = placed
+			picked.append(transforms[i])
+			tints.append(colors[i])
+		instance.set_copies(picked, tints)
+		add_content(instance)
 
 
-## Where the copies in one of `add_multimesh`'s nodes stand. Headless runs
-## can't read them back from the MultiMesh (the dummy renderer keeps no
-## buffers), so the design remembers them.
+## Where the copies in one of `add_multimesh`'s nodes stand, read from the
+## attached content.
 func instance_transforms(node_name: StringName) -> Array[Transform3D]:
+	var node := part(NodePath(node_name)) as BakedMultiMesh
 	var placed: Array[Transform3D] = []
-	placed.assign(_instances.get(node_name, []))
+	if node:
+		placed = node.transforms()
 	return placed
 
 
@@ -342,11 +408,55 @@ func add_collider(shape: Shape3D, where: Transform3D) -> void:
 	if _colliders == null:
 		_colliders = StaticBody3D.new()
 		_colliders.name = "Colliders"
-		add_child(_colliders)
+		add_content(_colliders)
 	var collision := CollisionShape3D.new()
 	collision.shape = shape
 	collision.transform = where
 	_colliders.add_child(collision)
+
+
+func _read_sectors() -> void:
+	for sector_name in sectors:
+		var cell := SectorMap.cell_named(sector_name)
+		if cell == SectorMap.NONE:
+			push_error("%s: there is no sector named '%s'" % [name, sector_name])
+		elif not _owned.has(cell):
+			_owned[cell] = true
+			_cells.append(cell)
+
+
+## Samples the hooks over every owned sector.
+func _sample() -> void:
+	_sampled = true
+	if not _set_up:
+		_set_up = true
+		_setup()
+	for cell in _cells:
+		var heights := PackedFloat32Array()
+		var water := PackedFloat32Array()
+		var flows := PackedVector2Array()
+		var tints := PackedColorArray()
+		var corner := SectorMap.corner_of(cell)
+		for j in SAMPLES:
+			for i in SAMPLES:
+				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
+				var weight := edge_weight(xz)
+				heights.append(_ground(xz) * weight)
+				water.append(_water_level(xz))
+				flows.append(_flow(xz))
+				var tint := _ground_tint(xz)
+				tint.a = lerpf(1.0, tint.a, weight)
+				tints.append(tint)
+		_heights[cell] = heights
+		_water[cell] = water
+		_flows[cell] = flows
+		_tints[cell] = tints
+
+
+func _drop_content() -> void:
+	remove_child(_content)
+	_content.queue_free()
+	_content = null
 
 
 ## The claim squares a circle touches. Two circles that overlap always share
@@ -359,9 +469,9 @@ func _claim_buckets(xz: Vector2, radius: float) -> Array[Vector2i]:
 	return keys
 
 
-## The ground at a point from the baked grid, on the triangle FieldTerrain
-## draws there. Water levels use the same grid; a point touching dry samples
-## has no water.
+## The ground at a point from the sampled grid, on the triangle the ground
+## mesh draws there. Water levels use the same grid; a point touching dry
+## samples has no water.
 func _interpolate(grids: Dictionary[Vector2i, PackedFloat32Array], xz: Vector2, outside: float) -> float:
 	var cell := SectorMap.unbounded_cell_at(xz)
 	if not grids.has(cell):
@@ -385,6 +495,59 @@ func _interpolate(grids: Dictionary[Vector2i, PackedFloat32Array], xz: Vector2, 
 	if fu + fv <= 1.0:
 		return south_west + (south_east - south_west) * fu + (north_west - south_west) * fv
 	return north_east + (north_west - north_east) * (1.0 - fu) + (south_east - north_east) * (1.0 - fv)
+
+
+## The ground of every owned sector at full detail: a mesh painted with the
+## field's grass-and-grid shader and the design's tints, and its collision.
+func _build_ground() -> void:
+	var body := StaticBody3D.new()
+	body.name = "GroundBody"
+	add_content(body)
+	for cell in _cells:
+		var heights := _heights[cell]
+		var corner := SectorMap.corner_of(cell)
+		var vertices := PackedVector3Array()
+		var normals := PackedVector3Array()
+		for j in SAMPLES:
+			for i in SAMPLES:
+				var k := j * SAMPLES + i
+				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
+				vertices.append(Vector3(xz.x, heights[k], xz.y))
+				# Row j + 1 lies to the north. Border samples look across into
+				# the next sector, so normals match at the seam.
+				var east_slope: float
+				var south_slope: float
+				if i > 0 and i < SAMPLES - 1 and j > 0 and j < SAMPLES - 1:
+					east_slope = heights[k + 1] - heights[k - 1]
+					south_slope = heights[k - SAMPLES] - heights[k + SAMPLES]
+				else:
+					east_slope = height_at(xz + Vector2(RESOLUTION, 0.0)) - height_at(xz - Vector2(RESOLUTION, 0.0))
+					south_slope = height_at(xz + Vector2(0.0, RESOLUTION)) - height_at(xz - Vector2(0.0, RESOLUTION))
+				normals.append(Vector3(-east_slope, 2.0 * RESOLUTION, -south_slope).normalized())
+		var indices := PackedInt32Array()
+		var faces := PackedVector3Array()
+		for j in SAMPLES - 1:
+			for i in SAMPLES - 1:
+				var south_west := j * SAMPLES + i
+				var north_west := south_west + SAMPLES
+				for index: int in [south_west, north_west, south_west + 1, south_west + 1, north_west, north_west + 1]:
+					indices.append(index)
+					faces.append(vertices[index])
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = vertices
+		arrays[Mesh.ARRAY_NORMAL] = normals
+		arrays[Mesh.ARRAY_COLOR] = _tints[cell]
+		arrays[Mesh.ARRAY_INDEX] = indices
+		var mesh := ArrayMesh.new()
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		add_mesh("Ground" + SectorMap.name_of(cell), mesh, FieldTerrain.ground_material())
+		var shape := ConcavePolygonShape3D.new()
+		shape.set_faces(faces)
+		var collision := CollisionShape3D.new()
+		collision.name = SectorMap.name_of(cell)
+		collision.shape = shape
+		body.add_child(collision)
 
 
 ## The water surface: a quad on every grid square where water stands above

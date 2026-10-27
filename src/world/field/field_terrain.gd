@@ -1,32 +1,48 @@
 @tool
 class_name FieldTerrain
 extends StaticBody3D
-## The field's ground: flat grass everywhere, reshaped inside the sectors a
-## SectorDesign owns. Builds one mesh and collision shape for the flat part
-## (the undesigned sectors and a wide ring around the grid) and one of each per
-## designed sector, all painted by the grass-and-grid shader. Answers height and
-## water questions for the whole field. Generated children have no owner, so
-## the editor never saves them.
+## The field's ground: one mesh and collision shape for the flat grass (the
+## undesigned sectors and a wide ring around the grid), and for each designed
+## sector a coarse stand-in, 1 m between samples, shown while its design's
+## content isn't loaded, so distant hills keep their shape and nothing is
+## left open. Loaded designs bring their own detailed ground. Answers height
+## and water questions for the whole field. Generated children have no
+## owner, so the editor never saves them.
 
 const GRASS_SHADER := preload("res://src/world/field/grass_grid.gdshader")
+## Samples along each side of a sector's stand-in.
+const FAR_SAMPLES := 11
 
 ## The node whose SectorDesign children shape the ground.
 @export var designs_root: Node3D
 ## How far the flat grass reaches past the grid on every side, in metres.
 @export var margin: float = 900.0
 
+static var _material: ShaderMaterial
+
 var _collected := false
 var _designs: Array[SectorDesign] = []
 var _owners: Dictionary[Vector2i, SectorDesign] = {}
+## Each designed cell's stand-in mesh and its collision.
+var _stand_ins: Dictionary[Vector2i, Array] = {}
+
+
+## The grass-and-grid material every piece of ground shares.
+static func ground_material() -> ShaderMaterial:
+	if _material == null:
+		_material = ShaderMaterial.new()
+		_material.shader = GRASS_SHADER
+	return _material
 
 
 func _ready() -> void:
 	_collect()
-	var material := ShaderMaterial.new()
-	material.shader = GRASS_SHADER
-	_build_flat(material)
+	_build_flat()
 	for cell: Vector2i in _owners.keys():
-		_build_shaped(cell, _owners[cell], material)
+		_build_stand_in(cell, _owners[cell])
+	for design in _designs:
+		design.content_changed.connect(_show_stand_ins.bind(design))
+		_show_stand_ins(design.is_content_loaded(), design)
 
 
 func designs() -> Array[SectorDesign]:
@@ -77,6 +93,11 @@ func find_dry_spot(xz: Vector2, search_radius: float = 8.0) -> Vector2:
 	return xz
 
 
+## True if a designed cell is showing its coarse stand-in.
+func shows_stand_in(cell: Vector2i) -> bool:
+	return _stand_ins.has(cell) and (_stand_ins[cell][0] as MeshInstance3D).visible
+
+
 func _collect() -> void:
 	if _collected:
 		return
@@ -97,7 +118,7 @@ func _collect() -> void:
 
 
 ## Two triangles per undesigned sector, and four long strips around the grid.
-func _build_flat(material: Material) -> void:
+func _build_flat() -> void:
 	var faces := PackedVector3Array()
 	for row in SectorMap.ROWS:
 		for column in SectorMap.COLUMNS:
@@ -120,7 +141,7 @@ func _build_flat(material: Material) -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = faces
 	arrays[Mesh.ARRAY_NORMAL] = normals
-	_add_ground("Flat", arrays, faces, material, false)
+	_add_ground("Flat", arrays, faces, false)
 
 
 ## A flat rectangle from its south-west to its north-east corner.
@@ -132,55 +153,40 @@ func _add_quad(faces: PackedVector3Array, x0: float, z0: float, x1: float, z1: f
 	faces.append_array(PackedVector3Array([south_west, north_west, south_east, south_east, north_west, north_east]))
 
 
-## The ground of one designed sector, from its design's samples.
-func _build_shaped(cell: Vector2i, design: SectorDesign, material: Material) -> void:
-	var samples := SectorDesign.SAMPLES
-	var step := SectorDesign.RESOLUTION
-	var heights := design.heights_of(cell)
+## A designed sector's ground at 1 m, following its surface (water lies flat).
+func _build_stand_in(cell: Vector2i, design: SectorDesign) -> void:
+	var step := SectorMap.SIZE / (FAR_SAMPLES - 1)
 	var corner := SectorMap.corner_of(cell)
-	var vertices := PackedVector3Array()
-	var normals := PackedVector3Array()
-	for j in samples:
-		for i in samples:
-			var k := j * samples + i
+	var points := PackedVector3Array()
+	for j in FAR_SAMPLES:
+		for i in FAR_SAMPLES:
 			var xz := Vector2(corner.x + i * step, corner.z - j * step)
-			vertices.append(Vector3(xz.x, heights[k], xz.y))
-			# Row j + 1 lies to the north. Border samples look into the
-			# neighbouring sector, so normals match across the seam.
-			var east_slope: float
-			var south_slope: float
-			if i > 0 and i < samples - 1 and j > 0 and j < samples - 1:
-				east_slope = heights[k + 1] - heights[k - 1]
-				south_slope = heights[k - samples] - heights[k + samples]
-			else:
-				east_slope = height_at(xz + Vector2(step, 0.0)) - height_at(xz - Vector2(step, 0.0))
-				south_slope = height_at(xz + Vector2(0.0, step)) - height_at(xz - Vector2(0.0, step))
-			normals.append(Vector3(-east_slope, 2.0 * step, -south_slope).normalized())
-	var indices := PackedInt32Array()
+			points.append(Vector3(xz.x, maxf(design.height_at(xz), design.water_level_at(xz)), xz.y))
 	var faces := PackedVector3Array()
-	for j in samples - 1:
-		for i in samples - 1:
-			var south_west := j * samples + i
-			var north_west := south_west + samples
+	for j in FAR_SAMPLES - 1:
+		for i in FAR_SAMPLES - 1:
+			var south_west := j * FAR_SAMPLES + i
+			var north_west := south_west + FAR_SAMPLES
 			for index: int in [south_west, north_west, south_west + 1, south_west + 1, north_west, north_west + 1]:
-				indices.append(index)
-				faces.append(vertices[index])
+				faces.append(points[index])
+	var normals := PackedVector3Array()
+	for t in range(0, faces.size(), 3):
+		var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()
+		normals.append_array(PackedVector3Array([normal, normal, normal]))
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_VERTEX] = faces
 	arrays[Mesh.ARRAY_NORMAL] = normals
-	arrays[Mesh.ARRAY_COLOR] = design.tints_of(cell)
-	arrays[Mesh.ARRAY_INDEX] = indices
-	_add_ground(SectorMap.name_of(cell), arrays, faces, material, true)
+	_stand_ins[cell] = _add_ground("Far" + SectorMap.name_of(cell), arrays, faces, false)
 
 
-func _add_ground(node_name: String, arrays: Array, faces: PackedVector3Array, material: Material, shadows: bool) -> void:
+func _add_ground(node_name: String, arrays: Array, faces: PackedVector3Array, shadows: bool) -> Array:
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	var instance := MeshInstance3D.new()
 	instance.name = node_name
 	instance.mesh = mesh
-	instance.material_override = material
+	instance.material_override = ground_material()
 	if not shadows:
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(instance)
@@ -190,3 +196,14 @@ func _add_ground(node_name: String, arrays: Array, faces: PackedVector3Array, ma
 	collision.name = node_name + "Collision"
 	collision.shape = shape
 	add_child(collision)
+	return [instance, collision]
+
+
+## Shows a design's stand-ins while its content is away, and hides them (and
+## their collision) while it's loaded.
+func _show_stand_ins(loaded: bool, design: SectorDesign) -> void:
+	for cell in design.cells():
+		if not _stand_ins.has(cell):
+			continue
+		(_stand_ins[cell][0] as MeshInstance3D).visible = not loaded
+		(_stand_ins[cell][1] as CollisionShape3D).set_deferred(&"disabled", loaded)

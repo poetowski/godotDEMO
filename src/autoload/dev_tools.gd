@@ -142,9 +142,22 @@ func _capture_and_quit(options: Options) -> void:
 		camera.look_at(options.shot_look)
 		camera.make_current()
 		await get_tree().process_frame
+	await _streaming_settled()
 	await RenderingServer.frame_post_draw
 	var error := save_screenshot(options.shot_path)
 	get_tree().quit(0 if error == OK else 1)
+
+
+## Waits, up to a few seconds, until every sector streamer has loaded what
+## the camera can see.
+func _streaming_settled() -> void:
+	for i in 600:
+		var settled := true
+		for streamer in get_tree().get_nodes_in_group(&"sector_streamers"):
+			settled = settled and bool(streamer.call(&"is_settled"))
+		if settled:
+			return
+		await get_tree().process_frame
 
 
 func _hotkey_shot_path() -> String:

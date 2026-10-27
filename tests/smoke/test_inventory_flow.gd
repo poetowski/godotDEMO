@@ -24,7 +24,7 @@ func after_all() -> void:
 
 
 func test_1_the_cornflower_grows_in_b1() -> void:
-	var pickup := _world.get_node("Sectors/B1Cornflower/Cornflower") as ItemPickup
+	var pickup := _world.get_node("Sectors/B1Cornflower/Content/Cornflower") as ItemPickup
 	assert_eq(pickup.item.id, &"cornflower")
 	assert_eq(SectorMap.name_of(SectorMap.cell_at(pickup.global_position)), "B1")
 
@@ -39,7 +39,7 @@ func test_2_walking_up_and_pressing_e_picks_it_up() -> void:
 	_player.interact()
 	await wait_process_frames(2)
 	assert_true(_player.inventory.has(&"cornflower"))
-	assert_null(_world.get_node_or_null("Sectors/B1Cornflower/Cornflower"), "gone from the meadow")
+	assert_null(_world.get_node_or_null("Sectors/B1Cornflower/Content/Cornflower"), "gone from the meadow")
 
 
 func test_3_i_opens_the_inventory_from_the_right_over_40_percent() -> void:

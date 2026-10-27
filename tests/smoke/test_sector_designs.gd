@@ -14,6 +14,7 @@ func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
 	_terrain = _world.get_node("Terrain") as FieldTerrain
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 
 
 func after_all() -> void:

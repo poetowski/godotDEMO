@@ -11,6 +11,10 @@ const WOOD: Array[Color] = [Color(0.45, 0.28, 0.16), Color(0.4, 0.25, 0.14), Col
 const IRON := Color(0.25, 0.25, 0.27)
 const GOLD := Color(0.88, 0.68, 0.28)
 
+## Names the blade in WorldState, so it stays taken when the chest is
+## loaded again; empty for none.
+@export var persist_id: String = ""
+
 ## The blade on the lid; a FlameKatana unless set before the chest enters
 ## the tree.
 var blade: Node3D
@@ -27,12 +31,14 @@ func _ready() -> void:
 	box.position = Vector3(0.0, shape.size.y * 0.5, 0.0)
 	body.add_child(box)
 	add_child(body)
-	if blade == null:
+	var taken := not Engine.is_editor_hint() and not persist_id.is_empty() and WorldState.is_taken(persist_id)
+	if blade == null and not taken:
 		blade = FlameKatana.new()
-	blade.name = "Blade"
-	# Lying along the lid, edge toward the lock.
-	blade.transform = Transform3D(Basis(Vector3.BACK, -PI * 0.5), Vector3(-0.39, SIZE.y + SIZE.z * 0.5 + 0.02, 0.0))
-	add_child(blade)
+	if blade:
+		blade.name = "Blade"
+		# Lying along the lid, edge toward the lock.
+		blade.transform = Transform3D(Basis(Vector3.BACK, -PI * 0.5), Vector3(-0.39, SIZE.y + SIZE.z * 0.5 + 0.02, 0.0))
+		add_child(blade)
 	var area := Area3D.new()
 	area.name = "PickupArea"
 	area.collision_layer = 0
@@ -59,6 +65,8 @@ func take_sword() -> Node3D:
 	var taken := blade
 	remove_child(taken)
 	blade = null
+	if not persist_id.is_empty():
+		WorldState.mark_taken(persist_id)
 	return taken
 
 

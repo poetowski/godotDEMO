@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dpx2dohi1qp0t" path="res://src/world/field/field_terrain.gd" id="2_terrain"]
 [ext_resource type="Script" uid="uid://cfww1o6ahv4pu" path="res://src/world/field/sector_grid.gd" id="3_grid"]
 [ext_resource type="Script" uid="uid://665actg5qogf" path="res://src/world/field/clouds.gd" id="4_clouds"]
+[ext_resource type="Script" path="res://src/world/streaming/sector_streamer.gd" id="13_streamer"]
 [ext_resource type="PackedScene" path="res://src/player/player.tscn" id="5_player"]
 [ext_resource type="PackedScene" path="res://src/ui/hud/hud.tscn" id="6_hud"]
 [ext_resource type="Script" uid="uid://fkfavch0yl46" path="res://src/world/field/sectors/a1_a3_stream/a1_a3_stream.gd" id="7_stream"]
@@ -96,6 +97,12 @@ designs_root = NodePath("../Sectors")
 [node name="SectorGrid" type="Node3D" parent="." unique_id=1605784109 node_paths=PackedStringArray("terrain")]
 script = ExtResource("3_grid")
 terrain = NodePath("../Terrain")
+
+[node name="Streamer" type="Node" parent="." node_paths=PackedStringArray("designs_root", "focus")]
+editor_description = "Loads the sector designs near the player and unloads the far ones."
+script = ExtResource("13_streamer")
+designs_root = NodePath("../Sectors")
+focus = NodePath("../Player")
 
 [node name="Clouds" type="Node3D" parent="." unique_id=133901257]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -100)

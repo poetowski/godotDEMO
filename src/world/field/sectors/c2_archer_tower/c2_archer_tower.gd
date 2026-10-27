@@ -174,7 +174,8 @@ func _place_chest() -> void:
 	chest.name = "Chest"
 	chest.item_name = "the flame katana"
 	chest.transform = Transform3D(_ring_box(angle), _around(angle, 1.0, tower_height + 0.3))
-	add_child(chest)
+	chest.persist_id = content_id(chest.name)
+	add_content(chest)
 
 
 ## The stairs' angle a fraction of the way from the bottom to the top.

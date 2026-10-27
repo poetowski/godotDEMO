@@ -47,9 +47,15 @@ sectors.
    didn't ask for, such as buildings, creatures or items; propose them instead.
 5. **Generated in code.** Low-poly, built from the kit below, and the same
    every run, decided by `design_seed`. No downloaded assets.
-6. **The player can always start.** Props stay clear of every owned sector's
+6. **Built for streaming.** The world loads a design's content only while
+   the player is near, from a baked copy. Add every node with `add_content`
+   or the add_* helpers, never `add_child`. Anything the player can change
+   (take, open, destroy) records it in `WorldState` through a `persist_id`
+   built with `content_id(...)`, so it stays changed when the sector
+   reloads.
+7. **The player can always start.** Props stay clear of every owned sector's
    start point (`crowds_start`), and A1's start point stays dry ground.
-7. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
+8. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
    prop group per sector (`merged`/`commit_merged`), and a MultiMesh
    (`add_multimesh`) for anything repeated more than about 50 times. Add
    colliders only for props the player shouldn't walk through (about 0.45 m
@@ -84,7 +90,9 @@ sectors.
    open, close its tab first, or use the MCP tools.
 5. **Test it.** Add `tests/smoke/test_<slug>.gd` asserting the brief's key
    elements: water where asked, plants on the right ground, each sector
-   populated. See `tests/smoke/test_a1_a3_stream.gd`.
+   populated. Call `load_all_now()` on the field's `Streamer` in
+   `before_all`, and read the content with `design.part("Name")`. See
+   `tests/smoke/test_a1_a3_stream.gd`.
    `tests/smoke/test_sector_designs.gd` already checks every design for the
    invariants: nothing outside its sectors, no step at the edges, no sector
    claimed twice, A1's start dry. Run `npm run verify`.
@@ -125,7 +133,7 @@ Helpers to use in `_populate`:
 
 - **Ground and water:** `height_at`, `water_level_at`, `flow_at`, `is_dry(xz, margin)`, `surface(xz)`, and `lowest_ground(xz, r)` to seat wide props without floating.
 - **Placement:** `fits(xz, r)` (inside the owned sectors), `crowds_start(xz, r)`, `claim(xz, r)` and `is_clear(xz, r, spacing)` to keep props apart, `random_point()`, and `cells()`.
-- **Output:** `merged(group, xz)`, which returns a `NatureKit.Batch` per sector, then `commit_merged(group, material)`; `add_multimesh(name, mesh, material, transforms, colors, visible_distance)`, one node per sector, read back with `instance_transforms(name)`; `add_mesh`; `add_collider(shape, transform)`.
+- **Output:** `merged(group, xz)`, which returns a `NatureKit.Batch` per sector, then `commit_merged(group, material)`; `add_multimesh(name, mesh, material, transforms, colors, visible_distance)`, one node per sector, read back with `instance_transforms(name)`; `add_mesh`; `add_collider(shape, transform)`; `add_content(node)` for anything else, such as an `ItemPickup`, a `GestureSpot` or particles.
 
 **`StreamPath`** (`src/shared/nature/stream_path.gd`). Takes control points
 as `Vector4(x, z, half_width, water_level)` and smooths them into a line.
@@ -167,8 +175,11 @@ sectors.
 
 ## Gotchas
 
-- MultiMesh transforms read back as identity in headless tests (the dummy
-  renderer keeps no buffers). Use `instance_transforms`.
+- The game shows baked content: `npm run game`, `shot` and `test` re-bake
+  when sources changed, but a game started another way may show the old
+  version until `npm run bake` runs.
+- MultiMesh data can't be read back headless. The helpers use
+  `BakedMultiMesh`; read copies with `instance_transforms`.
 - In shaders, clamp vertex and instance colours before `pow()`. Interpolated
   values dip below 0 at triangle edges under MSAA, and the NaN blooms into
   white blobs.

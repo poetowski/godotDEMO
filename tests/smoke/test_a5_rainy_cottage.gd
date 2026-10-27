@@ -13,6 +13,7 @@ var _design: SectorDesign
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_design = _world.get_node("Sectors/A5RainyCottage") as SectorDesign
 
 
@@ -25,18 +26,18 @@ func test_owns_a5() -> void:
 
 
 func test_the_cottage_and_its_rain_cloud_stand_in_a5() -> void:
-	assert_not_null(_design.get_node_or_null("CottageA5"))
-	var cloud := (_design.get_node("RainCloud") as MeshInstance3D).get_aabb()
+	assert_not_null(_design.part("CottageA5"))
+	var cloud := (_design.part("RainCloud") as MeshInstance3D).get_aabb()
 	assert_gt(cloud.position.y, 10.0, "the cloud hangs high")
-	var rain := _design.get_node("Rain") as GPUParticles3D
+	var rain := _design.part("Rain") as GPUParticles3D
 	assert_true(rain.emitting, "it rains")
 	assert_gt(rain.amount, 500)
 	assert_lt(rain.global_position.y, cloud.position.y + 1.0, "from under the cloud")
-	assert_not_null(_design.get_node_or_null("RainCatcher"), "rain stops at the roof and ground")
+	assert_not_null(_design.part("RainCatcher"), "rain stops at the roof and ground")
 
 
 func test_the_cloud_stays_put() -> void:
-	var cloud := _design.get_node("RainCloud") as MeshInstance3D
+	var cloud := _design.part("RainCloud") as MeshInstance3D
 	var before := cloud.global_position
 	await wait_seconds(0.5)
 	assert_eq(cloud.global_position, before)

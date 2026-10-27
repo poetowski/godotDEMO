@@ -268,14 +268,14 @@ func _build_rain() -> void:
 	rain.position = CLOUD_CENTRE - Vector3(0.0, 1.0, 0.0)
 	rain.visibility_aabb = AABB(Vector3(-4.0, -CLOUD_CENTRE.y, -4.0), Vector3(8.0, CLOUD_CENTRE.y + 1.0, 8.0))
 	rain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(rain)
+	add_content(rain)
 	var catcher := GPUParticlesCollisionHeightField3D.new()
 	catcher.name = "RainCatcher"
 	catcher.size = Vector3(9.0, 12.0, 9.0)
 	catcher.resolution = GPUParticlesCollisionHeightField3D.RESOLUTION_256
 	catcher.update_mode = GPUParticlesCollisionHeightField3D.UPDATE_MODE_WHEN_MOVED
 	catcher.position = Vector3(CLOUD_CENTRE.x, 5.0, CLOUD_CENTRE.z)
-	add_child(catcher)
+	add_content(catcher)
 
 
 func _place_bushes() -> void:

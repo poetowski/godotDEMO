@@ -12,6 +12,7 @@ var _design: SectorDesign
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_design = _world.get_node("Sectors/D1E2Castle") as SectorDesign
 
 
@@ -27,7 +28,7 @@ func test_owns_d1_to_e2() -> void:
 
 func test_the_castle_stands_on_a_hill() -> void:
 	assert_gt(_design.height_at(CastleDesign.HILL), 2.5, "the hilltop is high")
-	var castle := (_design.get_node("CastleE2") as MeshInstance3D).get_aabb()
+	var castle := (_design.part("CastleE2") as MeshInstance3D).get_aabb()
 	assert_gt(castle.position.y, 2.0, "the castle starts on the hilltop")
 	assert_gt(castle.end.y, 10.0, "towers and roofs rise high")
 

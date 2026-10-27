@@ -12,6 +12,7 @@ var _design: SectorDesign
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate() as Node3D
 	add_child(_world)
+	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_design = _world.get_node("Sectors/C2ArcherTower") as SectorDesign
 
 
@@ -25,10 +26,10 @@ func test_owns_c2() -> void:
 
 func test_tower_pine_and_foliage_exist() -> void:
 	for node_name: String in ["TowerC2", "PineC2", "BushesC2", "GrassC2", "FernsC2"]:
-		assert_not_null(_design.get_node_or_null(node_name), node_name)
-	var tower := (_design.get_node("TowerC2") as MeshInstance3D).get_aabb()
+		assert_not_null(_design.part(node_name), node_name)
+	var tower := (_design.part("TowerC2") as MeshInstance3D).get_aabb()
 	assert_gt(tower.size.y, 9.0, "the tower stands tall")
-	var pine := (_design.get_node("PineC2") as MeshInstance3D).get_aabb()
+	var pine := (_design.part("PineC2") as MeshInstance3D).get_aabb()
 	assert_gt(pine.size.y, 9.0, "the pine is big")
 
 
@@ -55,7 +56,7 @@ func test_the_player_can_climb_the_stairs_to_the_top() -> void:
 
 
 func test_the_flame_katana_waits_in_the_chest_on_top_and_can_be_wielded() -> void:
-	var chest := _design.get_node("Chest") as SwordChest
+	var chest := _design.part("Chest") as SwordChest
 	assert_true(chest.has_sword())
 	assert_gt(chest.global_position.y - _design.height_at(TowerDesign.TOWER), 9.0, "the chest is on top of the tower")
 	var player := _world.get_node("Player") as Player

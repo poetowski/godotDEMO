@@ -6,6 +6,9 @@
 //                                play the game, or one scene, in a window;
 //                                --sector starts the player in that sector
 //   npm run import               import new or changed assets, headless
+//   npm run bake                 generate every sector design's content into
+//                                baked/sectors/; game, shot and test do it
+//                                first whenever the baked files are stale
 //   npm run check                import, then load every script, scene and
 //                                resource in src/ data/ assets/ tests/ tools/
 //   npm test [-- <gut args>]     run the GUT suite headless, e.g.
@@ -21,7 +24,7 @@
 // variable to use another binary (on Windows, the *_console.exe one).
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -99,6 +102,40 @@ async function importAssets() {
   return report('import', await godot(['--headless', '--path', ROOT, '--import'], { timeoutMs: 15 * 60_000 }));
 }
 
+// Mirrors BakedSectors in src/world/streaming/baked_sectors.gd: baked
+// content is stale once a source it comes from is newer than its stamp.
+const BAKE_STAMP = path.join(ROOT, 'baked', 'sectors', 'stamp.txt');
+const BAKE_SOURCES = ['src', 'data', path.join('tools', 'bake_sectors.gd')];
+const BAKE_EXTENSIONS = new Set(['.gd', '.gdshader', '.tscn', '.tres', '.res']);
+
+function newestSource(target) {
+  if (!existsSync(target)) return 0;
+  const stat = statSync(target);
+  if (stat.isFile()) return BAKE_EXTENSIONS.has(path.extname(target)) ? stat.mtimeMs : 0;
+  let newest = 0;
+  for (const entry of readdirSync(target)) newest = Math.max(newest, newestSource(path.join(target, entry)));
+  return newest;
+}
+
+function isBakeFresh() {
+  if (!existsSync(BAKE_STAMP)) return false;
+  // Godot compares whole seconds, so this does too.
+  const stamp = Math.floor(statSync(BAKE_STAMP).mtimeMs / 1000);
+  return BAKE_SOURCES.every((source) => Math.floor(newestSource(path.join(ROOT, source)) / 1000) <= stamp);
+}
+
+async function bake() {
+  if (!(await ensureImported())) return false;
+  const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/bake_sectors.gd'], {
+    timeoutMs: 10 * 60_000,
+  });
+  return report('bake', result);
+}
+
+async function ensureBaked() {
+  return isBakeFresh() || bake();
+}
+
 function toResPath(scene) {
   if (scene.startsWith('res://')) return scene;
   const relative = path.relative(ROOT, path.resolve(process.cwd(), scene)).split(path.sep).join('/');
@@ -132,11 +169,13 @@ const commands = {
     const { options, positional } = parseOptions(argv);
     const scene = positional[0] ? [toResPath(positional[0])] : [];
     const user = options.sector ? ['--', `--sector=${options.sector}`] : [];
-    if (!(await ensureImported())) return false;
+    if (!(await ensureImported()) || !(await ensureBaked())) return false;
     return report('game', await godot(['--path', ROOT, ...scene, ...user]));
   },
 
   import: importAssets,
+
+  bake,
 
   async check() {
     if (!(await importAssets())) return false;
@@ -147,7 +186,7 @@ const commands = {
   },
 
   async test(argv) {
-    if (!(await ensureImported())) return false;
+    if (!(await ensureImported()) || !(await ensureBaked())) return false;
     const result = await godot(['--headless', '--path', ROOT, '--script', 'res://addons/gut/gut_cmdln.gd', ...argv], {
       timeoutMs: 15 * 60_000,
     });
@@ -161,7 +200,7 @@ const commands = {
     const out = path.resolve(ROOT, options.out ?? path.join('.shots', `${name}.png`));
     mkdirSync(path.dirname(out), { recursive: true });
     if (existsSync(out)) rmSync(out);
-    if (!(await ensureImported())) return false;
+    if (!(await ensureImported()) || !(await ensureBaked())) return false;
     const args = ['--path', ROOT, '--resolution', options.size ?? '1280x720'];
     if (scene) args.push(scene);
     args.push('--', `--shot=${out}`, `--shot-frames=${options.frames ?? 60}`);
