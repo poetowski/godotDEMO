@@ -91,18 +91,18 @@ func show_page(which: String) -> void:
 		child.queue_free()
 	match which:
 		"main":
-			_title.text = "Paused"
-			_button("Resume", close)
-			_button("Save game", show_page.bind("save"))
-			_button("Load game", show_page.bind("load"))
-			_button("Quit", func() -> void: get_tree().quit())
+			_title.text = tr("Paused")
+			_button(tr("Resume"), close)
+			_button(tr("Save game"), show_page.bind("save"))
+			_button(tr("Load game"), show_page.bind("load"))
+			_button(tr("Quit"), func() -> void: get_tree().quit())
 		"save", "load":
-			_title.text = "Save game" if which == "save" else "Load game"
+			_title.text = tr("Save game") if which == "save" else tr("Load game")
 			for slot in SaveGame.SLOTS:
-				var label := "%s   %s" % ["Quicksave" if slot == SaveGame.QUICK else "Slot " + slot, SaveGame.describe(slot)]
+				var label := "%s   %s" % [tr("Quicksave") if slot == SaveGame.QUICK else tr("Slot %s") % slot, SaveGame.describe(slot)]
 				var button := _button(label, _pick_slot.bind(slot))
-				button.disabled = which == "load" and not SaveGame.exists(slot)
-			_button("Back", show_page.bind("main"))
+				button.disabled = which == "load" and SaveGame.read(slot).is_empty()
+			_button(tr("Back"), show_page.bind("main"))
 
 
 func _unhandled_key_input(event: InputEvent) -> void:

@@ -21,7 +21,9 @@ design arrives.
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint; opens the inventory on I and freezes the hero while it's open. |
 | Inventory | `src/items/inventory.gd`, `src/items/item_data.gd`, `src/ui/inventory/`, `data/items/` | `Inventory` (4 x 6 slots, on the player) holds `ItemData` resources: name, description, facts, model and stack size (mushrooms stack 20 to a slot). `InventoryPanel` is the drawer sliding in from the right over 40% of the screen, with 3D slot pictures and a viewer (`ItemPreview`, a model in its own small world, dragged to turn). |
 | Interaction | `src/items/interactable.gd`, `src/items/item_pickup.gd`, `src/items/gesture_spot.gd` | `Interactable` offers itself to the player inside its area with a prompt, and acts on E. `ItemPickup` puts an item in the inventory; `SwordHolder` hands over a blade; `GestureSpot` asks the player to choose a gesture (pray, cry) and has the hero perform it. |
-| Save and load | `src/save/save_game.gd`, `src/ui/game_menu/`, `Field.capture` / `Field.apply`, `src/items/item_catalog.gd` | JSON saves in `user://saves/slot_<name>.json` (a quicksave and slots 1 to 3): the player's position, facing and sword, the inventory by item id, and `WorldState`. Loading happens in place: the world state, inventory and sword are restored, then every streamed design reloads around the player. The game menu (Esc) pauses the game; F5 quicksaves, F9 quickloads. |
+| Save and load | `src/save/save_game.gd`, `src/save/save_migration.gd`, `src/ui/game_menu/`, `Field.capture` / `Field.apply`, `src/items/item_catalog.gd` | JSON saves in `user://saves/slot_<name>.json` (a quicksave and slots 1 to 3): the player's position, facing and sword, the inventory by item id and amount, and `WorldState`'s record per object. Saves carry a format number (2 now); `SaveMigration` upgrades older ones step by step, checked against a frozen save of every old format in `tests/fixtures/saves/`. Loading happens in place: the world state, inventory and sword are restored, then every streamed design reloads around the player. The game menu (Esc) pauses the game; F5 quicksaves, F9 quickloads. |
+| Stable ids | `SectorDesign.design_id`, `content_id`, `scatter_id`, `WorldState` | Everything saved about the world is keyed by ids that survive renaming nodes and retuning scatters: `<design_id>/<local name>` for hand-placed things, `<design_id>/<kind>@<x>,<z>` (decimetres) for scattered ones. A design issuing the same id twice is an error. `WorldState` keeps a small record per id (`taken` now; doors, NPCs and the like later). |
+| Localization | `src/shared/text.gd`, `tools/extract_strings.gd`, `locale/messages.pot` | English only for now, ready for translation: player-facing text goes through `tr`, `TranslationServer.translate`, plural forms or `Text.mark`; `npm run strings` collects it, with item texts, into `messages.pot`. Adding a language means translating that file into `locale/<lang>.po` and listing it under Localization in the project settings. |
 | Choices and gestures | `src/ui/choice/choice_menu.gd`, `Player.ask`, `Player.perform` | `Player.ask` raises a choice the HUD's `ChoiceMenu` shows (numbered buttons, Esc cancels). `Player.perform` plays a timed gesture (kneeling prayer, crying with tears) while the hero stands still. |
 | Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material (the clouds use it). |
 | Sandbox | `src/world/sandbox/` | Dev test ground: greybox blocks with collision, a 1.8 m human-scale marker, sun, sky, fog and a fly camera. |
@@ -129,9 +131,8 @@ decided until the author says so.
    classes in `data/`: editable in the inspector, diffable as `.tres`, and
    testable.
 6. **Saves.** In: plain JSON with a format number (`SaveGame.FORMAT`), never
-   Resources, since a crafted `.tres` can run code. When the format changes,
-   bump the number and convert older saves on read rather than refusing
-   them, once saves matter to players.
+   Resources, since a crafted `.tres` can run code. Older formats are
+   converted on read (`SaveMigration`); the rules are in CLAUDE.md.
 7. **Dialogue and quests.** Dialogic 2, or a small Resource-based system.
    Decide when writing starts.
 8. **Performance budget.** Visibility ranges (HLOD), automatic mesh LODs,

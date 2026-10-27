@@ -47,7 +47,7 @@ func can_interact(player: Player) -> bool:
 
 
 func prompt() -> String:
-	return "[E]  Pick up %s" % item.display_name
+	return tr("[E]  Pick up %s") % tr(item.display_name)
 
 
 func interact(player: Player) -> void:

@@ -43,7 +43,7 @@ func _ready() -> void:
 	_buttons.add_theme_constant_override("separation", 10)
 	column.add_child(_buttons)
 	var hint := Label.new()
-	hint.text = "Esc  cancel"
+	hint.text = tr("Esc  cancel")
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_font_size_override("font_size", 22)
 	hint.add_theme_color_override("font_color", Color(0.65, 0.68, 0.74))
@@ -57,14 +57,14 @@ func is_open() -> bool:
 
 ## Shows the choices; `chosen` reports the pick.
 func ask(title: String, labels: PackedStringArray) -> void:
-	_title.text = title
+	_title.text = tr(title)
 	for child in _buttons.get_children():
 		_buttons.remove_child(child)
 		child.queue_free()
 	_count = labels.size()
 	for k in labels.size():
 		var button := Button.new()
-		button.text = "%d   %s" % [k + 1, labels[k]]
+		button.text = "%d   %s" % [k + 1, tr(labels[k])]
 		button.focus_mode = Control.FOCUS_NONE
 		button.custom_minimum_size = Vector2(420.0, 64.0)
 		button.add_theme_font_size_override("font_size", 32)

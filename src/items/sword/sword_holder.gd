@@ -3,8 +3,9 @@ extends Interactable
 ## Something that holds a sword for the player to take: a sword in a stone, a
 ## chest with a blade on it. Hands the sword over through take_sword().
 
-## What the prompt calls the blade: "[E]  Take <item_name>".
-@export var item_name: String = "the sword"
+## What the prompt calls the blade, in English (it's translated when
+## shown): "[E]  Take <item_name>". Empty for "the sword".
+@export var item_name: String = ""
 
 
 func has_sword() -> bool:
@@ -21,7 +22,7 @@ func can_interact(player: Player) -> bool:
 
 
 func prompt() -> String:
-	return "[E]  Take %s" % item_name
+	return tr("[E]  Take %s") % (tr("the sword") if item_name.is_empty() else tr(item_name))
 
 
 func interact(player: Player) -> void:

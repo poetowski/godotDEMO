@@ -51,8 +51,12 @@ sectors.
    the player is near, from a baked copy. Add every node with `add_content`
    or the add_* helpers, never `add_child`. Anything the player can change
    (take, open, destroy) records it in `WorldState` through a `persist_id`
-   built with `content_id(...)`, so it stays changed when the sector
-   reloads.
+   built with `content_id("local_name")` for one hand-placed thing or
+   `scatter_id("kind", xz)` for scattered ones, so it stays changed when the
+   sector reloads. Those ids go into saves: never derive them from node
+   names or placing order, and never change one once it has shipped.
+   Anything the player reads (prompts, titles, choices) is English wrapped
+   in `Text.mark("...")`; the node translates it where it's shown.
 7. **The player can always start.** Props stay clear of every owned sector's
    start point (`crowds_start`), and A1's start point stays dry ground.
 8. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
@@ -84,8 +88,11 @@ sectors.
    editor_description = "<one line>"
    script = ExtResource("8_<slug>")
    sectors = PackedStringArray("A1", "A2")
+   design_id = "<slug>"
    design_seed = <any int>
    ```
+   `design_id` names the design in saves for good: the slug, lowercase,
+   unique.
    Give it no transform: designs sit at the origin. If the editor has the field
    open, close its tab first, or use the MCP tools.
 5. **Test it.** Add `tests/smoke/test_<slug>.gd` asserting the brief's key

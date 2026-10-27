@@ -122,7 +122,7 @@ func _build_drawer() -> void:
 	_drawer.add_child(column)
 	var header := HBoxContainer.new()
 	column.add_child(header)
-	var title := _label("Inventory", 44, ACCENT)
+	var title := _label(tr("Inventory"), 44, ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 	_count = _label("", 28, MUTED)
@@ -164,7 +164,7 @@ func _build_drawer() -> void:
 		_grid.add_child(button)
 		_slots.append(button)
 		_thumbnails.append(thumbnail)
-	column.add_child(_label("Click an item to look at it    I  close", 24, MUTED))
+	column.add_child(_label(tr("Click an item to look at it    I  close"), 24, MUTED))
 
 
 func _build_viewer() -> void:
@@ -198,7 +198,7 @@ func _build_viewer() -> void:
 	_preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_preview.custom_minimum_size = Vector2(0.0, 300.0)
 	column.add_child(_preview)
-	column.add_child(_label("Drag to turn it", 22, MUTED))
+	column.add_child(_label(tr("Drag to turn it"), 22, MUTED))
 	_description = _label("", 28, TEXT)
 	_description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(_description)
@@ -219,14 +219,14 @@ func _show_viewer(slot: int) -> void:
 	if item == null:
 		return
 	var amount := _inventory.amount_at(slot)
-	_name.text = item.display_name if amount < 2 else "%s  x%d" % [item.display_name, amount]
-	_description.text = item.description
+	_name.text = tr(item.display_name) if amount < 2 else "%s  x%d" % [tr(item.display_name), amount]
+	_description.text = tr(item.description)
 	for child in _facts.get_children():
 		child.queue_free()
 		_facts.remove_child(child)
 	for label: String in item.facts:
-		_facts.add_child(_label(label, 26, MUTED))
-		_facts.add_child(_label(item.facts[label], 26, TEXT))
+		_facts.add_child(_label(tr(label), 26, MUTED))
+		_facts.add_child(_label(tr(item.facts[label]), 26, TEXT))
 
 
 func _refresh() -> void:
@@ -237,7 +237,7 @@ func _refresh() -> void:
 		var item := _inventory.item_at(slot)
 		if _thumbnails[slot].item() != item:
 			_thumbnails[slot].show_item(item)
-		_slots[slot].tooltip_text = item.display_name if item else ""
+		_slots[slot].tooltip_text = tr(item.display_name) if item else ""
 		var amount := _inventory.amount_at(slot)
 		_amounts[slot].text = str(amount) if amount > 1 else ""
 	if _selected >= 0 and viewed_item() == null:

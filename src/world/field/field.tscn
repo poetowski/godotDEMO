@@ -58,36 +58,42 @@ editor_description = "One SectorDesign per designed area; each shapes only the s
 editor_description = "A spring in A3, a stream through A2, a lily pond in A1."
 script = ExtResource("7_stream")
 sectors = PackedStringArray("A1", "A2", "A3")
+design_id = "a1_a3_stream"
 design_seed = 7
 
 [node name="C2ArcherTower" type="Node3D" parent="Sectors" unique_id=473655340]
 editor_description = "A brick archer tower with an outside spiral staircase, a big pine and foliage."
 script = ExtResource("8_tower")
 sectors = PackedStringArray("C2")
+design_id = "c2_archer_tower"
 design_seed = 21
 
 [node name="D1E2Castle" type="Node3D" parent="Sectors" unique_id=784844662]
 editor_description = "Bratislava Castle, stylised, on a hill with a road up to its gate."
 script = ExtResource("9_castle")
 sectors = PackedStringArray("D1", "D2", "E1", "E2")
+design_id = "d1_e2_castle"
 design_seed = 33
 
 [node name="A5RainyCottage" type="Node3D" parent="Sectors" unique_id=60651236]
 editor_description = "A medieval cottage with its door open and shutters closed, under a still rain cloud."
 script = ExtResource("10_cottage")
 sectors = PackedStringArray("A5")
+design_id = "a5_rainy_cottage"
 design_seed = 45
 
 [node name="A7IvyStatue" type="Node3D" parent="Sectors"]
 editor_description = "A big phallic fertility statue on a plinth, overgrown with ivy."
 script = ExtResource("11_statue")
 sectors = PackedStringArray("A7")
+design_id = "a7_ivy_statue"
 design_seed = 57
 
 [node name="B1Cornflower" type="Node3D" parent="Sectors"]
 editor_description = "A wildflower meadow with a cornflower to pick up."
 script = ExtResource("12_meadow")
 sectors = PackedStringArray("B1")
+design_id = "b1_cornflower"
 design_seed = 61
 
 [node name="Terrain" type="StaticBody3D" parent="." unique_id=2031718324 node_paths=PackedStringArray("designs_root")]

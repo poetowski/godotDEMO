@@ -172,9 +172,9 @@ func _place_chest() -> void:
 	var angle := _stair_angle(1.0) + PI
 	var chest := SwordChest.new()
 	chest.name = "Chest"
-	chest.item_name = "the flame katana"
+	chest.item_name = Text.mark("the flame katana")
 	chest.transform = Transform3D(_ring_box(angle), _around(angle, 1.0, tower_height + 0.3))
-	chest.persist_id = content_id(chest.name)
+	chest.persist_id = content_id("sword_chest")
 	add_content(chest)
 
 

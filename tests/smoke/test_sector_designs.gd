@@ -25,6 +25,26 @@ func test_there_are_designs() -> void:
 	assert_gt(_terrain.designs().size(), 0)
 
 
+func test_every_design_has_its_own_stable_id() -> void:
+	var seen: Dictionary[String, String] = {}
+	for design in _terrain.designs():
+		assert_false(design.design_id.is_empty(), "%s has a design_id" % design.name)
+		assert_eq(design.design_id, design.design_id.to_lower(), "lowercase")
+		assert_false(seen.has(design.design_id), "%s and %s share %s" % [seen.get(design.design_id, ""), design.name, design.design_id])
+		seen[design.design_id] = design.name
+
+
+func test_saved_things_are_named_by_their_design_id() -> void:
+	var count := 0
+	for design in _terrain.designs():
+		for node in design.content().find_children("*", "", true, false):
+			var id: Variant = node.get("persist_id")
+			if id is String and not (id as String).is_empty():
+				assert_true((id as String).begins_with(design.design_id + "/"), id)
+				count += 1
+	assert_gt(count, 1, "the cornflower and the katana chest")
+
+
 func test_no_sector_is_claimed_twice() -> void:
 	var claimed: Dictionary[Vector2i, String] = {}
 	for design in _terrain.designs():

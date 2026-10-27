@@ -39,6 +39,10 @@ const CLAIM_BUCKET := 2.0
 
 ## The sectors this design owns, by name: "A1", "B2"...
 @export var sectors: PackedStringArray = PackedStringArray()
+## Names this design in saves for good, such as "b1_cornflower": unique,
+## lowercase, and never changed once the game has been played. Node names can
+## change freely; this can't.
+@export var design_id: String = ""
 ## Seeds `rng` and anything else random, so the design comes out the same
 ## every time.
 @export var design_seed: int = 1
@@ -62,6 +66,7 @@ var _merged: Dictionary[String, NatureKit.Batch] = {}
 ## Claimed ground as x, z and radius, filed under every CLAIM_BUCKET-sized
 ## square each claim touches.
 var _claims: Dictionary[Vector2i, Array] = {}
+var _issued: Dictionary[String, bool] = {}
 var _colliders: StaticBody3D
 ## The content being generated, and the content attached.
 var _building: Node3D
@@ -134,6 +139,7 @@ func generate_content() -> Node3D:
 		_sample()
 	_merged.clear()
 	_claims.clear()
+	_issued.clear()
 	_colliders = null
 	_building = Node3D.new()
 	_building.name = "Content"
@@ -187,9 +193,28 @@ func ground() -> SectorGround:
 	return data
 
 
-## A stable name for something in the content, for WorldState.
-func content_id(node_name: String) -> String:
-	return "%s/%s" % [name, node_name]
+## A stable id for a hand-placed thing in the content, for WorldState and
+## saves: "<design_id>/<local name>", such as "b1_cornflower/cornflower".
+## Never change a local name once the game has been played; saves hold it.
+func content_id(local_name: String) -> String:
+	return _issue("%s/%s" % [design_id, local_name])
+
+
+## A stable id for a scattered thing, from its kind and where it stands to
+## the decimetre, such as "stress_j10/mushroom@928,-931". It doesn't depend
+## on the order things were placed in, so retuning a scatter can only make
+## moved things count as new, never mix two of them up.
+func scatter_id(kind: String, xz: Vector2) -> String:
+	return _issue("%s/%s@%d,%d" % [design_id, kind, roundi(xz.x * 10.0), roundi(xz.y * 10.0)])
+
+
+func _issue(id: String) -> String:
+	if design_id.is_empty():
+		push_error("SectorDesign %s: design_id is empty, so its ids aren't stable" % name)
+	if _issued.has(id):
+		push_error("SectorDesign %s: id %s given twice" % [name, id])
+	_issued[id] = true
+	return id
 
 
 ## The cells of the owned sectors.

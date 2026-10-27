@@ -58,13 +58,13 @@ func capture() -> Dictionary:
 		},
 		"inventory": Array(_player.inventory.ids()),
 		"amounts": Array(_player.inventory.amounts()),
-		"taken": Array(WorldState.taken_ids()),
+		"world": WorldState.snapshot(),
 	}
 
 
 func save_to(slot: String) -> Error:
 	var error := SaveGame.write(slot, capture())
-	_hud.notify(("Saved to %s" % _slot_name(slot)) if error == OK else ("Could not save: %s" % error_string(error)))
+	_hud.notify((tr("Saved to %s") % _slot_name(slot)) if error == OK else (tr("Could not save: %s") % error_string(error)))
 	return error
 
 
@@ -72,11 +72,11 @@ func save_to(slot: String) -> Error:
 func load_from(slot: String) -> bool:
 	var data := SaveGame.read(slot)
 	if data.is_empty():
-		_hud.notify("No save in %s" % _slot_name(slot))
+		_hud.notify(tr("Nothing to load in %s") % _slot_name(slot))
 		return false
 	apply(data)
 	_hud.close_menus()
-	_hud.notify("Loaded %s" % _slot_name(slot))
+	_hud.notify(tr("Loaded %s") % _slot_name(slot))
 	return true
 
 
@@ -84,7 +84,7 @@ func load_from(slot: String) -> bool:
 ## the sectors around the player so taken things stay gone and the rest
 ## come back.
 func apply(data: Dictionary) -> void:
-	WorldState.restore(data.get("taken", []))
+	WorldState.restore(data.get("world", {}))
 	var inventory: Array = data.get("inventory", [])
 	var amounts: Array = data.get("amounts", [])
 	_player.inventory.clear()
@@ -108,7 +108,7 @@ func apply(data: Dictionary) -> void:
 
 
 func _slot_name(slot: String) -> String:
-	return "quicksave" if slot == SaveGame.QUICK else "slot " + slot
+	return tr("quicksave") if slot == SaveGame.QUICK else tr("slot %s") % slot
 
 
 ## The sector named by a `--sector=` argument, or "A1".

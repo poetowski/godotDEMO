@@ -135,9 +135,9 @@ func _add_twig(batch: NatureKit.Batch, a: Vector3, b: Vector3, radius: float) ->
 func _place_shrine_spot() -> void:
 	var spot := GestureSpot.new()
 	spot.name = "ShrineSpot"
-	spot.prompt_text = "[E]  Stand before the statue"
-	spot.title = "Before the statue"
-	spot.labels = PackedStringArray(["Pray", "Cry"])
+	spot.prompt_text = Text.mark("[E]  Stand before the statue")
+	spot.title = Text.mark("Before the statue")
+	spot.labels = Text.marks(PackedStringArray(["Pray", "Cry"]))
 	spot.gestures = [&"pray", &"cry"] as Array[StringName]
 	spot.seconds = PackedFloat32Array([5.0, 4.0])
 	spot.face_toward = _at(0.0, 2.0, 0.0)

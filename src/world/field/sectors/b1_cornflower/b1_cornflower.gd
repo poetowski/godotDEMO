@@ -32,7 +32,7 @@ func _populate() -> void:
 	pickup.name = "Cornflower"
 	pickup.item = CORNFLOWER
 	pickup.position = surface(FLOWER_AT) - Vector3.UP * 0.02
-	pickup.persist_id = content_id(pickup.name)
+	pickup.persist_id = content_id("cornflower")
 	add_content(pickup)
 	claim(FLOWER_AT, 0.5)
 	_place_wildflowers()

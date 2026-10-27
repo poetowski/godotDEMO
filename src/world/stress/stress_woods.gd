@@ -104,7 +104,7 @@ func _place_mushrooms() -> void:
 		pickup.reach = 1.2
 		pickup.position = surface(xz) - Vector3.UP * 0.01
 		pickup.rotation.y = rng.randf() * TAU
-		pickup.persist_id = content_id(pickup.name)
+		pickup.persist_id = scatter_id("mushroom", xz)
 		add_content(pickup)
 		# Room in the grass so it can be spotted.
 		claim(xz, 0.6)

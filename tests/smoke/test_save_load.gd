@@ -61,6 +61,21 @@ func test_1_loading_brings_back_the_world_and_the_hero() -> void:
 	assert_eq(_hud.toast_text(), "Loaded slot 2")
 
 
+func test_1b_an_old_save_loads_with_what_was_taken() -> void:
+	var field := _world as Node
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SaveGame.folder))
+	DirAccess.copy_absolute(ProjectSettings.globalize_path("res://tests/fixtures/saves/format_1.json"), ProjectSettings.globalize_path(SaveGame.path_of("3")))
+	assert_true(field.call("load_from", "3"))
+	await wait_process_frames(2)
+	var meadow := _world.get_node("Sectors/B1Cornflower") as SectorDesign
+	var tower := _world.get_node("Sectors/C2ArcherTower") as SectorDesign
+	assert_null(meadow.part("Cornflower"), "picked in the old save, so gone")
+	assert_false((tower.part("Chest") as SwordChest).has_sword(), "the chest stays empty")
+	assert_true(_player.sword() is FlameKatana)
+	assert_eq(_player.inventory.amount_at(1), 1)
+	SaveGame.delete("3")
+
+
 func test_2_esc_opens_the_menu_and_pauses() -> void:
 	var menu := _hud.game_menu()
 	_press("ui_cancel")

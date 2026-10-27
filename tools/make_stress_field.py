@@ -40,6 +40,7 @@ for row in range(1, 21):
             f'[node name="Stress{letter}{row}" type="Node3D" parent="Sectors"]\n'
             f'script = ExtResource("20_woods")\n'
             f'sectors = PackedStringArray("{letter}{row}")\n'
+            f'design_id = "stress_{letter.lower()}{row}"\n'
             f"design_seed = {row * 100 + column}"
         )
 # Dense woodland everywhere: keep full detail close, far models beyond.

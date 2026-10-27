@@ -7,7 +7,9 @@ extends Interactable
 ## gesture ends. Generated children have no owner, so the editor never saves
 ## them.
 
-@export var prompt_text: String = "[E]  Stand here"
+## The prompt, in English like the title and labels (they are translated
+## when shown); empty for "[E]  Stand here".
+@export var prompt_text: String = ""
 ## The question above the choices.
 @export var title: String = ""
 ## What each choice says, such as "Pray".
@@ -45,7 +47,7 @@ func can_interact(player: Player) -> bool:
 
 
 func prompt() -> String:
-	return prompt_text
+	return tr("[E]  Stand here") if prompt_text.is_empty() else tr(prompt_text)
 
 
 func interact(player: Player) -> void:

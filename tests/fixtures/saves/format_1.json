@@ -1,0 +1,45 @@
+{
+	"inventory": [
+		"cornflower",
+		"penny_bun",
+		"penny_bun",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		""
+	],
+	"player": {
+		"position": [
+			16.5,
+			0.1,
+			-7.5
+		],
+		"sword": "flame_katana",
+		"yaw": 1.25
+	},
+	"saved_at": "2026-10-27 12:30",
+	"sector": "B1",
+	"taken": [
+		"B1Cornflower/Cornflower",
+		"C2ArcherTower/Chest",
+		"StressJ10/Mushroom0"
+	],
+	"version": 1.0
+}

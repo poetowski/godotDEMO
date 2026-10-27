@@ -9,6 +9,8 @@
 //   npm run bake                 generate every sector design's content into
 //                                baked/sectors/; game, shot and test do it
 //                                first whenever the baked files are stale
+//   npm run strings              collect every player-facing English string
+//                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
 //                                resource in src/ data/ assets/ tests/ tools/
 //   npm test [-- <gut args>]     run the GUT suite headless, e.g.
@@ -177,6 +179,14 @@ const commands = {
   import: importAssets,
 
   bake,
+
+  async strings() {
+    if (!(await ensureImported())) return false;
+    const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/extract_strings.gd'], {
+      timeoutMs: 3 * 60_000,
+    });
+    return report('strings', result);
+  },
 
   async check() {
     if (!(await importAssets())) return false;

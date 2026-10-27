@@ -8,9 +8,11 @@ extends RefCounted
 ##   sector    the sector the player stood in, "B1"
 ##   player    {position: [x, y, z], yaw, sword: "" | "sword" | "flame_katana"}
 ##   inventory item ids by slot ("" for an empty slot)
-##   taken     WorldState ids of things taken from the world
+##   amounts   how many of the item each slot holds
+##   world     WorldState's record: {stable id: {"taken": true, ...}}
+## Saves in older formats are upgraded on reading (SaveMigration).
 
-const FORMAT := 1
+const FORMAT := 2
 const QUICK := "quick"
 ## The slots the menu offers, in order.
 const SLOTS: Array[String] = [QUICK, "1", "2", "3"]
@@ -47,10 +49,14 @@ static func read(slot: String) -> Dictionary:
 		push_warning("SaveGame: %s is not a save" % path_of(slot))
 		return {}
 	var data: Dictionary = parsed
-	if int(data.get("version", 0)) != FORMAT:
-		push_warning("SaveGame: %s has format %s, expected %d" % [path_of(slot), data.get("version"), FORMAT])
+	var version := int(data.get("version", 0))
+	if version > FORMAT:
+		push_warning("SaveGame: %s is from a newer version of the game (format %d, this one reads up to %d)" % [path_of(slot), version, FORMAT])
 		return {}
-	return data
+	var upgraded := SaveMigration.upgrade(data)
+	if upgraded.is_empty():
+		push_warning("SaveGame: %s has format %s, which can't be upgraded" % [path_of(slot), data.get("version")])
+	return upgraded
 
 
 static func delete(slot: String) -> void:
@@ -60,13 +66,19 @@ static func delete(slot: String) -> void:
 
 ## A line describing a slot for menus, such as "B1   2026-10-27 10:42   1 item".
 static func describe(slot: String) -> String:
+	if not exists(slot):
+		return TranslationServer.translate("Empty")
 	var data := read(slot)
 	if data.is_empty():
-		return "Empty"
+		return TranslationServer.translate("Can't be loaded")
 	var items := 0
-	for id: String in data.get("inventory", []):
-		items += 0 if id.is_empty() else 1
-	return "%s   %s   %d item%s" % [data.get("sector", "?"), data.get("saved_at", "?"), items, "" if items == 1 else "s"]
+	var amounts: Array = data.get("amounts", [])
+	var inventory: Array = data.get("inventory", [])
+	for index in inventory.size():
+		if not (inventory[index] as String).is_empty():
+			items += int(amounts[index]) if index < amounts.size() else 1
+	var carried := TranslationServer.translate_plural("%d item", "%d items", items) % items
+	return "%s   %s   %s" % [data.get("sector", "?"), data.get("saved_at", "?"), carried]
 
 
 ## The local date and time as saves record it.
