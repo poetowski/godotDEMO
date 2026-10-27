@@ -24,6 +24,7 @@ var _grid: GridContainer
 var _count: Label
 var _slots: Array[Button] = []
 var _thumbnails: Array[ItemPreview] = []
+var _amounts: Array[Label] = []
 var _viewer: PanelContainer
 var _preview: ItemPreview
 var _name: Label
@@ -150,6 +151,16 @@ func _build_drawer() -> void:
 		thumbnail.offset_right = -6.0
 		thumbnail.offset_bottom = -6.0
 		button.add_child(thumbnail)
+		var amount := _label("", 24, TEXT)
+		amount.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+		amount.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		amount.grow_vertical = Control.GROW_DIRECTION_BEGIN
+		amount.offset_right = -8.0
+		amount.offset_bottom = -4.0
+		amount.add_theme_color_override("font_outline_color", Color.BLACK)
+		amount.add_theme_constant_override("outline_size", 6)
+		button.add_child(amount)
+		_amounts.append(amount)
 		_grid.add_child(button)
 		_slots.append(button)
 		_thumbnails.append(thumbnail)
@@ -207,7 +218,8 @@ func _show_viewer(slot: int) -> void:
 	_preview.show_item(item)
 	if item == null:
 		return
-	_name.text = item.display_name
+	var amount := _inventory.amount_at(slot)
+	_name.text = item.display_name if amount < 2 else "%s  x%d" % [item.display_name, amount]
 	_description.text = item.description
 	for child in _facts.get_children():
 		child.queue_free()
@@ -226,6 +238,8 @@ func _refresh() -> void:
 		if _thumbnails[slot].item() != item:
 			_thumbnails[slot].show_item(item)
 		_slots[slot].tooltip_text = item.display_name if item else ""
+		var amount := _inventory.amount_at(slot)
+		_amounts[slot].text = str(amount) if amount > 1 else ""
 	if _selected >= 0 and viewed_item() == null:
 		_show_viewer(-1)
 

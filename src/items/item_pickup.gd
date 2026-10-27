@@ -43,7 +43,7 @@ func _ready() -> void:
 
 
 func can_interact(player: Player) -> bool:
-	return item != null and not player.inventory.is_full()
+	return item != null and player.inventory.can_add(item)
 
 
 func prompt() -> String:

@@ -57,6 +57,7 @@ func capture() -> Dictionary:
 			"sword": "" if sword == null else ("flame_katana" if sword is FlameKatana else "sword"),
 		},
 		"inventory": Array(_player.inventory.ids()),
+		"amounts": Array(_player.inventory.amounts()),
 		"taken": Array(WorldState.taken_ids()),
 	}
 
@@ -85,11 +86,12 @@ func load_from(slot: String) -> bool:
 func apply(data: Dictionary) -> void:
 	WorldState.restore(data.get("taken", []))
 	var inventory: Array = data.get("inventory", [])
+	var amounts: Array = data.get("amounts", [])
 	_player.inventory.clear()
 	for slot in mini(inventory.size(), _player.inventory.capacity()):
 		var id: String = inventory[slot]
 		if not id.is_empty():
-			_player.inventory.put(slot, ItemCatalog.find(StringName(id)))
+			_player.inventory.put(slot, ItemCatalog.find(StringName(id)), int(amounts[slot]) if slot < amounts.size() else 1)
 	var player: Dictionary = data.get("player", {})
 	_player.unequip_sword()
 	match String(player.get("sword", "")):

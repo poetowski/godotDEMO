@@ -10,3 +10,5 @@ extends Resource
 @export var facts: Dictionary[String, String] = {}
 ## The item's look, with its base at the origin.
 @export var model: PackedScene
+## How many of this item share one inventory slot.
+@export_range(1, 999) var stack_size: int = 1

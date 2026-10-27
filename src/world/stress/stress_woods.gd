@@ -1,7 +1,7 @@
 @tool
 extends SectorDesign
 ## Stress test: one sector of woodland on rolling hills. Trees, pines,
-## bushes, rocks and grass, thick where a world-wide noise says forest and
+## bushes, rocks, grass and mushrooms to collect, thick where a world-wide noise says forest and
 ## thin in its clearings, so neighbouring sectors read as one wood. Every
 ## sector of the stress world is one of these, so streaming works exactly as
 ## it would in a fully built world. Not game content.
@@ -10,6 +10,14 @@ extends SectorDesign
 @export var bushes: int = 6
 @export var rocks: int = 4
 @export var grass: int = 900
+## At most this many mushrooms per sector, fewer in clearings.
+@export var mushrooms: int = 3
+
+const MUSHROOMS: Array[ItemData] = [
+	preload("res://data/items/penny_bun.tres"),
+	preload("res://data/items/fly_agaric.tres"),
+	preload("res://data/items/chanterelle.tres"),
+]
 
 var _bumps: FastNoiseLite
 var _forest: FastNoiseLite
@@ -66,6 +74,7 @@ func _populate() -> void:
 		claim(xz, size * 0.75)
 	commit_merged("Bushes", MeshKit.lowpoly_material(Color.WHITE, 0.9))
 	commit_merged("Rocks", MeshKit.lowpoly_material(Color.WHITE, 0.95))
+	_place_mushrooms()
 	var transforms: Array[Transform3D] = []
 	var colors := PackedColorArray()
 	for k in grass:
@@ -77,6 +86,29 @@ func _populate() -> void:
 		var shade := rng.randf_range(0.88, 1.08)
 		colors.append(Color(shade, shade, shade))
 	add_multimesh("Grass", NatureKit.grass_tuft(rng), NatureKit.grass_material(), transforms, colors, 45.0)
+
+
+## Mushrooms the player can pick up, mostly where the wood is thick. Each
+## is remembered in WorldState once taken.
+func _place_mushrooms() -> void:
+	var placed := 0
+	for attempt in mushrooms * 6:
+		if placed >= mushrooms:
+			break
+		var xz := random_point()
+		if rng.randf() > _woodland(xz) * 0.8 or not fits(xz, 0.3) or not is_clear(xz, 0.3):
+			continue
+		var pickup := ItemPickup.new()
+		pickup.name = "Mushroom%d" % placed
+		pickup.item = MUSHROOMS[rng.randi() % MUSHROOMS.size()]
+		pickup.reach = 1.2
+		pickup.position = surface(xz) - Vector3.UP * 0.01
+		pickup.rotation.y = rng.randf() * TAU
+		pickup.persist_id = content_id(pickup.name)
+		add_content(pickup)
+		# Room in the grass so it can be spotted.
+		claim(xz, 0.6)
+		placed += 1
 
 
 ## How likely a tree is here: thick in the woods, sparse in clearings.

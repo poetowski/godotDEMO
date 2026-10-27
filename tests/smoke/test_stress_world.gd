@@ -56,3 +56,25 @@ func test_the_player_starts_among_loaded_woods() -> void:
 	var player := _world.get_node("Player") as Player
 	await wait_until(player.is_on_floor, 5.0)
 	assert_true(player.is_on_floor())
+
+
+func test_mushrooms_grow_in_the_woods_and_can_be_collected() -> void:
+	var streamer := _world.get_node("Streamer") as SectorStreamer
+	await wait_until(streamer.is_settled, 10.0)
+	var pickups: Array[ItemPickup] = []
+	for design in streamer.loaded_designs():
+		for node in design.content().find_children("Mushroom*", "ItemPickup", false, false):
+			pickups.append(node as ItemPickup)
+	assert_gt(pickups.size(), 3, "mushrooms among the loaded woods")
+	var player := _world.get_node("Player") as Player
+	player.inventory.clear()
+	var first := pickups[0]
+	var id := first.item.id
+	var persist := first.persist_id
+	first.interact(player)
+	pickups[1].interact(player)
+	assert_eq(player.inventory.count() + 0, 1 if pickups[1].item.id == id else 2)
+	assert_true(player.inventory.has(id))
+	assert_true(WorldState.is_taken(persist))
+	player.inventory.clear()
+	WorldState.reset()

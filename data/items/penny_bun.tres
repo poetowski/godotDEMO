@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="PackedScene" path="res://src/items/mushroom/penny_bun.tscn" id="2_model"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"penny_bun"
+display_name = "Penny Bun"
+description = "A stout mushroom with a brown, bun-shaped cap and a thick pale stem. It hides in the moss under trees and is prized by cooks."
+facts = Dictionary[String, String]({
+"Kind": "Mushroom",
+"Found in": "The woods",
+"Cap": "Brown and domed",
+"Edible": "Yes",
+"Rarity": "Uncommon"
+})
+model = ExtResource("2_model")
+stack_size = 20

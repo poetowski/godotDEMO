@@ -258,3 +258,24 @@ The brief: "implement save and load with user interface for that."
 Placeholders: the keys (Esc used to only free the mouse; the menu frees it
 too), the number of slots, the menu's look and wording, and Quit leaving
 the game at once without asking.
+
+## 2026-10-27: Mushrooms to collect in the woods
+
+Brief: "scatter mushrooms in the forest. all mushrooms are collectable and
+shown in inventory after collecting."
+
+- The forest is the stress world's woodland (`StressWoods`), the only forest
+  so far: up to 3 mushrooms per sector, more where the wood is thick, several
+  hundred over the 400 sectors. Each is an `ItemPickup` remembered in
+  `WorldState`, so a picked mushroom stays gone after streaming and loading.
+- Three kinds, each an item with a description and facts shown in the
+  inventory: Penny Bun (brown, domed), Fly Agaric (red with white spots,
+  poisonous), Chanterelle (golden funnel). Models are built in code
+  (`src/items/mushroom/`).
+- Items can now stack: `ItemData.stack_size`, 20 for mushrooms, 1 for the
+  cornflower. The slot shows the amount and the viewer shows "x N". Saves
+  store each slot's amount (older saves read as 1).
+
+Placeholders (Claude's choices beyond the brief): the three kinds, their
+texts and facts, the density, the stack size of 20.
+

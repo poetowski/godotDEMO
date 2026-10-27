@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/items/mushroom/mushroom.gd" id="1_mushroom"]
+
+[node name="Chanterelle" type="Node3D"]
+script = ExtResource("1_mushroom")
+cap = 2
+cap_color = Color(0.95, 0.66, 0.15, 1)
+gill_color = Color(0.95, 0.7, 0.2, 1)
+stem_color = Color(0.95, 0.7, 0.25, 1)
+height = 0.09
+cap_radius = 0.045
+stem_radius = 0.01
