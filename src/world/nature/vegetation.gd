@@ -27,6 +27,8 @@ const ATTACH_PER_FRAME := 2
 @export var bushes_per_chunk: int = 60
 @export var tree_visible_distance: float = 380.0
 @export var check_interval: float = 0.25
+## Rise per metre beyond which trees, bushes and grass don't grow.
+@export var max_slope: float = 0.8
 
 var _forest: FastNoiseLite
 var _tree_meshes: Array[ArrayMesh] = []
@@ -190,12 +192,12 @@ func _generate(chunk: Vector2i, detail: bool, token: int) -> void:
 		var bushes: Array[Transform3D] = []
 		for k in bushes_per_chunk:
 			var xz := corner + Vector2(rng.randf() * CHUNK, -rng.randf() * CHUNK)
-			if _open(xz):
+			if _open(xz) and _ground_allows(xz) > 0.3:
 				bushes.append(_stand(xz, rng.randf() * TAU, rng.randf_range(0.6, 1.1), 0.05))
 		var grass: Array[Transform3D] = []
 		for k in grass_per_chunk:
 			var xz := corner + Vector2(rng.randf() * CHUNK, -rng.randf() * CHUNK)
-			if _open(xz):
+			if _open(xz) and _ground_allows(xz) > 0.0:
 				grass.append(_stand(xz, rng.randf() * TAU, rng.randf_range(0.8, 1.2), 0.02))
 		var trunks: Array[Vector3] = []
 		for spot: Array in spots:
@@ -223,9 +225,21 @@ func _tree_spots(chunk: Vector2i) -> Array[Array]:
 			var size := rng.randf_range(0.75, 1.3)
 			var kind := rng.randi() % _tree_meshes.size()
 			var turn := rng.randf() * TAU
-			if keep <= forest_density(xz) and _open(xz):
+			if keep <= forest_density(xz) * _ground_allows(xz) and _open(xz):
 				spots.append([kind, _stand(xz, turn, size, 0.1)])
 	return spots
+
+
+## How far the ground lets trees grow, 0 to 1: landforms thin them (above
+## their tree line, say), and nothing roots on cliffs.
+func _ground_allows(xz: Vector2) -> float:
+	var ground := _height(xz)
+	var east := _height(xz + Vector2(1.5, 0.0))
+	var north := _height(xz + Vector2(0.0, -1.5))
+	var slope := Vector2(east - ground, north - ground).length() / 1.5
+	if slope > max_slope:
+		return 0.0
+	return Landforms.tree_factor(xz, ground)
 
 
 ## How likely a tree is at a point, 0.05 in clearings to 0.9 in thick woods.

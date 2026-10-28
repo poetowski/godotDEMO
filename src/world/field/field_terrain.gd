@@ -164,6 +164,7 @@ func _start_chunks() -> void:
 	_chunks.focus = focus
 	_chunks.height = WorldShape.height
 	_chunks.is_designed = func(xz: Vector2) -> bool: return _owners.has(SectorMap.unbounded_cell_at(xz))
+	_chunks.tint = Landforms.ground_tint
 	_chunks.material = ground_material()
 	_chunks.view_regions = view_regions
 	add_child(_chunks)

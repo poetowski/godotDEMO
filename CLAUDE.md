@@ -138,6 +138,11 @@ heights, water and flow stay known everywhere. So:
 
 ## Regions
 
+- Two design skills, two scales: `/region-design <regions> <brief>` shapes
+  the land of whole regions with landforms (data in
+  `data/world/landforms/`); `/environment-design <sectors> <brief>` builds
+  the detail of sectors on top. Shape the regions first.
+
 - The world is regions of 20 x 20 sectors (200 m) named R1, R2... from the
   south-west, east along each row, then north. In a world of several
   regions every sector name carries its region (`R45:J10`); a name without

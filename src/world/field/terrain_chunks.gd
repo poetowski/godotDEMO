@@ -28,6 +28,9 @@ var focus: Node3D
 var height: Callable
 ## True for a cell a design owns (left open). Safe on worker threads.
 var is_designed: Callable
+## The ground's colour for the grass shader at (xz, height, up), such as
+## rock on steep slopes; plain grass when unset. Safe on worker threads.
+var tint: Callable
 var material: Material
 ## Regions out to which tiles are shown.
 var view_regions: int = 6
@@ -183,12 +186,21 @@ func _generate(key: Vector3i, step: float, corner: Vector2, side: float) -> void
 			faces.append_array(PackedVector3Array([a, b, a + down, b, b + down, a + down]))
 	var normals := PackedVector3Array()
 	normals.resize(faces.size())
+	var colors := PackedColorArray()
+	if tint.is_valid():
+		colors.resize(faces.size())
 	for t in range(0, faces.size(), 3):
 		var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()
 		normals[t] = normal
 		normals[t + 1] = normal
 		normals[t + 2] = normal
-	var result := {"key": key, "step": step, "faces": faces, "normals": normals, "collide": key.z == 0}
+		if tint.is_valid():
+			var middle := (faces[t] + faces[t + 1] + faces[t + 2]) / 3.0
+			var color: Color = tint.call(Vector2(middle.x, middle.z), middle.y, normal.y)
+			colors[t] = color
+			colors[t + 1] = color
+			colors[t + 2] = color
+	var result := {"key": key, "step": step, "faces": faces, "normals": normals, "colors": colors, "collide": key.z == 0}
 	if step <= 1.0:
 		result["heights"] = heights
 		result["samples"] = samples
@@ -223,6 +235,8 @@ func _replace(key: Vector3i, result: Dictionary) -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = faces
 	arrays[Mesh.ARRAY_NORMAL] = result["normals"]
+	if not (result["colors"] as PackedColorArray).is_empty():
+		arrays[Mesh.ARRAY_COLOR] = result["colors"]
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	var instance := MeshInstance3D.new()

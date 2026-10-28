@@ -367,3 +367,22 @@ Placeholders (Claude's choices beyond the request): R1 kept flat and clear,
 how the hills rise around it, every sound (made in code; listen to them in
 .shots/sounds/), their loudness, and how often the birds and crickets call.
 
+## 2026-10-28: Region design, and a big mountain in R2
+
+Request: a skill that designs environment at region scale (one region or
+several), alongside the sector-scale one, using landforms with small noise
+detail on top; try it with a big mountain in R2 spanning several sectors.
+
+- `/region-design <regions> <brief>` shapes regions with landforms
+  (mountains, hills, ridges, valleys, plateaus), kept as data in
+  `data/world/landforms/`. The land is rolling hills + landforms + small
+  detail; R1 stays flat unless a brief puts a landform there.
+- R2: a big craggy mountain, about 85 m above the land around it, its top
+  near the middle of R2, with a snow cap above 70 m, bare rock on its steep
+  flanks, trees on the lower slopes up to 45 m, a shoulder ridge running
+  north-east and a low foothill toward R1.
+
+Placeholders (Claude's choices beyond the brief): the mountain's exact
+height, shape and craggedness, the snow cap, the tree line, the shoulder
+ridge and the foothill, and the rock and snow colours.
+

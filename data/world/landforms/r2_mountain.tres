@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="LandformSet" format=3]
+
+[ext_resource type="Script" path="res://src/world/land/landform_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://src/world/land/landform.gd" id="2_landform"]
+
+[sub_resource type="Resource" id="Resource_peak"]
+script = ExtResource("2_landform")
+kind = 0
+centre = Vector2(300, 105)
+radius = 78.0
+height = 85.0
+roughness = 0.75
+tree_density = 0.7
+tree_line = 45.0
+snow_line = 70.0
+noise_seed = 3
+
+[sub_resource type="Resource" id="Resource_shoulder"]
+script = ExtResource("2_landform")
+kind = 2
+centre = Vector2(330, 90)
+end = Vector2(365, 60)
+radius = 26.0
+height = 38.0
+roughness = 0.6
+tree_density = 0.6
+tree_line = 45.0
+noise_seed = 5
+
+[sub_resource type="Resource" id="Resource_foothill"]
+script = ExtResource("2_landform")
+centre = Vector2(245, 55)
+radius = 30.0
+height = 14.0
+roughness = 0.3
+noise_seed = 7
+
+[resource]
+script = ExtResource("1_set")
+id = "r2_mountain"
+regions = PackedStringArray("R2")
+brief = "Design a big mountain in region R2, spanning several sectors."
+landforms = Array[ExtResource("2_landform")]([SubResource("Resource_peak"), SubResource("Resource_shoulder"), SubResource("Resource_foothill")])

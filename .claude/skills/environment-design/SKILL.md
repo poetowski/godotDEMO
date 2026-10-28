@@ -6,6 +6,10 @@ argument-hint: <sectors> <description>
 
 # Environment design
 
+This is the sector-scale design skill. For the shape of the land over whole
+regions (mountains, valleys, ridges) use `/region-design`; a sector design
+sits on that land and blends into it at its edges.
+
 Build one area of the field from a brief: shape its ground, add water and
 place props inside the given sectors, and leave everything else as it was.
 `src/world/field/sectors/a1_a3_stream/` is a finished example, made with this

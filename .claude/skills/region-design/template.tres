@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="LandformSet" format=3]
+
+[ext_resource type="Script" path="res://src/world/land/landform_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://src/world/land/landform.gd" id="2_landform"]
+
+; Template for /region-design. Copy to data/world/landforms/<slug>.tres.
+; One [sub_resource] per landform; list them all in `landforms` below.
+; kind: 0 MOUNTAIN, 1 HILL, 2 RIDGE, 3 VALLEY, 4 PLATEAU.
+; centre and end: world metres, x east, y NORTH (= -z).
+
+[sub_resource type="Resource" id="Resource_main"]
+script = ExtResource("2_landform")
+kind = 1
+centre = Vector2(300, 100)
+radius = 50.0
+height = 20.0
+roughness = 0.3
+tree_density = 1.0
+tree_line = 0.0
+snow_line = 0.0
+noise_seed = 1
+
+[resource]
+script = ExtResource("1_set")
+id = "<slug>"
+regions = PackedStringArray("R2")
+brief = "<the author's brief, verbatim>"
+landforms = Array[ExtResource("2_landform")]([SubResource("Resource_main")])
