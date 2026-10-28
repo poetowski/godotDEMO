@@ -6,7 +6,8 @@ extends Node3D
 ## too. Where a world-wide noise says forest the trees stand thick, elsewhere
 ## they thin out to clearings. Everything is placed the same every time from
 ## the chunk's position and `vegetation_seed`, built on worker threads and
-## drawn as one MultiMesh per kind and chunk. Designed sectors are left alone.
+## drawn as one MultiMesh per kind and chunk. Designed sectors and the flat
+## home area being built by hand (WorldShape.home, R1) are left alone.
 
 const CHUNK := TerrainChunks.CHUNK
 ## Metres between candidate tree spots (jittered).
@@ -233,7 +234,7 @@ func forest_density(xz: Vector2) -> float:
 
 
 func _open(xz: Vector2) -> bool:
-	return terrain == null or terrain.design_at(xz) == null
+	return not WorldShape.is_home(xz) and (terrain == null or terrain.design_at(xz) == null)
 
 
 func _height(xz: Vector2) -> float:

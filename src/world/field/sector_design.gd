@@ -361,7 +361,7 @@ func add_content(node: Node) -> void:
 ## sector's rocks, say, are one mesh. `commit_merged` turns the batches into
 ## meshes.
 func merged(group: String, xz: Vector2) -> NatureKit.Batch:
-	var key := group + "_" + SectorMap.name_of(SectorMap.unbounded_cell_at(xz))
+	var key := group + "_" + SectorMap.node_name(SectorMap.unbounded_cell_at(xz))
 	if not _merged.has(key):
 		_merged[key] = NatureKit.Batch.new()
 	return _merged[key]
@@ -405,7 +405,7 @@ func add_multimesh(node_name: String, mesh: Mesh, material: Material, transforms
 		var instance := BakedMultiMesh.new()
 		instance.multimesh = multimesh
 		instance.material_override = material
-		instance.name = node_name + SectorMap.name_of(cell)
+		instance.name = node_name + SectorMap.node_name(cell)
 		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if visible_distance > 0.0:
 			instance.visibility_range_end = visible_distance
@@ -569,11 +569,11 @@ func _build_ground() -> void:
 		arrays[Mesh.ARRAY_INDEX] = indices
 		var mesh := ArrayMesh.new()
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-		add_mesh("Ground" + SectorMap.name_of(cell), mesh, FieldTerrain.ground_material())
+		add_mesh("Ground" + SectorMap.node_name(cell), mesh, FieldTerrain.ground_material())
 		var shape := ConcavePolygonShape3D.new()
 		shape.set_faces(faces)
 		var collision := CollisionShape3D.new()
-		collision.name = SectorMap.name_of(cell)
+		collision.name = SectorMap.node_name(cell)
 		collision.shape = shape
 		body.add_child(collision)
 

@@ -26,7 +26,7 @@ func after_all() -> void:
 func test_1_the_cornflower_grows_in_b1() -> void:
 	var pickup := _world.get_node("Sectors/B1Cornflower/Content/Cornflower") as ItemPickup
 	assert_eq(pickup.item.id, &"cornflower")
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(pickup.global_position)), "B1")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(pickup.global_position)), "R1:B1")
 
 
 func test_2_walking_up_and_pressing_e_picks_it_up() -> void:

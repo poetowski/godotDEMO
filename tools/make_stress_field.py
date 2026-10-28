@@ -17,6 +17,10 @@ field = re.sub(r" unique_id=\d+", "", field)
 blocks = field.split("\n\n")
 kept = []
 for block in blocks:
+    # The stress world is one region of designs: no streamed ground or woods.
+    if block.startswith('[node name="Vegetation"'):
+        continue
+    block = block.replace("chunked = true\n", "")
     if '/sectors/' in block and block.startswith("[ext_resource"):
         lines = [line for line in block.split("\n") if "/sectors/" not in line]
         block = "\n".join(lines)

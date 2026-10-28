@@ -6,7 +6,7 @@ extends "res://src/world/field/field.gd"
 ## content. Play it with `npm run game -- src/world/stress/stress_field.tscn`.
 
 ## Metres the hills rise and fall at most.
-const HILL_HEIGHT := 3.5
+const STRESS_HILL_HEIGHT := 3.5
 const VILLAGER_SCRIPT := preload("res://src/npc/villager.gd")
 ## Placeholder names, one villager each.
 const VILLAGERS: Array[String] = ["Ada", "Bran", "Cora", "Dain", "Elin", "Finn", "Greta", "Hal", "Ivy", "Jory"]
@@ -20,7 +20,8 @@ const MEETING_PLACE := Vector2(95.0, -95.0)
 
 func _init() -> void:
 	super()
-	WorldShape.configure(HILL_HEIGHT, 0.02, 7)
+	RegionMap.configure(1, 1)
+	WorldShape.configure(STRESS_HILL_HEIGHT, 0.02, 7)
 	start_sector = "J10"
 
 

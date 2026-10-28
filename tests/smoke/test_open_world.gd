@@ -1,8 +1,9 @@
 extends GutTest
-## The big world: 10 x 10 regions whose ground and woods stream around the
+## The open world: 10 x 10 regions whose ground and woods stream around the
 ## player, detailed near and coarse far, the same wherever the player goes.
+## R1, where the world is built from, is flat and clear of woods.
 
-const SCENE_PATH := "res://src/world/big/big_world.tscn"
+const SCENE_PATH := "res://src/world/field/field.tscn"
 
 var _world: Node
 var _player: Player
@@ -28,8 +29,29 @@ func _xz() -> Vector2:
 	return Vector2(_player.global_position.x, _player.global_position.z)
 
 
-func test_1_the_world_has_100_regions_and_starts_in_the_middle() -> void:
+func before_each() -> void:
+	if SectorMap.name_of(SectorMap.cell_at(_player.global_position)) != "R56:J10":
+		_world.call("teleport", SectorMap.cell_named("R56:J10"))
+	await wait_physics_frames(2)
+
+
+func test_0_the_world_has_100_regions_and_starts_in_r1() -> void:
 	assert_eq(RegionMap.count(), 100)
+	assert_eq((_world as Node).get("start_sector"), "A1")
+	assert_eq(SectorMap.cell_named("A1"), SectorMap.cell_named("R1:A1"))
+
+
+func test_1_r1_is_flat_and_clear_and_the_hills_rise_beyond() -> void:
+	for k in 20:
+		assert_eq(_terrain.height_at(Vector2(10.0 + k * 9.0, -15.0 - k * 9.0)), 0.0, "flat in R1")
+	assert_eq(_vegetation.tree_count(Vector2i(0, 0)), 0)
+	var far := 0.0
+	for k in 20:
+		far = maxf(far, absf(_terrain.height_at(Vector2(700.0 + k * 31.0, -700.0 - k * 17.0))))
+	assert_gt(far, 5.0, "hills well beyond R1")
+
+
+func test_1b_standing_in_the_middle_of_the_world() -> void:
 	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "R56:J10")
 	await wait_physics_frames(10)
 	assert_true(_player.is_on_floor(), "standing on the streamed ground")
@@ -77,3 +99,4 @@ func test_5_going_elsewhere_streams_it_in_and_lets_the_old_place_go() -> void:
 	await wait_until(func() -> bool: return (_world.get_node("SectorGrid") as Node).call("region") == Vector2i.ZERO, 5.0)
 	assert_eq((_world.get_node("SectorGrid") as Node).call("region"), Vector2i.ZERO, "the grid follows into R1")
 	_world.call("teleport", SectorMap.cell_named("R56:J10"))
+	await wait_physics_frames(2)

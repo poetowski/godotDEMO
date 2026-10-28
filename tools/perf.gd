@@ -6,13 +6,13 @@ extends SceneTree
 ## JSON to .perf/<world>.json. Run plugged in: on battery the numbers drift.
 ##
 ## User arguments (after --):
-##   --scene=res://...    the world (default: the big world)
+##   --scene=res://...    the world (default: the field, the main world)
 ##   --seconds=60         how long to travel
 ##   --speed=12           metres per second
 ##   --heading=45         degrees from north toward east
-##   --regions=10         passed on to the big world
+##   --regions=10         passed on to the field (20 makes 4 km)
 
-const DEFAULT_SCENE := "res://src/world/big/big_world.tscn"
+const DEFAULT_SCENE := "res://src/world/field/field.tscn"
 const SETTLE_FRAMES := 120
 
 var _options := {"scene": DEFAULT_SCENE, "seconds": 60.0, "speed": 12.0, "heading": 45.0}

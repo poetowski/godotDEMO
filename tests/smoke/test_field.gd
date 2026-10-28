@@ -22,12 +22,12 @@ func test_player_starts_on_the_ground_in_a1() -> void:
 	var player := _world.get_node("Player") as Player
 	await wait_until(player.is_on_floor, 5.0)
 	assert_true(player.is_on_floor())
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "A1")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "R1:A1")
 
 
 func test_hud_names_the_current_sector() -> void:
 	await wait_process_frames(2)
-	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector A1")
+	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector R1:A1")
 
 
 func test_every_sector_has_a_painted_name() -> void:

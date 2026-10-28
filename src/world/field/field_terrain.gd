@@ -255,7 +255,7 @@ func _build_stand_in(cell: Vector2i, design: SectorDesign) -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = faces
 	arrays[Mesh.ARRAY_NORMAL] = normals
-	_stand_ins[cell] = _add_ground("Far" + SectorMap.name_of(cell), arrays, faces, false)
+	_stand_ins[cell] = _add_ground("Far" + SectorMap.node_name(cell), arrays, faces, false)
 
 
 func _add_ground(node_name: String, arrays: Array, faces: PackedVector3Array, shadows: bool) -> Array:

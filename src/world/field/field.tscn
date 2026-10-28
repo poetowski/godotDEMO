@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://src/world/field/sectors/b1_cornflower/b1_cornflower.gd" id="12_meadow"]
 [ext_resource type="Script" path="res://src/world/time/world_clock.gd" id="30_clock"]
 [ext_resource type="Script" path="res://src/world/time/day_night.gd" id="31_daynight"]
+[ext_resource type="Script" path="res://src/world/nature/vegetation.gd" id="40_vegetation"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -35,12 +36,12 @@ ssao_enabled = true
 glow_enabled = true
 fog_enabled = true
 fog_light_color = Color(0.72, 0.8, 0.88, 1)
-fog_density = 0.0025
+fog_density = 0.0011
 fog_aerial_perspective = 0.4
 fog_sky_affect = 0.0
 
 [node name="Field" type="Node3D" unique_id=1365085668]
-editor_description = "Grass everywhere with a 20 x 20 grid of 10 m sectors. A1 is the south-west corner sector and the start; letters grow east, numbers north. Sector designs live under Sectors."
+editor_description = "The world: 10 x 10 regions of 20 x 20 sectors (2 km). R1, the south-west region, is flat and is where the world is built from, starting at A1; hills and woods rise beyond it, streamed around the player. Sector designs live under Sectors."
 script = ExtResource("1_field")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=925081369]
@@ -113,12 +114,15 @@ sectors = PackedStringArray("B1")
 design_id = "b1_cornflower"
 design_seed = 61
 
-[node name="Terrain" type="StaticBody3D" parent="." unique_id=2031718324 node_paths=PackedStringArray("designs_root")]
+[node name="Terrain" type="StaticBody3D" parent="." unique_id=2031718324 node_paths=PackedStringArray("designs_root", "focus")]
 script = ExtResource("2_terrain")
+chunked = true
+focus = NodePath("../Player")
 designs_root = NodePath("../Sectors")
 
-[node name="SectorGrid" type="Node3D" parent="." unique_id=1605784109 node_paths=PackedStringArray("terrain")]
+[node name="SectorGrid" type="Node3D" parent="." unique_id=1605784109 node_paths=PackedStringArray("terrain", "focus")]
 script = ExtResource("3_grid")
+focus = NodePath("../Player")
 terrain = NodePath("../Terrain")
 
 [node name="Streamer" type="Node" parent="." node_paths=PackedStringArray("designs_root", "focus")]
@@ -127,9 +131,16 @@ script = ExtResource("13_streamer")
 designs_root = NodePath("../Sectors")
 focus = NodePath("../Player")
 
-[node name="Clouds" type="Node3D" parent="." unique_id=133901257]
+[node name="Clouds" type="Node3D" parent="." unique_id=133901257 node_paths=PackedStringArray("follow")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, -100)
 script = ExtResource("4_clouds")
+follow = NodePath("../Player")
+
+[node name="Vegetation" type="Node3D" parent="." node_paths=PackedStringArray("focus", "terrain")]
+editor_description = "Woods growing on their own over the open land beyond R1, streamed around the player."
+script = ExtResource("40_vegetation")
+focus = NodePath("../Player")
+terrain = NodePath("../Terrain")
 
 [node name="Player" parent="." unique_id=1016686104 instance=ExtResource("5_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -2.5)

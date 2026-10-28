@@ -15,7 +15,7 @@
 //                                then import them
 //   npm run blender              open Blender (for the MCP tools)
 //   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20]
-//                                benchmark a world (default: the big world)
+//                                benchmark a world (default: the field)
 //                                in a window; writes .perf/<world>.json
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
@@ -237,7 +237,7 @@ const commands = {
   // Benchmarks a world: see tools/perf.gd for what it measures.
   async perf(argv) {
     const { options, positional } = parseOptions(argv);
-    const scene = positional[0] ? toResPath(positional[0]) : 'res://src/world/big/big_world.tscn';
+    const scene = positional[0] ? toResPath(positional[0]) : 'res://src/world/field/field.tscn';
     const seconds = Number(options.seconds ?? 60);
     if (!(await ensureImported()) || !(await ensureBaked())) return false;
     const passed = ['seconds', 'speed', 'heading', 'regions'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);

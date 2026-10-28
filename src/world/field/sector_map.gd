@@ -46,6 +46,16 @@ static func name_of(cell: Vector2i) -> String:
 	return RegionMap.name_of(RegionMap.of_cell(cell)) + ":" + local_name(cell)
 
 
+## A sector's name fit for a node (no ":"): "A1" in R1, "R45J10" elsewhere,
+## or "" outside the world. R1's parts keep the names they had before the
+## world had regions.
+static func node_name(cell: Vector2i) -> String:
+	if not is_valid(cell):
+		return ""
+	var region := RegionMap.of_cell(cell)
+	return local_name(cell) if region == Vector2i.ZERO else RegionMap.name_of(region) + local_name(cell)
+
+
 ## The sector's name within its region, such as "J10".
 static func local_name(cell: Vector2i) -> String:
 	var local := Vector2i(posmod(cell.x, COLUMNS), posmod(cell.y, ROWS))
