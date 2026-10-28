@@ -91,6 +91,11 @@ func is_settled() -> bool:
 	return _pending.is_empty()
 
 
+## True while a design's content is being read or waits to be attached.
+func is_loading(design: SectorDesign) -> bool:
+	return _pending.has(design)
+
+
 func loaded_designs() -> Array[SectorDesign]:
 	return _designs().filter(func(design: SectorDesign) -> bool: return design.is_content_loaded())
 

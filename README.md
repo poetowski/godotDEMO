@@ -59,6 +59,10 @@ npm run strings   collect the player-facing text into locale/messages.pot
 npm run api       dump the engine class reference to .godot-api/
 ```
 
+In dev builds: ` opens the developer console (help lists its commands), F3
+shows the performance overlay, F4 the streaming map, F7 runs time fast, F12
+saves a screenshot.
+
 `CLAUDE.md` covers working rules, conventions and gotchas.
 `docs/ARCHITECTURE.md` covers what exists and the open technical questions.
 `docs/DESIGN_DECISIONS.md` is the design record.

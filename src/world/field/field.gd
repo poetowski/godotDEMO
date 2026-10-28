@@ -32,14 +32,10 @@ func _ready() -> void:
 	var start := SectorMap.cell_named(requested_sector(OS.get_cmdline_user_args(), start_sector))
 	if start == SectorMap.NONE:
 		start = Vector2i.ZERO
-	var point := SectorMap.start_of(start)
-	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
-	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
-	_player.look_toward(_player.global_position + Vector3.FORWARD)
+	teleport(start)
 	var hour := requested_hour(OS.get_cmdline_user_args())
 	if hour >= 0.0:
 		_clock.hour = hour
-	_streamer.load_around_now()
 	_hud.save_requested.connect(save_to)
 	_hud.load_requested.connect(load_from)
 	_hud.track(_player)
@@ -55,6 +51,29 @@ func _process(_delta: float) -> void:
 
 func clock() -> WorldClock:
 	return _clock
+
+
+func player() -> Player:
+	return _player
+
+
+func streamer() -> SectorStreamer:
+	return _streamer
+
+
+func terrain() -> FieldTerrain:
+	return _terrain
+
+
+## Puts the player on dry ground in a sector, facing north, and loads the
+## sectors around it.
+func teleport(cell: Vector2i) -> void:
+	var point := SectorMap.start_of(cell)
+	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
+	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
+	_player.velocity = Vector3.ZERO
+	_player.face(0.0)
+	_streamer.load_around_now()
 
 
 ## Everything a save keeps, as plain data (see SaveGame).

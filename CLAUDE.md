@@ -226,6 +226,9 @@ folder, like `src/world/field/`.
 
 ## Godot gotchas
 
+- Lambdas kept in a long-lived Dictionary or Array (a command table, say)
+  leak at exit ("ObjectDB instances were leaked"); register methods instead.
+
 - `--headless` can't render, so screenshots need a window. `npm run shot`
   opens one for a few seconds.
 - Commit `.uid` and `.import` files; never commit `.godot/`.

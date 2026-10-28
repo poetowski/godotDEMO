@@ -8,7 +8,9 @@ design arrives.
 | Piece | Where | Purpose |
 |---|---|---|
 | Engine | Godot 4.7.2, Forward+, Jolt physics | Pinned in `tools/dev.mjs` and `project.godot` |
-| DevTools autoload | `src/autoload/dev_tools.gd` | `--shot` screenshots for `npm run shot`, F12 screenshots, F3 performance overlay. Frees itself in release builds. |
+| DevTools autoload | `src/autoload/dev_tools.gd` | `--shot` screenshots for `npm run shot`, F12 screenshots, F3 performance overlay, F4 streaming map, F7 fast time, and the console. Frees itself, and all of these, in release builds. |
+| Developer console | `src/autoload/dev_console.gd` | Opened with ` (left of 1). Commands: help, where, goto <sector>, time [hh:mm], fast, give <item> [n], items, radius <load> [unload], reset, save/load [slot], map, fps, clear, quit. Other code adds commands with `register`. Its text is for developers and isn't translated. |
+| Streaming map | `src/autoload/streaming_map.gd` | F4 or `map`: the 20 x 20 grid from above, each sector coloured loaded (green), loading (yellow), distant view only (blue) or empty; the hero's arrow, the load and unload radius, design counts, memory, draw calls and fps. |
 | MCPRuntime autoload | `addons/godot_mcp/runtime/` | Lets the MCP server screenshot, drive input in and inspect the running game. Editor builds only (local patch). |
 | Field | `src/world/field/` | The main scene: grass everywhere, the sector grid, and the sector designs under `Sectors` (see the design record). `grass_grid.gdshader` paints the grass, designed ground's colours and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names (not in designed sectors), and `field.gd` starts the player on dry ground in A1 (or the `--sector` given). |
 | SectorMap | `src/world/field/sector_map.gd` | Sector maths: which sector a point is in, names to cells and back, sector centres, corners and start points. Everything that talks about sectors goes through it. |

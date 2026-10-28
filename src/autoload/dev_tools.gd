@@ -9,8 +9,9 @@ extends Node
 ##   --shot-frame=A1:C3    ...or from a camera framing those sectors from above
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
-## the editor); F3 (dev_overlay) toggles the performance overlay; F7 runs the
-## world clock fast (a game hour per second) or normally again.
+## the editor); F3 (dev_overlay) toggles the performance overlay; F4 toggles
+## the streaming map (StreamingMap); F7 runs the world clock fast (a game
+## hour per second) or normally again; ` opens the console (DevConsole).
 
 const DEFAULT_SHOT_FRAMES := 60
 ## Game hours per real second while F7 fast-forwards the world clock.
@@ -28,6 +29,9 @@ class Options:
 
 var _overlay_layer: CanvasLayer
 var _overlay_label: Label
+var _console: DevConsole
+var _map_layer: CanvasLayer
+var _map: StreamingMap
 
 
 static func parse_args(args: PackedStringArray) -> Options:
@@ -82,6 +86,9 @@ func _ready() -> void:
 		return
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
+	_console = DevConsole.new()
+	_console.name = "DevConsole"
+	add_child(_console)
 	var options := parse_args(OS.get_cmdline_user_args())
 	if not options.shot_path.is_empty():
 		_capture_and_quit(options)
@@ -97,6 +104,28 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventKey and (event as InputEventKey).pressed and not event.is_echo() and (event as InputEventKey).keycode == KEY_F7:
 		toggle_fast_time()
 		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and (event as InputEventKey).pressed and not event.is_echo() and (event as InputEventKey).keycode == KEY_F4:
+		toggle_streaming_map()
+		get_viewport().set_input_as_handled()
+
+
+func console() -> DevConsole:
+	return _console
+
+
+## Shows or hides the streaming map; returns whether it's shown now.
+func toggle_streaming_map() -> bool:
+	if _map_layer == null:
+		_map_layer = CanvasLayer.new()
+		_map_layer.layer = 126
+		_map = StreamingMap.new()
+		_map.name = "StreamingMap"
+		_map_layer.add_child(_map)
+		add_child(_map_layer)
+	else:
+		_map_layer.visible = not _map_layer.visible
+	_map.set_process(_map_layer.visible)
+	return _map_layer.visible
 
 
 ## Runs every world clock a game hour per real second, or back at normal
