@@ -26,6 +26,8 @@ working title and the game's design is not decided yet.
 | `npm run shot -- --frame=A1:C3 --out=.shots/area.png` | The same, from a camera framing those sectors from above. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
+| `npm run models` | Runs every Blender script in `tools/blender/` headless with factory settings (the hero: `build_hero.py`), writing `.glb` files into `assets/models/`, then imports them. Commit the `.glb` with the script that made it. |
+| `npm run blender` | Opens Blender for the MCP tools, with the add-on's telemetry and update check off. |
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
@@ -33,7 +35,9 @@ working title and the game's design is not decided yet.
 | `npm run game -- [scene] [--sector=C4]` | Plays until the window is closed, starting in the given sector. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
-`tools/dev.mjs`. The `GODOT` environment variable overrides it.
+`tools/dev.mjs`. The `GODOT` environment variable overrides it. Blender 5.2.3
+LTS lives in `%LOCALAPPDATA%\Programs\Blender\5.2.3\`, pinned the same way
+(`BLENDER` overrides it).
 
 ## Definition of done
 
@@ -44,6 +48,29 @@ Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
    done.
 3. New behaviour gets a GUT test: `tests/unit/` for logic, `tests/smoke/` for
    scenes loading and wiring together.
+
+## Models from Blender
+
+- Models are made by Python scripts in `tools/blender/`, run by
+  `npm run models`, never by hand-editing a `.blend` in the repo: the script
+  is the source, the `.glb` its output. Same idea as the sector designs.
+- Characters use the bone names of Godot's `SkeletonProfileHumanoid` (Hips,
+  Spine, Chest, LeftUpperArm...), so animations from elsewhere can be
+  retargeted onto them later.
+- Every part of a mesh that spans a joint needs rings along its length, or
+  it stretches straight from end to end instead of bending (see
+  `Body.cylinder` in `build_hero.py`).
+- Check animations by rendering them in Godot, not by reading numbers:
+  bone-axis signs are easy to get backwards.
+
+## MCP: the `blender` server
+
+`.mcp.json` also starts `mcp-for-blender==2.2.4` with `DISABLE_TELEMETRY`.
+Its add-on (`blender_mcp.py`, in Blender's user add-ons, enabled) listens on
+`localhost:9876` while Blender is open: run `npm run blender` first. Its
+asset services (Poly Haven, Sketchfab, Hyper3D and the like) stay off; we
+don't use downloaded assets. Use it to look at and try things in a live
+scene; anything worth keeping goes into a script in `tools/blender/`.
 
 ## MCP: the `godot` server
 
@@ -165,7 +192,7 @@ src/player/      the player character
 src/items/       items such as the sword
 src/ui/          HUD and menus
 data/            game data as Resources (.tres)
-assets/          imported art and audio: models/ textures/ materials/ audio/ fonts/
+assets/          imported art and audio: models/ textures/ materials/ audio/ fonts/; models/ holds .glb built by tools/blender/
 tests/unit/      logic tests
 tests/smoke/     scene loading and wiring tests
 tests/fixtures/  frozen inputs, such as saves in every old format

@@ -16,7 +16,8 @@ design arrives.
 | FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground: one flat mesh and collision for the undesigned sectors plus a 900 m ring around the grid, and a coarse (1 m) stand-in for each designed sector and a far model (`FarModel`) for each design, shown while its content isn't loaded. Answers height and water questions for the whole field. |
 | Streaming | `src/world/streaming/` | `SectorStreamer` loads a design's content while one of its sectors is within `load_radius` (4) sectors of the player or the camera, nearest first, and unloads it beyond `unload_radius` (5). Content comes from scenes baked by `tools/bake_sectors.gd` (`npm run bake`) into `baked/sectors/`, read on a background thread, or is generated live when the bake is stale. `SectorGround` keeps every design's heights, water and flow loaded. `WorldState` remembers what the player took, so reloaded content stays changed. |
 | Nature kit | `src/shared/nature/` | Low-poly rocks, bushes, grass tufts and lily pads (`NatureKit`), stream courses (`StreamPath`), and shaders for flowing water, swaying grass and floating things. |
-| Player | `src/player/` | Third-person hero from the castle PoC: SpringArm camera, camera-relative movement, sprint, jump, procedural walk cycle, sword pickup and swing with a swoosh trail. |
+| Player | `src/player/` | Third-person hero: SpringArm camera, camera-relative movement, sprint, jump, sword pickup and swing with a swoosh trail, gestures. The body is `HeroBody`: the skinned hero from `assets/models/hero/hero.glb` and an `AnimationTree` built in code (idle/walk/run blended by speed, fall, the sword arm, a swing over the upper body, pray and cry over everything), with the right hand and eyes as attachment points. |
+| Hero model | `tools/blender/build_hero.py`, `assets/models/hero/` | Built in Blender by a script (`npm run models`): a low-poly body skinned to 22 bones named after Godot's humanoid profile, and 8 animations (idle, walk, run, fall, hold_sword, swing, pray, cry). |
 | Swords | `src/items/sword/`, `src/items/flame_katana/` | `SwordHolder` offers a blade to the player: the sword-in-the-stone (not placed now) and `SwordChest`, which holds the `FlameKatana` on top of the C2 tower. The katana is built in code: burning blade shader, flame particles, flickering light. |
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint; opens the inventory on I and freezes the hero while it's open. |
 | Inventory | `src/items/inventory.gd`, `src/items/item_data.gd`, `src/ui/inventory/`, `data/items/` | `Inventory` (4 x 6 slots, on the player) holds `ItemData` resources: name, description, facts, model and stack size (mushrooms stack 20 to a slot). `InventoryPanel` is the drawer sliding in from the right over 40% of the screen, with 3D slot pictures and a viewer (`ItemPreview`, a model in its own small world, dragged to turn). |
@@ -139,8 +140,12 @@ decided until the author says so.
    MultiMesh for foliage and props, occluders. Profile with the F3 overlay
    and the editor profiler on the target hardware (the dev machine has a
    GTX 1650).
-9. **Art pipeline.** Blender to glTF (`.glb`) into `assets/models/`. Blender
-   isn't installed. Godot can import `.blend` files directly once it is.
+9. **Art pipeline.** In: Blender 5.2.3 LTS, driven by scripts in
+   `tools/blender/` that export `.glb` into `assets/models/` (the hero
+   first). The Blender MCP server is connected for live work in Blender.
+   Open: whether later characters and props are scripted like the hero,
+   modelled by hand, or bought; the humanoid bone names keep all three
+   open.
 10. **Generated content at scale.** Settled: designs are baked to scenes
     (`npm run bake`, about 1 s for six designs) and streamed. Baked files
     aren't committed; exports must run the bake first (add it to the export

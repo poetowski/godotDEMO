@@ -3,6 +3,13 @@
     "godot": {
       "command": "cmd",
       "args": ["/c", "npx", "-y", "godot-mcp-server@0.6.1"]
+    },
+    "blender": {
+      "command": "cmd",
+      "args": ["/c", "uvx", "mcp-for-blender==2.2.4"],
+      "env": {
+        "DISABLE_TELEMETRY": "true"
+      }
     }
   }
 }

@@ -9,6 +9,10 @@
 //   npm run bake                 generate every sector design's content into
 //                                baked/sectors/; game, shot and test do it
 //                                first whenever the baked files are stale
+//   npm run models               build the models made by Blender scripts in
+//                                tools/blender/ (the hero) into assets/models/,
+//                                then import them
+//   npm run blender              open Blender (for the MCP tools)
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
@@ -24,6 +28,7 @@
 //
 // The engine is pinned to GODOT_VERSION below. Set the GODOT environment
 // variable to use another binary (on Windows, the *_console.exe one).
+// Blender is pinned to BLENDER_VERSION the same way, overridden by BLENDER.
 
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
@@ -31,6 +36,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const GODOT_VERSION = '4.7.2';
+const BLENDER_VERSION = '5.2.3';
+// Each builds one model; run in this order by `npm run models`.
+const BLENDER_SCRIPTS = ['tools/blender/build_hero.py'];
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ANSI = /\x1b\[[0-9;]*m/g;
 const ERROR_LINE = /^\s*(SCRIPT ERROR|SHADER ERROR|USER ERROR|ERROR):/;
@@ -45,6 +53,29 @@ function godotBinary({ gui = false } = {}) {
     if (existsSync(exe)) return exe;
   }
   return 'godot';
+}
+
+function blenderBinary() {
+  if (process.env.BLENDER) return process.env.BLENDER;
+  if (process.platform === 'win32') {
+    const exe = path.join(process.env.LOCALAPPDATA ?? '', 'Programs', 'Blender', BLENDER_VERSION, 'blender.exe');
+    if (existsSync(exe)) return exe;
+  }
+  return 'blender';
+}
+
+// Runs a Blender script headless with factory settings, so add-ons and
+// preferences on this machine can't change what it builds.
+function blender(script) {
+  return new Promise((resolve) => {
+    const args = ['--background', '--factory-startup', '--python-exit-code', '1', '--python', path.join(ROOT, script)];
+    const child = spawn(blenderBinary(), args, { cwd: ROOT, stdio: 'inherit' });
+    child.on('close', (code) => resolve(code ?? 1));
+    child.on('error', (error) => {
+      console.error(`[dev] could not start Blender (${blenderBinary()}): ${error.message}`);
+      resolve(1);
+    });
+  });
 }
 
 // Runs Godot, echoing its output, and resolves with the exit code, the output
@@ -179,6 +210,24 @@ const commands = {
   import: importAssets,
 
   bake,
+
+  async models() {
+    for (const script of BLENDER_SCRIPTS) {
+      const code = await blender(script);
+      console.log(`\n[dev] blender ${script}: exit ${code}`);
+      if (code !== 0) return false;
+    }
+    return importAssets();
+  },
+
+  // Opens Blender with the MCP for Blender add-on's telemetry and its
+  // update check off, so it stays the pinned version and sends nothing.
+  blender() {
+    const env = { ...process.env, DISABLE_TELEMETRY: 'true', BLENDERMCP_NO_UPDATE_CHECK: '1' };
+    spawn(blenderBinary(), [], { detached: true, stdio: 'ignore', env }).unref();
+    console.log('[dev] Blender starting');
+    return true;
+  },
 
   async strings() {
     if (!(await ensureImported())) return false;

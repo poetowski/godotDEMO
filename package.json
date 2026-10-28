@@ -11,6 +11,8 @@
     "game": "node tools/dev.mjs game",
     "bake": "node tools/dev.mjs bake",
     "strings": "node tools/dev.mjs strings",
+    "models": "node tools/dev.mjs models",
+    "blender": "node tools/dev.mjs blender",
     "import": "node tools/dev.mjs import",
     "check": "node tools/dev.mjs check",
     "test": "node tools/dev.mjs test",

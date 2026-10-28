@@ -279,3 +279,21 @@ shown in inventory after collecting."
 Placeholders (Claude's choices beyond the brief): the three kinds, their
 texts and facts, the density, the stack size of 20.
 
+## 2026-10-28: A skinned hero with skeletal animation
+
+Request: install Blender and its MCP, connect them to the project, design a
+skeleton for the hero and make it work in the game. Camera and controls stay
+as they are for now.
+
+- The hero is now a skinned model built in Blender by
+  `tools/blender/build_hero.py`: the same look as before (green tunic,
+  brown trousers, boots, brown hair), low-poly and flat-shaded, on 22 bones
+  named after Godot's humanoid profile.
+- Animations: idle, walk, run, fall, holding the sword, a diagonal swing,
+  kneeling prayer and crying with hands to the face. The game blends them
+  by speed and state.
+
+Placeholders (Claude's choices beyond the request): the body's proportions
+and parts, every animation's poses and timing, holding the sword raised
+before the body rather than pointing ahead.
+

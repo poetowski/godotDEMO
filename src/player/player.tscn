@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://src/player/player.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://assets/models/hero/hero.glb" id="2_hero"]
+[ext_resource type="Script" path="res://src/player/hero_body.gd" id="3_body"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.32
@@ -8,87 +10,6 @@ height = 1.8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_camera"]
 radius = 0.2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tunic"]
-albedo_color = Color(0.18, 0.42, 0.3, 1)
-roughness = 0.85
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trousers"]
-albedo_color = Color(0.36, 0.27, 0.2, 1)
-roughness = 0.9
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_skin"]
-albedo_color = Color(0.92, 0.74, 0.6, 1)
-roughness = 0.7
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hair"]
-albedo_color = Color(0.3, 0.19, 0.1, 1)
-roughness = 0.9
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_leather"]
-albedo_color = Color(0.24, 0.15, 0.09, 1)
-roughness = 0.8
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
-albedo_color = Color(0.08, 0.08, 0.1, 1)
-roughness = 0.4
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_torso"]
-material = SubResource("StandardMaterial3D_tunic")
-radius = 0.23
-height = 0.72
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_belt"]
-material = SubResource("StandardMaterial3D_leather")
-top_radius = 0.235
-bottom_radius = 0.235
-height = 0.07
-radial_segments = 16
-rings = 1
-
-[sub_resource type="SphereMesh" id="SphereMesh_head"]
-material = SubResource("StandardMaterial3D_skin")
-radius = 0.16
-height = 0.32
-
-[sub_resource type="SphereMesh" id="SphereMesh_hair"]
-material = SubResource("StandardMaterial3D_hair")
-radius = 0.17
-height = 0.17
-is_hemisphere = true
-
-[sub_resource type="SphereMesh" id="SphereMesh_hair_back"]
-material = SubResource("StandardMaterial3D_hair")
-radius = 0.162
-height = 0.324
-
-[sub_resource type="SphereMesh" id="SphereMesh_eye"]
-material = SubResource("StandardMaterial3D_eye")
-radius = 0.016
-height = 0.032
-radial_segments = 8
-rings = 4
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
-material = SubResource("StandardMaterial3D_tunic")
-radius = 0.065
-height = 0.58
-
-[sub_resource type="SphereMesh" id="SphereMesh_hand"]
-material = SubResource("StandardMaterial3D_skin")
-radius = 0.055
-height = 0.11
-radial_segments = 10
-rings = 5
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_leg"]
-material = SubResource("StandardMaterial3D_trousers")
-radius = 0.085
-height = 0.84
-
-[sub_resource type="BoxMesh" id="BoxMesh_boot"]
-material = SubResource("StandardMaterial3D_leather")
-size = Vector3(0.15, 0.13, 0.26)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -99,82 +20,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
 [node name="Model" type="Node3D" parent="."]
-editor_description = "Placeholder hero built from primitives. Faces -Z; player.gd animates the limb pivots."
 
-[node name="Torso" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.75, 0, 1.14, 0)
-mesh = SubResource("CapsuleMesh_torso")
-
-[node name="Belt" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.78, 0, 0.9, 0)
-mesh = SubResource("CylinderMesh_belt")
-
-[node name="Head" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66, 0)
-mesh = SubResource("SphereMesh_head")
-
-[node name="Hair" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, 0.015)
-mesh = SubResource("SphereMesh_hair")
-
-[node name="HairBack" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.675, 0.04)
-mesh = SubResource("SphereMesh_hair_back")
-
-[node name="LeftEye" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, 1.67, -0.145)
-mesh = SubResource("SphereMesh_eye")
-
-[node name="RightEye" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 1.67, -0.145)
-mesh = SubResource("SphereMesh_eye")
-
-[node name="LeftArm" type="Node3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.4, 0)
-
-[node name="Mesh" type="MeshInstance3D" parent="Model/LeftArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
-mesh = SubResource("CapsuleMesh_arm")
-
-[node name="HandMesh" type="MeshInstance3D" parent="Model/LeftArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.57, 0)
-mesh = SubResource("SphereMesh_hand")
-
-[node name="RightArm" type="Node3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.4, 0)
-
-[node name="Mesh" type="MeshInstance3D" parent="Model/RightArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
-mesh = SubResource("CapsuleMesh_arm")
-
-[node name="HandMesh" type="MeshInstance3D" parent="Model/RightArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.57, 0)
-mesh = SubResource("SphereMesh_hand")
-
-[node name="Hand" type="Node3D" parent="Model/RightArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.58, 0)
-
-[node name="LeftLeg" type="Node3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.82, 0)
-
-[node name="Mesh" type="MeshInstance3D" parent="Model/LeftLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, 0)
-mesh = SubResource("CapsuleMesh_leg")
-
-[node name="Boot" type="MeshInstance3D" parent="Model/LeftLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.76, -0.04)
-mesh = SubResource("BoxMesh_boot")
-
-[node name="RightLeg" type="Node3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.82, 0)
-
-[node name="Mesh" type="MeshInstance3D" parent="Model/RightLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, 0)
-mesh = SubResource("CapsuleMesh_leg")
-
-[node name="Boot" type="MeshInstance3D" parent="Model/RightLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.76, -0.04)
-mesh = SubResource("BoxMesh_boot")
+[node name="Body" parent="Model" instance=ExtResource("2_hero")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+script = ExtResource("3_body")
 
 [node name="Swoosh" type="MeshInstance3D" parent="Model"]
 

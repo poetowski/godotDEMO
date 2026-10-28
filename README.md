@@ -5,6 +5,9 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 ## Setup (already done on this machine)
 
 - Godot 4.7.2 in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`
+- Blender 5.2.3 LTS in `%LOCALAPPDATA%\Programs\Blender\5.2.3\`, only to
+  rebuild models (`npm run models`); the built `.glb` files are committed
+- uv (for the Blender MCP server)
 - Node.js 20 or newer (the dev commands have no npm dependencies)
 - Add-ons vendored in `addons/`: GUT 9.7.1 for tests, Godot MCP 0.6.1 for
   Claude Code (see `addons/README.md`)
@@ -49,6 +52,9 @@ npm run game      play the game
 npm run import    import new assets without the editor
 npm run bake      bake the sector designs for streaming (game, shot and
                   test do it when needed)
+npm run models    rebuild the Blender-made models (the hero) and import them
+npm run blender   open Blender for the Blender MCP tools
+npm run strings   collect the player-facing text into locale/messages.pot
 npm run api       dump the engine class reference to .godot-api/
 ```
 

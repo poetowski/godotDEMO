@@ -30,7 +30,8 @@ func test_takes_the_sword_from_the_stone() -> void:
 	player.interact()
 	assert_true(player.has_sword)
 	assert_false(stone.has_sword())
-	assert_not_null(player.get_node_or_null("Model/RightArm/Hand/Sword"))
+	assert_not_null(player.sword(), "in hand")
+	assert_eq(player.sword().get_parent(), player.body().hand())
 	assert_signal_emitted(player, "sword_equipped")
 
 
@@ -65,18 +66,19 @@ func test_praying_kneels_for_its_time_then_stands() -> void:
 	player.perform(&"pray", 1.5)
 	assert_true(player.is_performing())
 	assert_eq(player.gesture(), &"pray")
+	var standing := player.body().bone_height("Head")
 	await wait_seconds(0.8)
-	assert_lt((player.get_node("Model") as Node3D).position.y, -0.2, "kneeling")
-	await wait_seconds(1.0)
+	assert_lt(player.body().bone_height("Head"), standing - 0.25, "kneeling")
+	await wait_seconds(1.2)
 	assert_false(player.is_performing())
 	assert_signal_emitted_with_parameters(player, "gesture_finished", [&"pray"])
-	assert_eq((player.get_node("Model") as Node3D).position.y, 0.0, "standing again")
+	assert_almost_eq(player.body().bone_height("Head"), standing, 0.05, "standing again")
 
 
 func test_crying_sheds_tears_then_stops() -> void:
 	var player := _spawn_player()
 	player.perform(&"cry", 1.5)
-	var tears := player.get_node("Model/LeftEye/Tears") as GPUParticles3D
+	var tears := player.body().eyes()[0].get_node("Tears") as GPUParticles3D
 	assert_true(tears.emitting)
 	await wait_seconds(1.8)
 	assert_false(player.is_performing())

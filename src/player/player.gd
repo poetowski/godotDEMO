@@ -1,8 +1,9 @@
 class_name Player
 extends CharacterBody3D
-## Third-person hero for the castle proof of concept: camera-relative movement,
-## sprinting and jumping, taking the sword and swinging it. The body is made of
-## primitive parts animated in code. Look and tuning are placeholders.
+## Third-person hero: camera-relative movement, sprinting and jumping, taking
+## the sword and swinging it, and gestures. The body is a skinned model with
+## animations (HeroBody, built in Blender by tools/blender/build_hero.py).
+## Look and tuning are placeholders.
 ##
 ## The mouse is captured on the first click in the window and released with
 ## Esc; a gamepad's right stick looks around without capturing anything.
@@ -15,22 +16,12 @@ signal swung
 signal choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable)
 signal gesture_finished(gesture: StringName)
 
-const SWORD_REST := Vector3(0.45, 0.0, 0.0)
-const SWING_RAISED := Vector3(2.6, 0.0, 0.7)
-const SWING_STRUCK := Vector3(0.55, 0.0, -1.1)
 ## Gestures the hero can perform with perform().
 const GESTURES: Array[StringName] = [&"pray", &"cry"]
 ## Seconds a gesture takes to blend in and out.
 const GESTURE_BLEND := 0.6
-## Kneeling: the legs fold to this share of their length and tilt back a
-## little, the body sinks onto them and bows.
-const KNEEL_FOLD := 0.55
-const KNEEL_LEGS := -0.3
-const KNEEL_DROP := 0.4
-const PRAY_BOW := 0.12
-const PRAY_ARMS := Vector3(0.95, 0.0, 0.75)
-const CRY_ARMS := Vector3(2.05, 0.0, 0.7)
-const CRY_HUNCH := 0.1
+## Share of a swing at which the blade strikes and the trail shows.
+const SWING_STRIKE := 0.3
 
 @export_group("Movement")
 @export var walk_speed: float = 4.5
@@ -61,8 +52,7 @@ var _offered: Interactable
 var _gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
 var _yaw: float = 0.0
 var _pitch: float = 0.0
-var _walk_phase: float = 0.0
-var _stride: float = 0.0
+var _hand: Node3D
 var _swoosh_material: StandardMaterial3D
 var _gesture: StringName = &""
 var _gesture_time: float = 0.0
@@ -72,11 +62,7 @@ var _tears: Array[GPUParticles3D] = []
 @onready var _model: Node3D = $Model
 @onready var _camera_pivot: Node3D = $CameraPivot
 @onready var _spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
-@onready var _left_arm: Node3D = $Model/LeftArm
-@onready var _right_arm: Node3D = $Model/RightArm
-@onready var _left_leg: Node3D = $Model/LeftLeg
-@onready var _right_leg: Node3D = $Model/RightLeg
-@onready var _hand: Node3D = $Model/RightArm/Hand
+@onready var _body: HeroBody = $Model/Body
 @onready var _swoosh: MeshInstance3D = $Model/Swoosh
 
 
@@ -94,7 +80,8 @@ func _ready() -> void:
 	_swoosh.mesh = _build_swoosh_mesh()
 	_swoosh.material_override = _swoosh_material
 	_swoosh.visible = false
-	for eye: Node3D in [$Model/LeftEye, $Model/RightEye]:
+	_hand = _body.hand()
+	for eye in _body.eyes():
 		var tears := _build_tears()
 		eye.add_child(tears)
 		_tears.append(tears)
@@ -224,6 +211,11 @@ func interact() -> void:
 	target.interact(self)
 
 
+## The animated body.
+func body() -> HeroBody:
+	return _body
+
+
 ## The sword in hand, or null.
 func sword() -> Node3D:
 	return _hand.get_child(0) as Node3D if _hand.get_child_count() > 0 else null
@@ -235,7 +227,6 @@ func unequip_sword() -> void:
 		_hand.remove_child(child)
 		child.queue_free()
 	has_sword = false
-	_right_arm.rotation = Vector3.ZERO
 
 
 ## The direction the hero and camera face, in radians around the vertical.
@@ -254,7 +245,6 @@ func equip_sword(sword: Node3D) -> void:
 	_hand.add_child(sword)
 	sword.transform = Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO)
 	has_sword = true
-	_right_arm.rotation = SWORD_REST
 	sword_equipped.emit()
 
 
@@ -264,14 +254,11 @@ func try_attack() -> bool:
 		return false
 	is_swinging = true
 	swung.emit()
+	_body.swing()
 	var tween := create_tween()
-	tween.tween_property(_right_arm, "rotation", SWING_RAISED, swing_duration * 0.3) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(swing_duration * SWING_STRIKE)
 	tween.tween_callback(_flash_swoosh)
-	tween.tween_property(_right_arm, "rotation", SWING_STRUCK, swing_duration * 0.22) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(_right_arm, "rotation", SWORD_REST, swing_duration * 0.48) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_interval(swing_duration * (1.0 - SWING_STRIKE))
 	tween.tween_callback(func() -> void: is_swinging = false)
 	return true
 
@@ -282,59 +269,27 @@ func _turn_camera(yaw_delta: float, pitch_delta: float) -> void:
 	_camera_pivot.rotation = Vector3(_pitch, _yaw, 0.0)
 
 
-## Walk cycle: legs and arms swing with ground speed, the body bobs a little,
-## legs tuck while airborne. The sword arm stays still while holding the sword.
+## Tells the body how the hero moves: idle, walk and run by ground speed,
+## falling while airborne, the sword arm while holding the sword.
 func _animate(delta: float) -> void:
 	var ground_speed := Vector2(velocity.x, velocity.z).length()
-	_stride = lerpf(_stride, clampf(ground_speed / walk_speed, 0.0, 1.4), 1.0 - exp(-8.0 * delta))
-	_walk_phase = fmod(_walk_phase + delta * (3.0 + ground_speed * 1.5), TAU)
-	var swing := sin(_walk_phase) * 0.65 * _stride
-	if is_on_floor():
-		_left_leg.rotation.x = swing
-		_right_leg.rotation.x = -swing
-	else:
-		_left_leg.rotation.x = lerpf(_left_leg.rotation.x, 0.6, 1.0 - exp(-10.0 * delta))
-		_right_leg.rotation.x = lerpf(_right_leg.rotation.x, -0.25, 1.0 - exp(-10.0 * delta))
-	_left_arm.rotation.x = -swing * 0.8
-	if not is_swinging:
-		var rest := SWORD_REST.x + swing * 0.25 if has_sword else swing * 0.8
-		_right_arm.rotation = Vector3(rest, 0.0, 0.0)
-	_model.position.y = absf(sin(_walk_phase)) * 0.05 * _stride
+	_body.move(ground_speed, not is_on_floor(), has_sword, delta)
 
 
-## Blends the body into the gesture's pose at its start and back out at its
-## end.
+## Blends the body into the gesture at its start and back out at its end.
 func _pose_gesture() -> void:
 	var t := _gesture_time
 	var weight := minf(smoothstep(0.0, GESTURE_BLEND, t), 1.0 - smoothstep(_gesture_length - GESTURE_BLEND, _gesture_length, t))
-	var arms := PRAY_ARMS if _gesture == &"pray" else CRY_ARMS
-	_left_arm.rotation = Vector3(arms.x, 0.0, arms.z) * weight
-	_right_arm.rotation = Vector3(arms.x, 0.0, -arms.z) * weight
-	if _gesture == &"pray":
-		var fold := lerpf(1.0, KNEEL_FOLD, weight)
-		for leg: Node3D in [_left_leg, _right_leg]:
-			leg.rotation.x = KNEEL_LEGS * weight
-			leg.scale.y = fold
-		_model.position.y = -KNEEL_DROP * weight
-		_model.rotation.x = -PRAY_BOW * weight
-	else:
-		_left_leg.rotation.x = 0.0
-		_right_leg.rotation.x = 0.0
-		var sob := sin(t * 13.0) * (0.6 + 0.4 * sin(t * 2.7))
-		_model.position.y = (-0.04 + sob * 0.018) * weight
-		_model.rotation.x = (-CRY_HUNCH + sob * 0.02) * weight
+	_body.gesture(_gesture, weight)
+	_body.move(0.0, false, has_sword, get_physics_process_delta_time())
 
 
 func _finish_gesture() -> void:
 	var done := _gesture
 	_gesture = &""
-	_model.position.y = 0.0
-	_model.rotation.x = 0.0
-	_left_leg.scale.y = 1.0
-	_right_leg.scale.y = 1.0
+	_body.gesture(done, 0.0)
 	for tears in _tears:
 		tears.emitting = false
-	_right_arm.rotation = SWORD_REST if has_sword else Vector3.ZERO
 	gesture_finished.emit(done)
 
 
