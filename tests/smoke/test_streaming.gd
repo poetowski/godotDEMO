@@ -111,3 +111,17 @@ func _names(root: Node) -> PackedStringArray:
 		names.append(child.name)
 	names.sort()
 	return names
+
+
+func test_6_a_design_unloaded_mid_read_leaves_nothing_behind() -> void:
+	_player.global_position = Vector3(5.0, 0.3, -5.0)
+	_streamer.unload_all()
+	_streamer.update()
+	var reading := _terrain.designs().filter(func(design: SectorDesign) -> bool: return _streamer.is_loading(design))
+	assert_gt(reading.size(), 0, "reads started")
+	for design: SectorDesign in reading:
+		_streamer.unload(design)
+		assert_false(_streamer.is_loading(design))
+	await wait_until(func() -> bool: return (_streamer.get("_abandoned") as PackedStringArray).is_empty(), 10.0)
+	assert_eq((_streamer.get("_abandoned") as PackedStringArray).size(), 0, "every abandoned read collected")
+	_streamer.load_around_now()

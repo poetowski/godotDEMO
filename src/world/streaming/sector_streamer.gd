@@ -26,6 +26,9 @@ signal design_unloaded(design: SectorDesign)
 
 ## Designs waiting to load, with the baked scene being read ("" to generate).
 var _pending: Dictionary[SectorDesign, String] = {}
+## Background reads nobody waits for any more (their design was unloaded or
+## loaded another way), collected once they finish so they don't leak.
+var _abandoned: PackedStringArray = []
 var _timer := 0.0
 
 
@@ -39,9 +42,13 @@ func _exit_tree() -> void:
 		if not path.is_empty():
 			ResourceLoader.load_threaded_get(path)
 	_pending.clear()
+	for path in _abandoned:
+		ResourceLoader.load_threaded_get(path)
+	_abandoned.clear()
 
 
 func _process(delta: float) -> void:
+	_collect_abandoned()
 	_attach_one()
 	_timer -= delta
 	if active and _timer <= 0.0:
@@ -86,7 +93,7 @@ func unload_all() -> void:
 
 
 func unload(design: SectorDesign) -> void:
-	_pending.erase(design)
+	_abandon(design)
 	if design.is_content_loaded():
 		design.detach_content()
 		design_unloaded.emit(design)
@@ -147,10 +154,32 @@ func _attach_one() -> void:
 func _load_now(design: SectorDesign) -> void:
 	if design.is_content_loaded():
 		return
-	_pending.erase(design)
 	var path := BakedSectors.scene_for(design.name)
-	var scene := load(path) as PackedScene if not path.is_empty() else null
+	var scene: PackedScene = null
+	if _pending.get(design, "") == path and not path.is_empty():
+		# Already being read in the background: wait for that read.
+		_pending.erase(design)
+		scene = ResourceLoader.load_threaded_get(path) as PackedScene
+	else:
+		_abandon(design)
+		scene = load(path) as PackedScene if not path.is_empty() else null
 	_attach(design, scene.instantiate() as Node3D if scene else design.generate_content())
+
+
+## Stops waiting for a design; its background read, if any, is collected
+## later.
+func _abandon(design: SectorDesign) -> void:
+	var path: String = _pending.get(design, "")
+	_pending.erase(design)
+	if not path.is_empty():
+		_abandoned.append(path)
+
+
+func _collect_abandoned() -> void:
+	for k in range(_abandoned.size() - 1, -1, -1):
+		if ResourceLoader.load_threaded_get_status(_abandoned[k]) != ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+			ResourceLoader.load_threaded_get(_abandoned[k])
+			_abandoned.remove_at(k)
 
 
 func _attach(design: SectorDesign, content: Node3D) -> void:
