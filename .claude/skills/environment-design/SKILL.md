@@ -92,7 +92,8 @@ sectors.
    design_seed = <any int>
    ```
    `design_id` names the design in saves for good: the slug, lowercase,
-   unique.
+   unique. In a world of several regions, sector names carry their region
+   ("R45:J10"); in the main field (R1 only) plain names ("A1") work.
    Give it no transform: designs sit at the origin. If the editor has the field
    open, close its tab first, or use the MCP tools.
 5. **Test it.** Add `tests/smoke/test_<slug>.gd` asserting the brief's key

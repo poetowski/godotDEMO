@@ -1,7 +1,7 @@
 class_name StreamingMap
 extends Control
 ## The streaming map, toggled with F4 or the console's `map`: the sector grid
-## seen from above with each sector coloured by what the streamer holds of
+## of the hero's region (RegionMap) seen from above with each sector coloured by what the streamer holds of
 ## it, the hero as an arrow, the load and unload radius around the hero, and
 ## counts and memory beneath. North is up. Part of DevTools, so debug builds
 ## only; its text is for developers and isn't translated.
@@ -23,7 +23,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	var side := CELL * SectorMap.COLUMNS
-	custom_minimum_size = Vector2(side + 24.0, side + 150.0)
+	custom_minimum_size = Vector2(side + 24.0, side + 170.0)
 	size = custom_minimum_size
 	position = Vector2(get_viewport_rect().size.x - size.x - 16.0, 70.0)
 	_stats = Label.new()
@@ -61,9 +61,10 @@ func _draw() -> void:
 	var side := CELL * SectorMap.COLUMNS
 	draw_rect(Rect2(Vector2.ZERO, size), BACKGROUND)
 	var origin := Vector2(12.0, 12.0)
+	var first := RegionMap.first_cell(_region())
 	for column in SectorMap.COLUMNS:
 		for row in SectorMap.ROWS:
-			var cell := Vector2i(column, row)
+			var cell := first + Vector2i(column, row)
 			# Row 1 (A1) is at the bottom: north is up.
 			var corner := origin + Vector2(column * CELL, (SectorMap.ROWS - 1 - row) * CELL)
 			draw_rect(Rect2(corner + Vector2.ONE, Vector2.ONE * (CELL - 2.0)), _color(cell_state(cell)))
@@ -72,7 +73,7 @@ func _draw() -> void:
 		return
 	var player := field.call("player") as Player
 	var streamer := field.call("streamer") as SectorStreamer
-	var at := player.global_position
+	var at := player.global_position - RegionMap.corner_of(_region())
 	var dot := origin + Vector2(at.x / SectorMap.SIZE, SectorMap.ROWS + at.z / SectorMap.SIZE) * CELL
 	for radius: int in [streamer.load_radius, streamer.unload_radius]:
 		var reach := (radius + 0.5) * CELL
@@ -93,6 +94,7 @@ func _stats_text() -> String:
 		var state := cell_state(design.cells()[0])
 		counts[state] = int(counts.get(state, 0)) + 1
 	return "\n".join([
+		"region %s of %d" % [RegionMap.name_of(_region()), RegionMap.count()],
 		"designs %d loaded, %d loading," % [counts[&"loaded"], counts[&"loading"]],
 		"%d distant" % counts[&"distant"],
 		"memory %.0f MB   video %.0f MB" % [
@@ -106,6 +108,15 @@ func _stats_text() -> String:
 		"green loaded, yellow loading,",
 		"blue distant view only",
 	])
+
+
+## The region the hero stands in.
+func _region() -> Vector2i:
+	var field := _field()
+	if field == null:
+		return Vector2i.ZERO
+	var region := RegionMap.at((field.call("player") as Player).global_position)
+	return region if region != RegionMap.NONE else Vector2i.ZERO
 
 
 func _color(state: StringName) -> Color:

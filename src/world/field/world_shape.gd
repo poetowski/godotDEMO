@@ -17,6 +17,7 @@ static var _noise: FastNoiseLite
 
 static func configure(hill_height: float, hill_frequency: float = 0.02, hill_seed: int = 1) -> void:
 	amplitude = hill_height
+	border = 15.0
 	frequency = hill_frequency
 	_noise = FastNoiseLite.new()
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN

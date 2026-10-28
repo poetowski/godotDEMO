@@ -333,3 +333,21 @@ real minutes, a new game starting at 8:00, sunrise at 6:00 and sunset at
 20:00 all year, the sun's height, every colour and brightness, and F7 as
 the dev key that runs time fast (it doesn't exist in release builds).
 
+## 2026-10-28: Regions and a big world
+
+Request: prepare and build the big world as proposed (one continuous world
+in regions, streamed ground with detail falling off with distance), stress
+test it, and name regions R1, R2, R3...
+
+- Regions are 20 x 20 sectors (200 m). R1 is the south-west corner; numbers
+  run east along the southern row, then on along the next row north. A
+  sector's full name carries its region: R45:J10. The main field is R1, and
+  its sector names stay as they were.
+- The big world is 10 x 10 regions (R1 to R100, 2 km) of rolling hills and
+  woods, with no designed sectors yet. It starts in R56:J10, near the middle.
+  It also runs at 20 x 20 (4 km) for testing.
+
+Placeholders (Claude's choices beyond the request): the world's size, the
+hills (34 m high, about one every 250 m), the woods and their density, the
+thinner fog, the start, and how far detail and trees reach.
+

@@ -10,6 +10,10 @@ extends StaticBody3D
 ## ground and hide both. Answers height
 ## and water questions for the whole field. Generated children have no
 ## owner, so the editor never saves them.
+##
+## In a big world (`chunked`), the open ground isn't one mesh: TerrainChunks
+## streams it around `focus`, detailed near and coarse far, and a flat ring
+## lies around the world's edge.
 
 const GRASS_SHADER := preload("res://src/world/field/grass_grid.gdshader")
 ## Samples along each side of a sector's stand-in.
@@ -21,6 +25,12 @@ const FAR_SAMPLES := 11
 @export var margin: float = 900.0
 ## Metres out to which far models show, fading out over the last tenth.
 @export var far_distance: float = 150.0
+## Stream the open ground in tiles around `focus` (big worlds).
+@export var chunked: bool = false
+## Whose surroundings the streamed ground details.
+@export var focus: Node3D
+## Regions out to which the streamed ground is shown.
+@export var view_regions: int = 6
 
 static var _material: ShaderMaterial
 
@@ -30,6 +40,7 @@ var _owners: Dictionary[Vector2i, SectorDesign] = {}
 ## Each designed cell's stand-in mesh and its collision.
 var _stand_ins: Dictionary[Vector2i, Array] = {}
 var _far_models: Dictionary[SectorDesign, MeshInstance3D] = {}
+var _chunks: TerrainChunks
 
 
 ## The grass-and-grid material every piece of ground shares.
@@ -42,7 +53,12 @@ static func ground_material() -> ShaderMaterial:
 
 func _ready() -> void:
 	_collect()
-	_build_flat()
+	if chunked:
+		_build_border()
+		if not Engine.is_editor_hint():
+			_start_chunks()
+	else:
+		_build_flat()
 	for cell: Vector2i in _owners.keys():
 		_build_stand_in(cell, _owners[cell])
 	for design in _designs:
@@ -99,6 +115,18 @@ func find_dry_spot(xz: Vector2, search_radius: float = 8.0) -> Vector2:
 	return xz
 
 
+## Builds the streamed ground around the focus at once (big worlds), for the
+## start or after jumping somewhere else.
+func prepare_around_focus() -> void:
+	if _chunks:
+		_chunks.build_now()
+
+
+## The streamed ground, or null when the field is one mesh.
+func chunks() -> TerrainChunks:
+	return _chunks
+
+
 ## The far model shown for a design while its content is away, or null.
 func far_model(design: SectorDesign) -> MeshInstance3D:
 	return _far_models.get(design)
@@ -128,6 +156,43 @@ func _collect() -> void:
 			_owners[cell] = design
 
 
+func _start_chunks() -> void:
+	_chunks = TerrainChunks.new()
+	_chunks.name = "Chunks"
+	_chunks.body = self
+	_chunks.focus = focus
+	_chunks.height = WorldShape.height
+	_chunks.is_designed = func(xz: Vector2) -> bool: return _owners.has(SectorMap.unbounded_cell_at(xz))
+	_chunks.material = ground_material()
+	_chunks.view_regions = view_regions
+	add_child(_chunks)
+
+
+## Four long flat strips around the world, where the land has eased flat.
+func _build_border() -> void:
+	var faces := PackedVector3Array()
+	_add_border(faces)
+	var normals := PackedVector3Array()
+	for t in range(0, faces.size(), 3):
+		normals.append_array(PackedVector3Array([Vector3.UP, Vector3.UP, Vector3.UP]))
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = faces
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	_add_ground("Border", arrays, faces, false)
+
+
+func _add_border(faces: PackedVector3Array) -> void:
+	var west := SectorMap.ORIGIN.x
+	var south := SectorMap.ORIGIN.z
+	var east := west + SectorMap.extent().x
+	var north := south - SectorMap.extent().y
+	_add_quad(faces, west - margin, south + margin, east + margin, south)
+	_add_quad(faces, west - margin, north, east + margin, north - margin)
+	_add_quad(faces, west - margin, south, west, north)
+	_add_quad(faces, east, south, east + margin, north)
+
+
 ## Two triangles per undesigned sector, and four long strips around the grid.
 func _build_flat() -> void:
 	var faces := PackedVector3Array()
@@ -141,14 +206,7 @@ func _build_flat() -> void:
 				_add_quad(faces, corner.x, corner.z, corner.x + SectorMap.SIZE, corner.z - SectorMap.SIZE)
 			else:
 				_add_shaped(faces, corner, func(xz: Vector2) -> float: return WorldShape.height(xz))
-	var west := SectorMap.ORIGIN.x
-	var south := SectorMap.ORIGIN.z
-	var east := west + SectorMap.extent().x
-	var north := south - SectorMap.extent().y
-	_add_quad(faces, west - margin, south + margin, east + margin, south)
-	_add_quad(faces, west - margin, north, east + margin, north - margin)
-	_add_quad(faces, west - margin, south, west, north)
-	_add_quad(faces, east, south, east + margin, north)
+	_add_border(faces)
 	var normals := PackedVector3Array()
 	for t in range(0, faces.size(), 3):
 		var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()

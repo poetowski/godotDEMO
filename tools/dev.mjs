@@ -14,6 +14,9 @@
 //                                tools/blender/ (the hero) into assets/models/,
 //                                then import them
 //   npm run blender              open Blender (for the MCP tools)
+//   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20]
+//                                benchmark a world (default: the big world)
+//                                in a window; writes .perf/<world>.json
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
@@ -229,6 +232,17 @@ const commands = {
     spawn(blenderBinary(), [], { detached: true, stdio: 'ignore', env }).unref();
     console.log('[dev] Blender starting');
     return true;
+  },
+
+  // Benchmarks a world: see tools/perf.gd for what it measures.
+  async perf(argv) {
+    const { options, positional } = parseOptions(argv);
+    const scene = positional[0] ? toResPath(positional[0]) : 'res://src/world/big/big_world.tscn';
+    const seconds = Number(options.seconds ?? 60);
+    if (!(await ensureImported()) || !(await ensureBaked())) return false;
+    const passed = ['seconds', 'speed', 'heading', 'regions'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
+    const args = ['--path', ROOT, '--resolution', options.size ?? '1280x720', '--script', 'res://tools/perf.gd', '--', `--scene=${scene}`, ...passed];
+    return report('perf', await godot(args, { timeoutMs: (seconds + 180) * 1000 }));
   },
 
   async strings() {

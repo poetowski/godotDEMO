@@ -25,6 +25,7 @@ const SWORD_SCENE := preload("res://src/items/sword/sword.tscn")
 ## A new field is a new game.
 func _init() -> void:
 	WorldState.reset()
+	RegionMap.configure(1, 1)
 	WorldShape.configure(0.0)
 
 
@@ -73,6 +74,7 @@ func teleport(cell: Vector2i) -> void:
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.velocity = Vector3.ZERO
 	_player.face(0.0)
+	_terrain.prepare_around_focus()
 	_streamer.load_around_now()
 
 
@@ -140,6 +142,7 @@ func apply(data: Dictionary) -> void:
 	_player.global_position = Vector3(at[0], at[1], at[2])
 	_player.velocity = Vector3.ZERO
 	_player.face(float(player.get("yaw", 0.0)))
+	_terrain.prepare_around_focus()
 	_streamer.unload_all()
 	_streamer.load_around_now()
 

@@ -8,6 +8,8 @@ extends Node3D
 @export var count: int = 16
 @export var drift_speed: float = 1.2
 @export var span: float = 320.0
+## In a big world, the clouds travel along over this node (the player).
+@export var follow: Node3D
 
 var _clouds: Array[Node3D] = []
 
@@ -35,6 +37,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
+	if follow:
+		global_position = Vector3(follow.global_position.x, 0.0, follow.global_position.z)
 	for cloud in _clouds:
 		cloud.position.x += drift_speed * delta
 		if cloud.position.x > span * 0.5:

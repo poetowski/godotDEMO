@@ -6,10 +6,17 @@ extends Node3D
 ## they would hover over its ground; the HUD still names them. The lines on
 ## the ground come from the grass shader. Generated children have no owner, so
 ## the editor never saves them.
+##
+## It covers one region (RegionMap) at a time: the one `focus` stands in,
+## rebuilt when the focus walks into another. The main field is one region.
+## The first region is built at once; later ones are worked out on a worker
+## thread (the ground sampling is the slow part) and swapped in when ready.
 
 const CURTAIN_SHADER := preload("res://src/world/field/light_curtain.gdshader")
-## Metres between the points where a curtain meets shaped ground.
+## Metres between the points where a curtain meets a design's ground.
 const CURTAIN_STEP := 0.5
+## ...and where it meets the open hills, which are smoother.
+const HILL_STEP := 2.0
 ## Half the size of a painted name, in metres east and north.
 const LABEL_HALF_SIZE := Vector2(1.1, 0.9)
 
@@ -20,24 +27,99 @@ const LABEL_HALF_SIZE := Vector2(1.1, 0.9)
 @export var label_visible_distance: float = 70.0
 ## Paint names in designed sectors too.
 @export var name_designed_sectors: bool = false
+## Whose region the grid shows; R1 when unset.
+@export var focus: Node3D
+
+var _region := RegionMap.NONE
+var _curtains: MeshInstance3D
+## Every sector's painted name by its place in the region; the same names
+## serve every region, moved over when the region changes.
+var _labels: Array[Label3D] = []
+## The region being worked out on a worker thread, its task, and the result.
+var _pending := RegionMap.NONE
+var _task := -1
+var _result: Dictionary = {}
 
 
 func _ready() -> void:
-	_build_curtains()
-	_build_labels()
+	_show_region(_focus_region())
 
 
-func _build_curtains() -> void:
+func _process(_delta: float) -> void:
+	if _task >= 0 and WorkerThreadPool.is_task_completed(_task):
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = -1
+		if _pending == _focus_region():
+			_apply(_pending, _result)
+		_pending = RegionMap.NONE
+	var region := _focus_region()
+	if region != _region and region != _pending and region != RegionMap.NONE and _task < 0:
+		_pending = region
+		_task = WorkerThreadPool.add_task(_work_out.bind(region))
+
+
+func _exit_tree() -> void:
+	if _task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = -1
+
+
+## The region whose grid is shown.
+func region() -> Vector2i:
+	return _region
+
+
+func _focus_region() -> Vector2i:
+	if focus == null or not focus.is_inside_tree():
+		return Vector2i.ZERO
+	return RegionMap.at(focus.global_position)
+
+
+func _show_region(shown: Vector2i) -> void:
+	_apply(shown, _work_out(shown))
+
+
+## The region's curtain geometry and its names' places: reads the ground
+## only, so it runs on a worker thread.
+func _work_out(shown: Vector2i) -> Dictionary:
 	var vertices := PackedVector3Array()
 	var colors := PackedColorArray()
-	var extent := SectorMap.extent()
-	var origin := SectorMap.ORIGIN
+	var origin := RegionMap.corner_of(shown)
+	var side := RegionMap.SIZE
 	for i in SectorMap.COLUMNS + 1:
 		var x := origin.x + i * SectorMap.SIZE
-		_add_curtain(vertices, colors, Vector3(x, 0.0, origin.z), Vector3(x, 0.0, origin.z - extent.y))
+		_add_curtain(vertices, colors, Vector3(x, 0.0, origin.z), Vector3(x, 0.0, origin.z - side))
 	for j in SectorMap.ROWS + 1:
 		var z := origin.z - j * SectorMap.SIZE
-		_add_curtain(vertices, colors, Vector3(origin.x, 0.0, z), Vector3(origin.x + extent.x, 0.0, z))
+		_add_curtain(vertices, colors, Vector3(origin.x, 0.0, z), Vector3(origin.x + side, 0.0, z))
+	var places := PackedVector3Array()
+	var shown_names: Array[bool] = []
+	for row in SectorMap.ROWS:
+		for column in SectorMap.COLUMNS:
+			var centre := SectorMap.center_of(RegionMap.first_cell(shown) + Vector2i(column, row))
+			places.append(centre + Vector3.UP * _label_height(centre))
+			shown_names.append(name_designed_sectors or terrain == null or terrain.design_at(Vector2(centre.x, centre.z)) == null)
+	_result = {"vertices": vertices, "colors": colors, "places": places, "shown": shown_names}
+	return _result
+
+
+## Shows a worked-out region: the new curtains, the names moved over.
+func _apply(shown: Vector2i, worked: Dictionary) -> void:
+	_region = shown
+	if _curtains:
+		_curtains.queue_free()
+	_build_curtains(worked["vertices"], worked["colors"])
+	if _labels.is_empty():
+		_build_labels()
+	var places: PackedVector3Array = worked["places"]
+	var shown_names: Array[bool] = []
+	shown_names.assign(worked["shown"])
+	for k in _labels.size():
+		_labels[k].position = places[k]
+		_labels[k].visible = shown_names[k]
+
+
+func _build_curtains(vertices: PackedVector3Array, colors: PackedColorArray) -> void:
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
@@ -52,6 +134,7 @@ func _build_curtains() -> void:
 	curtains.material_override = material
 	curtains.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(curtains)
+	_curtains = curtains
 
 
 ## A curtain standing on the ground along the line from `a` to `b`, opaque at
@@ -66,10 +149,11 @@ func _add_curtain(vertices: PackedVector3Array, colors: PackedColorArray, a: Vec
 		var from := a.lerp(b, float(s) / spans)
 		var to := a.lerp(b, float(s + 1) / spans)
 		var middle := from.lerp(to, 0.5)
-		if not (_is_designed(middle + across) or _is_designed(middle - across)):
+		var designed := _is_designed(middle + across) or _is_designed(middle - across)
+		if not (designed or _is_shaped()):
 			_add_foot(feet, to)
 			continue
-		var pieces := ceili(SectorMap.SIZE / CURTAIN_STEP)
+		var pieces := ceili(SectorMap.SIZE / (CURTAIN_STEP if designed else HILL_STEP))
 		for k in range(1, pieces + 1):
 			var point := from.lerp(to, float(k) / pieces)
 			point.y = _surface(Vector2(point.x, point.z))
@@ -99,14 +183,20 @@ func _surface(xz: Vector2) -> float:
 	return terrain.surface_height_at(xz) if terrain else 0.0
 
 
+## True when the land has hills everywhere, so every curtain follows it.
+func _is_shaped() -> bool:
+	return terrain != null and not WorldShape.is_flat()
+
+
 func _is_designed(point: Vector3) -> bool:
 	return terrain != null and terrain.design_at(Vector2(point.x, point.z)) != null
 
 
-## Just above the highest ground or water under a painted name.
+## Just above the highest ground or water under a painted name: sampled
+## around it on a design's ground, at its middle on the smooth open hills.
 func _label_height(centre: Vector3) -> float:
 	if not _is_designed(centre):
-		return 0.03
+		return _surface(Vector2(centre.x, centre.z)) + 0.25 if _is_shaped() else 0.03
 	var highest := 0.0
 	for dx: float in [-1.0, 0.0, 1.0]:
 		for dz: float in [-1.0, 0.0, 1.0]:
@@ -119,8 +209,8 @@ func _build_labels() -> void:
 		for column in SectorMap.COLUMNS:
 			var cell := Vector2i(column, row)
 			var label := Label3D.new()
-			label.name = "Label" + SectorMap.name_of(cell)
-			label.text = SectorMap.name_of(cell)
+			label.name = "Label" + SectorMap.local_name(cell)
+			label.text = SectorMap.local_name(cell)
 			label.font_size = 96
 			label.pixel_size = 0.02
 			label.outline_size = 0
@@ -132,7 +222,5 @@ func _build_labels() -> void:
 			label.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 			# Lying flat, readable when facing north.
 			label.rotation = Vector3(-PI / 2.0, 0.0, 0.0)
-			var centre := SectorMap.center_of(cell)
-			label.position = centre + Vector3.UP * _label_height(centre)
-			label.visible = name_designed_sectors or terrain == null or terrain.design_at(Vector2(centre.x, centre.z)) == null
 			add_child(label)
+			_labels.append(label)

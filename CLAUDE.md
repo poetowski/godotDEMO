@@ -32,6 +32,8 @@ working title and the game's design is not decided yet.
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
+| `npm run game -- src/world/big/big_world.tscn` | The big world: 10 x 10 regions (2 km) of streamed hills and woods; add `--regions=20` for 4 km. Regenerate it with `python tools/make_big_world.py`. |
+| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20]` | Benchmarks a world (default: the big world) in a window; writes `.perf/<world>.json`. Run plugged in. |
 | `npm run game -- src/world/stress/stress_field.tscn` | The stress-test world: woodland in all 400 sectors on Perlin hills. Regenerate it with `python tools/make_stress_field.py`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
@@ -133,6 +135,18 @@ heights, water and flow stay known everywhere. So:
   things use `content_id("local_name")` and scattered ones
   `scatter_id("kind", xz)`. Never build an id from a node name or a
   placing order. `test_sector_designs` checks the ids.
+
+## Regions
+
+- The world is regions of 20 x 20 sectors (200 m) named R1, R2... from the
+  south-west, east along each row, then north. In a world of several
+  regions every sector name carries its region (`R45:J10`); a name without
+  one means R1, so the main field's `A1`...`T20` still work.
+- Never loop over the whole world's sectors: at 2 km that's 40,000. Work per
+  region (SectorGrid, the streaming map) or per streamed chunk.
+- Anything slow that a region change triggers runs on a worker thread
+  (`WorkerThreadPool`) and is swapped in when ready; check with
+  `npm run perf`, which lists every slow frame and where it happened.
 
 ## Saves
 
