@@ -53,6 +53,7 @@ func test_every_older_format_has_a_fixture_that_upgrades() -> void:
 		var upgraded := SaveMigration.upgrade(data)
 		assert_eq(int(upgraded.get("version", 0)), SaveGame.FORMAT, "format %d upgrades" % version)
 		assert_true(upgraded.has("world"))
+		assert_true(upgraded.has("time"), "format %d gains the time of day" % version)
 
 
 func test_format_1_saves_keep_what_was_taken_under_the_stable_ids() -> void:

@@ -2,9 +2,10 @@
 // Dev commands for this Godot project, run through npm (see package.json):
 //
 //   npm run editor               open the project in the Godot editor
-//   npm run game [-- <scene>] [--sector=C4]
+//   npm run game [-- <scene>] [--sector=C4] [--hour=21.5]
 //                                play the game, or one scene, in a window;
-//                                --sector starts the player in that sector
+//                                --sector starts the player in that sector,
+//                                --hour at that time of day
 //   npm run import               import new or changed assets, headless
 //   npm run bake                 generate every sector design's content into
 //                                baked/sectors/; game, shot and test do it
@@ -20,7 +21,7 @@
 //   npm test [-- <gut args>]     run the GUT suite headless, e.g.
 //                                npm test -- -gselect=test_player
 //   npm run shot [-- <scene>] [--out=<png>] [--frames=<n>] [--size=<WxH>]
-//                [--camera=x,y,z --look=x,y,z | --frame=A1:C3] [--sector=C4]
+//                [--camera=x,y,z --look=x,y,z | --frame=A1:C3] [--sector=C4] [--hour=6]
 //                                play a scene in a window, save a PNG, quit;
 //                                with --camera or --frame, shoot from there
 //   npm run api                  dump the engine's class reference to .godot-api/
@@ -202,7 +203,8 @@ const commands = {
   async game(argv) {
     const { options, positional } = parseOptions(argv);
     const scene = positional[0] ? [toResPath(positional[0])] : [];
-    const user = options.sector ? ['--', `--sector=${options.sector}`] : [];
+    const passed = ['sector', 'hour'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
+    const user = passed.length ? ['--', ...passed] : [];
     if (!(await ensureImported()) || !(await ensureBaked())) return false;
     return report('game', await godot(['--path', ROOT, ...scene, ...user]));
   },
@@ -267,6 +269,7 @@ const commands = {
     if (options.camera) args.push(`--shot-camera=${options.camera}`, `--shot-look=${options.look ?? '0,0,0'}`);
     if (options.frame) args.push(`--shot-frame=${options.frame}`);
     if (options.sector) args.push(`--sector=${options.sector}`);
+    if (options.hour) args.push(`--hour=${options.hour}`);
     const ok = report('shot', await godot(args, { timeoutMs: 3 * 60_000 }));
     if (!existsSync(out) || statSync(out).size === 0) {
       console.log('[dev] no screenshot was written');

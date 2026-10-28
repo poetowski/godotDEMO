@@ -10,9 +10,10 @@ extends RefCounted
 ##   inventory item ids by slot ("" for an empty slot)
 ##   amounts   how many of the item each slot holds
 ##   world     WorldState's record: {stable id: {"taken": true, ...}}
+##   time      the world clock: {day, hour}
 ## Saves in older formats are upgraded on reading (SaveMigration).
 
-const FORMAT := 2
+const FORMAT := 3
 const QUICK := "quick"
 ## The slots the menu offers, in order.
 const SLOTS: Array[String] = [QUICK, "1", "2", "3"]

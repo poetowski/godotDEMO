@@ -210,14 +210,6 @@ msgstr ""
 msgid "The woods"
 msgstr ""
 
-#: src/world/stress/stress_field.gd
-msgid "Time runs fast"
-msgstr ""
-
-#: src/world/stress/stress_field.gd
-msgid "Time runs normally"
-msgstr ""
-
 #: data/items/penny_bun.tres
 msgid "Uncommon"
 msgstr ""

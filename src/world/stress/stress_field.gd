@@ -3,8 +3,7 @@ extends "res://src/world/field/field.gd"
 ## woodland on Perlin hills, and villagers around J10 living by daily
 ## programs on a world clock. Built to measure baking, streaming, memory and
 ## frame times at full size, and to try systems at that size; not game
-## content. Play it with `npm run game -- src/world/stress/stress_field.tscn`;
-## T fast-forwards time.
+## content. Play it with `npm run game -- src/world/stress/stress_field.tscn`.
 
 ## Metres the hills rise and fall at most.
 const HILL_HEIGHT := 3.5
@@ -17,10 +16,6 @@ const TUNICS: Array[Color] = [
 ]
 ## Where the villagers meet: the middle of J10.
 const MEETING_PLACE := Vector2(95.0, -95.0)
-## Game hours per real second while fast-forwarding.
-const FAST_HOURS_PER_SECOND := 1.0
-
-var _clock: WorldClock
 
 
 func _init() -> void:
@@ -30,28 +25,8 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	_clock = WorldClock.new()
-	_clock.name = "Clock"
-	add_child(_clock)
 	super()
 	_add_villagers()
-
-
-func _process(delta: float) -> void:
-	super(delta)
-	_hud.show_clock(_clock.text())
-
-
-func _unhandled_key_input(event: InputEvent) -> void:
-	var key := event as InputEventKey
-	if key and key.pressed and not key.echo and key.keycode == KEY_T:
-		var fast := is_equal_approx(_clock.speed, 1.0)
-		_clock.speed = FAST_HOURS_PER_SECOND / _clock.game_hours_per_second() if fast else 1.0
-		_hud.notify(tr("Time runs fast") if fast else tr("Time runs normally"))
-
-
-func clock() -> WorldClock:
-	return _clock
 
 
 func villagers() -> Array[Villager]:

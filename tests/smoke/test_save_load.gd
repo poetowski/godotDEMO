@@ -76,6 +76,19 @@ func test_1b_an_old_save_loads_with_what_was_taken() -> void:
 	SaveGame.delete("3")
 
 
+func test_1c_the_time_of_day_is_saved() -> void:
+	var field := _world as Node
+	var clock := _world.get_node("Clock") as WorldClock
+	clock.day = 3
+	clock.hour = 21.25
+	assert_eq(field.call("save_to", "2"), OK)
+	clock.day = 1
+	clock.hour = 9.0
+	assert_true(field.call("load_from", "2"))
+	assert_eq(clock.day, 3)
+	assert_almost_eq(clock.hour, 21.25, 0.01)
+
+
 func test_2_esc_opens_the_menu_and_pauses() -> void:
 	var menu := _hud.game_menu()
 	_press("ui_cancel")

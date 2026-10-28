@@ -13,6 +13,8 @@
 [ext_resource type="Script" uid="uid://bp7tgsoia7cg4" path="res://src/world/field/sectors/a5_rainy_cottage/a5_rainy_cottage.gd" id="10_cottage"]
 [ext_resource type="Script" path="res://src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd" id="11_statue"]
 [ext_resource type="Script" path="res://src/world/field/sectors/b1_cornflower/b1_cornflower.gd" id="12_meadow"]
+[ext_resource type="Script" path="res://src/world/time/world_clock.gd" id="30_clock"]
+[ext_resource type="Script" path="res://src/world/time/day_night.gd" id="31_daynight"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -50,6 +52,21 @@ light_color = Color(1, 0.95, 0.86, 1)
 light_energy = 1.3
 shadow_enabled = true
 directional_shadow_max_distance = 90.0
+
+[node name="Moon" type="DirectionalLight3D" parent="."]
+light_color = Color(0.62, 0.72, 1, 1)
+light_energy = 0.0
+directional_shadow_max_distance = 60.0
+
+[node name="Clock" type="Node" parent="."]
+script = ExtResource("30_clock")
+
+[node name="DayNight" type="Node" parent="." node_paths=PackedStringArray("clock", "sun", "moon", "world_environment")]
+script = ExtResource("31_daynight")
+clock = NodePath("../Clock")
+sun = NodePath("../Sun")
+moon = NodePath("../Moon")
+world_environment = NodePath("../WorldEnvironment")
 
 [node name="Sectors" type="Node3D" parent="." unique_id=1128904256]
 editor_description = "One SectorDesign per designed area; each shapes only the sectors it owns."

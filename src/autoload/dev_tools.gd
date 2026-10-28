@@ -9,9 +9,12 @@ extends Node
 ##   --shot-frame=A1:C3    ...or from a camera framing those sectors from above
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
-## the editor); F3 (dev_overlay) toggles the performance overlay.
+## the editor); F3 (dev_overlay) toggles the performance overlay; F7 runs the
+## world clock fast (a game hour per second) or normally again.
 
 const DEFAULT_SHOT_FRAMES := 60
+## Game hours per real second while F7 fast-forwards the world clock.
+const FAST_HOURS_PER_SECOND := 1.0
 
 
 ## Options read from the command line.
@@ -91,6 +94,20 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("dev_overlay"):
 		_toggle_overlay()
 		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and (event as InputEventKey).pressed and not event.is_echo() and (event as InputEventKey).keycode == KEY_F7:
+		toggle_fast_time()
+		get_viewport().set_input_as_handled()
+
+
+## Runs every world clock a game hour per real second, or back at normal
+## speed. Returns whether time now runs fast.
+func toggle_fast_time() -> bool:
+	var fast := false
+	for node in get_tree().get_nodes_in_group(&"world_clocks"):
+		var clock := node as WorldClock
+		fast = is_equal_approx(clock.speed, 1.0)
+		clock.speed = FAST_HOURS_PER_SECOND / clock.game_hours_per_second() if fast else 1.0
+	return fast
 
 
 func _process(_delta: float) -> void:

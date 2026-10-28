@@ -2,7 +2,8 @@ class_name WorldClock
 extends Node
 ## The time of day: hours run from 0 to 24 and roll over into the next day.
 ## A game day lasts `minutes_per_day` real minutes; `speed` fast-forwards it.
-## Villagers follow their daily programs by it.
+## Villagers follow their daily programs by it, DayNight lights the world by
+## it, and saves keep it. In the "world_clocks" group, so dev tools find it.
 
 ## Real minutes per game day.
 @export var minutes_per_day: float = 24.0
@@ -14,6 +15,10 @@ var day: int = 1
 var hour: float = 8.0
 ## How many times faster than normal the clock runs.
 var speed: float = 1.0
+
+
+func _enter_tree() -> void:
+	add_to_group(&"world_clocks")
 
 
 func _ready() -> void:

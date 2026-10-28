@@ -2,8 +2,10 @@ extends Node3D
 ## The sector-grid field: grass everywhere, the grid of 10 m sectors with their
 ## light curtains and names, the sector designs under `Sectors` shaping the
 ## sectors they own and streamed in around the player by `Streamer`, and the
-## player starting in A1 facing north. Pass
-## `--sector=C4` after `--` on the command line to start in another sector.
+## player starting in A1 facing north, and the time of day (Clock, with
+## DayNight lighting the world by it). Pass `--sector=C4` after `--` on the
+## command line to start in another sector, `--hour=21.5` to start at
+## another time.
 
 ## The sector the player starts in unless `--sector=` names another.
 var start_sector: String = "A1"
@@ -14,6 +16,7 @@ var _sector := Vector2i(-2, -2)
 @onready var _hud: Hud = $Hud
 @onready var _terrain: FieldTerrain = $Terrain
 @onready var _streamer: SectorStreamer = $Streamer
+@onready var _clock: WorldClock = $Clock
 
 
 const SWORD_SCENE := preload("res://src/items/sword/sword.tscn")
@@ -33,6 +36,9 @@ func _ready() -> void:
 	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.look_toward(_player.global_position + Vector3.FORWARD)
+	var hour := requested_hour(OS.get_cmdline_user_args())
+	if hour >= 0.0:
+		_clock.hour = hour
 	_streamer.load_around_now()
 	_hud.save_requested.connect(save_to)
 	_hud.load_requested.connect(load_from)
@@ -44,6 +50,11 @@ func _process(_delta: float) -> void:
 	if cell != _sector:
 		_sector = cell
 		_hud.show_sector(SectorMap.name_of(cell))
+	_hud.show_clock(_clock.text())
+
+
+func clock() -> WorldClock:
+	return _clock
 
 
 ## Everything a save keeps, as plain data (see SaveGame).
@@ -62,6 +73,7 @@ func capture() -> Dictionary:
 		"inventory": Array(_player.inventory.ids()),
 		"amounts": Array(_player.inventory.amounts()),
 		"world": WorldState.snapshot(),
+		"time": {"day": _clock.day, "hour": _clock.hour},
 	}
 
 
@@ -88,6 +100,9 @@ func load_from(slot: String) -> bool:
 ## come back.
 func apply(data: Dictionary) -> void:
 	WorldState.restore(data.get("world", {}))
+	var time: Dictionary = data.get("time", {})
+	_clock.day = int(time.get("day", 1))
+	_clock.hour = float(time.get("hour", _clock.start_hour))
 	var inventory: Array = data.get("inventory", [])
 	var amounts: Array = data.get("amounts", [])
 	_player.inventory.clear()
@@ -112,6 +127,14 @@ func apply(data: Dictionary) -> void:
 
 func _slot_name(slot: String) -> String:
 	return tr("quicksave") if slot == SaveGame.QUICK else tr("slot %s") % slot
+
+
+## The hour given by an `--hour=` argument, or -1.
+static func requested_hour(args: PackedStringArray) -> float:
+	for arg in args:
+		if arg.begins_with("--hour="):
+			return clampf(arg.trim_prefix("--hour=").to_float(), 0.0, 23.99)
+	return -1.0
 
 
 ## The sector named by a `--sector=` argument, or `fallback`.

@@ -249,7 +249,8 @@ func _build_rain() -> void:
 	process.particle_flag_align_y = true
 	process.collision_mode = ParticleProcessMaterial.COLLISION_HIDE_ON_CONTACT
 	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	# Lit, so the rain darkens with the night.
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_VERTEX
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	material.albedo_color = Color(0.78, 0.84, 0.92, 0.45)
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y

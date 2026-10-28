@@ -316,3 +316,20 @@ Cora, Dain, Elin, Finn, Greta, Hal, Ivy, Jory), tunic colours, the program
 and its hours, where homes and work places are, the day's length, the T key,
 and no houses, sleeping or collision.
 
+## 2026-10-28: Hours, days, day and night
+
+Request: proper hours and days, as in the stress world, with night and day
+changing; the system stays for production.
+
+- Every world has the clock now; it's saved (save format 3; older saves
+  start at 8:00 on day 1). The HUD shows "Day 1  08:00" top right.
+- The sun rises in the east, crosses the southern sky and sets in the west;
+  at night the moon lights the land in blue and stars come out. Dawn and
+  dusk tint the sky and the light.
+- The rain under the A5 cloud is now lit, so it darkens at night.
+
+Placeholders (Claude's choices beyond the request): a game day lasting 24
+real minutes, a new game starting at 8:00, sunrise at 6:00 and sunset at
+20:00 all year, the sun's height, every colour and brightness, and F7 as
+the dev key that runs time fast (it doesn't exist in release builds).
+

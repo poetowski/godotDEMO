@@ -18,6 +18,8 @@ static func upgrade(data: Dictionary) -> Dictionary:
 		match version:
 			1:
 				result = _from_1(result)
+			2:
+				result = _from_2(result)
 			_:
 				return {}
 		version = int(result.get("version", 0))
@@ -48,4 +50,12 @@ static func _from_1(data: Dictionary) -> Dictionary:
 			amounts.append(0 if id.is_empty() else 1)
 		data["amounts"] = amounts
 	data["version"] = 2
+	return data
+
+
+## Format 2 to 3 (2026-10-28): saves gained the time of day. Older games
+## carry on from the clock's starting time on day 1.
+static func _from_2(data: Dictionary) -> Dictionary:
+	data["time"] = {"day": 1, "hour": 8.0}
+	data["version"] = 3
 	return data

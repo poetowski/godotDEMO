@@ -24,6 +24,7 @@ working title and the game's design is not decided yet.
 | `npm run shot -- [scene] [--out=x.png] [--frames=60] [--size=1280x720]` | Plays a scene (default: the main scene) in a window, saves `.shots/<scene>.png` and quits. Read the PNG to see it. |
 | `npm run shot -- --camera=x,y,z --look=x,y,z --out=.shots/view.png` | The same, shot from a temporary camera at any viewpoint. |
 | `npm run shot -- --frame=A1:C3 --out=.shots/area.png` | The same, from a camera framing those sectors from above. |
+| `npm run shot -- --hour=0 --out=.shots/night.png` | Any shot at a time of day: the world is lit by the clock, so check designs by night too. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
 | `npm run models` | Runs every Blender script in `tools/blender/` headless with factory settings (the hero: `build_hero.py`), writing `.glb` files into `assets/models/`, then imports them. Commit the `.glb` with the script that made it. |
@@ -32,7 +33,7 @@ working title and the game's design is not decided yet.
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
 | `npm run game -- src/world/stress/stress_field.tscn` | The stress-test world: woodland in all 400 sectors on Perlin hills. Regenerate it with `python tools/make_stress_field.py`. |
-| `npm run game -- [scene] [--sector=C4]` | Plays until the window is closed, starting in the given sector. It blocks, so run it in the background when asked to launch the game. |
+| `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
 `tools/dev.mjs`. The `GODOT` environment variable overrides it. Blender 5.2.3
