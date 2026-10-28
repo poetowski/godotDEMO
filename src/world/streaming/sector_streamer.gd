@@ -33,6 +33,14 @@ func _ready() -> void:
 	add_to_group(&"sector_streamers")
 
 
+## Collects reads still running, so leaving a world mid-load leaks nothing.
+func _exit_tree() -> void:
+	for path: String in _pending.values():
+		if not path.is_empty():
+			ResourceLoader.load_threaded_get(path)
+	_pending.clear()
+
+
 func _process(delta: float) -> void:
 	_attach_one()
 	_timer -= delta
