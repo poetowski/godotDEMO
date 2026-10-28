@@ -18,7 +18,7 @@
 //   npm run check                import, then load every script, scene and
 //                                resource in src/ data/ assets/ tests/ tools/
 //   npm test [-- <gut args>]     run the GUT suite headless, e.g.
-//                                npm test -- -gselect=test_fly_camera
+//                                npm test -- -gselect=test_player
 //   npm run shot [-- <scene>] [--out=<png>] [--frames=<n>] [--size=<WxH>]
 //                [--camera=x,y,z --look=x,y,z | --frame=A1:C3] [--sector=C4]
 //                                play a scene in a window, save a PNG, quit;

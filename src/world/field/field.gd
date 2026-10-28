@@ -5,6 +5,9 @@ extends Node3D
 ## player starting in A1 facing north. Pass
 ## `--sector=C4` after `--` on the command line to start in another sector.
 
+## The sector the player starts in unless `--sector=` names another.
+var start_sector: String = "A1"
+
 var _sector := Vector2i(-2, -2)
 
 @onready var _player: Player = $Player
@@ -23,7 +26,7 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	var start := SectorMap.cell_named(requested_sector(OS.get_cmdline_user_args()))
+	var start := SectorMap.cell_named(requested_sector(OS.get_cmdline_user_args(), start_sector))
 	if start == SectorMap.NONE:
 		start = Vector2i.ZERO
 	var point := SectorMap.start_of(start)
@@ -111,9 +114,9 @@ func _slot_name(slot: String) -> String:
 	return tr("quicksave") if slot == SaveGame.QUICK else tr("slot %s") % slot
 
 
-## The sector named by a `--sector=` argument, or "A1".
-static func requested_sector(args: PackedStringArray) -> String:
+## The sector named by a `--sector=` argument, or `fallback`.
+static func requested_sector(args: PackedStringArray, fallback: String = "A1") -> String:
 	for arg in args:
 		if arg.begins_with("--sector="):
 			return arg.trim_prefix("--sector=")
-	return "A1"
+	return fallback

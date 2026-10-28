@@ -78,3 +78,26 @@ func test_mushrooms_grow_in_the_woods_and_can_be_collected() -> void:
 	assert_true(WorldState.is_taken(persist))
 	player.inventory.clear()
 	WorldState.reset()
+
+
+func test_villagers_live_by_their_program() -> void:
+	var clock: WorldClock = _world.call("clock")
+	var villagers: Array[Villager] = []
+	villagers.assign(_world.call("villagers"))
+	assert_eq(villagers.size(), 10)
+	clock.speed = 1.0
+	clock.hour = 9.0
+	for k in 40:
+		for villager in villagers:
+			villager.advance(1.0)
+	for villager in villagers:
+		assert_eq(villager.activity(), &"work", "%s works in the morning" % villager.display_name)
+		assert_lt(villager.ground_position().distance_to(villager.work), 0.1)
+	clock.hour = 12.5
+	for k in 40:
+		for villager in villagers:
+			villager.advance(1.0)
+	for villager in villagers:
+		assert_eq(villager.activity(), &"talk", "%s is at lunch" % villager.display_name)
+		assert_lt(villager.ground_position().distance_to(villager.meet), 2.0)
+		assert_almost_eq(villager.global_position.y, _terrain.height_at(villager.ground_position()), 0.01, "on the ground")

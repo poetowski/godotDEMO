@@ -53,3 +53,4 @@ func test_grass_is_solid_far_beyond_the_grid() -> void:
 func test_sector_argument_picks_the_start() -> void:
 	assert_eq(FieldScript.requested_sector(PackedStringArray(["--sector=C4"])), "C4")
 	assert_eq(FieldScript.requested_sector(PackedStringArray()), "A1")
+	assert_eq(FieldScript.requested_sector(PackedStringArray(), "J10"), "J10")

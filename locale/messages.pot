@@ -82,6 +82,10 @@ msgstr ""
 msgid "Cry"
 msgstr ""
 
+#: src/world/time/world_clock.gd
+msgid "Day %d  %02d:%02d"
+msgstr ""
+
 #: src/ui/inventory/inventory_panel.gd
 msgid "Drag to turn it"
 msgstr ""
@@ -204,6 +208,14 @@ msgstr ""
 
 #: data/items/chanterelle.tres data/items/fly_agaric.tres data/items/penny_bun.tres
 msgid "The woods"
+msgstr ""
+
+#: src/world/stress/stress_field.gd
+msgid "Time runs fast"
+msgstr ""
+
+#: src/world/stress/stress_field.gd
+msgid "Time runs normally"
 msgstr ""
 
 #: data/items/penny_bun.tres

@@ -297,3 +297,22 @@ Placeholders (Claude's choices beyond the request): the body's proportions
 and parts, every animation's poses and timing, holding the sword raised
 before the body rather than pointing ahead.
 
+## 2026-10-28: Villagers with daily programs in the stress world
+
+Request: remove the sandbox; in the stress world, add some NPCs with their
+own daily program, very simplistic.
+
+- The sandbox (dev test ground and fly camera) is gone.
+- The stress world has a clock (a game day is 24 real minutes; T
+  fast-forwards to one game hour per second) and starts the player in J10.
+- Ten villagers live around J10, each with a home and a work place. Their
+  day: work from about 6:00, lunch together at the middle of J10 at 12:00,
+  work again from 13:00, an evening together from about 18:00, home from
+  about 21:00. Hours differ by up to an hour between them. At work they
+  swing their arms as if chopping.
+
+Placeholders (Claude's choices beyond the request): the names (Ada, Bran,
+Cora, Dain, Elin, Finn, Greta, Hal, Ivy, Jory), tunic colours, the program
+and its hours, where homes and work places are, the day's length, the T key,
+and no houses, sleeping or collision.
+

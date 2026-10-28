@@ -14,6 +14,7 @@ var _prompt: Label
 var _mouse_hint: Label
 var _controls: Label
 var _sector: Label
+var _clock: Label
 var _inventory: InventoryPanel
 var _choices: ChoiceMenu
 var _menu: GameMenu
@@ -28,6 +29,13 @@ func _ready() -> void:
 	_sector.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_sector.offset_left = 28.0
 	_sector.offset_top = 20.0
+	_clock = _label(34, Color(0.75, 0.95, 1.0))
+	_clock.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_clock.anchor_left = 1.0
+	_clock.anchor_right = 1.0
+	_clock.offset_left = -400.0
+	_clock.offset_right = -28.0
+	_clock.offset_top = 20.0
 	_prompt = _label(40, Color(1.0, 0.9, 0.6))
 	_prompt.anchor_left = 0.0
 	_prompt.anchor_right = 1.0
@@ -111,6 +119,12 @@ func close_menus() -> void:
 ## Shows the sector the player stands in; an empty name means off the grid.
 func show_sector(sector_name: String) -> void:
 	_sector.text = tr("Off the grid") if sector_name.is_empty() else tr("Sector %s") % sector_name
+
+
+## Shows the time of day in the top right; worlds without a clock never
+## call it.
+func show_clock(text: String) -> void:
+	_clock.text = text
 
 
 func sector_text() -> String:

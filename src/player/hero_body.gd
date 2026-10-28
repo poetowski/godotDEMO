@@ -57,6 +57,25 @@ func eyes() -> Array[Node3D]:
 	return _eyes
 
 
+## Recolours one of the body's materials ("Tunic", "Trousers", "Hair"...)
+## on this body only.
+func tint(material_name: String, color: Color) -> void:
+	for mesh_instance in find_children("*", "MeshInstance3D", true, false):
+		var mesh := (mesh_instance as MeshInstance3D).mesh
+		for surface in mesh.get_surface_count():
+			var material := mesh.surface_get_material(surface) as BaseMaterial3D
+			if material and material.resource_name == material_name:
+				var own := material.duplicate() as BaseMaterial3D
+				own.albedo_color = color
+				(mesh_instance as MeshInstance3D).set_surface_override_material(surface, own)
+
+
+## Stops or restarts animating, for bodies far from the player.
+func set_active(active: bool) -> void:
+	if _tree.active != active:
+		_tree.active = active
+
+
 ## Sets how the body moves this frame.
 func move(ground_speed: float, airborne: bool, holding_sword: bool, delta: float) -> void:
 	var position_now := float(_tree.get("parameters/locomotion/blend_position"))
