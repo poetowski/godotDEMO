@@ -351,3 +351,19 @@ Placeholders (Claude's choices beyond the request): the world's size, the
 hills (34 m high, about one every 250 m), the woods and their density, the
 thinner fog, the start, and how far detail and trees reach.
 
+## 2026-10-28: One world from R1, footsteps and an ambient
+
+Decisions: R1 is the starting region, from which the world gets built; skip
+weather and seasons for now; for sound, footsteps and one ambient.
+
+- The main field is the world now: 10 x 10 regions (2 km). R1, with the
+  designed sectors, is where the player starts. It stays flat and clear of
+  the procedural woods, as room to build; hills rise beyond it over 300 m.
+- Footsteps on grass, splashes in water, a heavier step on landing.
+- One ambient for the whole world: a soft wind, birds by day, crickets by
+  night.
+
+Placeholders (Claude's choices beyond the request): R1 kept flat and clear,
+how the hills rise around it, every sound (made in code; listen to them in
+.shots/sounds/), their loudness, and how often the birds and crickets call.
+

@@ -52,6 +52,7 @@ static func ground_material() -> ShaderMaterial:
 
 
 func _ready() -> void:
+	add_to_group(&"terrains")
 	_collect()
 	if chunked:
 		_build_border()

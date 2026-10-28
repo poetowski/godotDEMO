@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://src/world/time/world_clock.gd" id="30_clock"]
 [ext_resource type="Script" path="res://src/world/time/day_night.gd" id="31_daynight"]
 [ext_resource type="Script" path="res://src/world/nature/vegetation.gd" id="40_vegetation"]
+[ext_resource type="Script" path="res://src/audio/ambience.gd" id="41_ambience"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -141,6 +142,12 @@ editor_description = "Woods growing on their own over the open land beyond R1, s
 script = ExtResource("40_vegetation")
 focus = NodePath("../Player")
 terrain = NodePath("../Terrain")
+
+[node name="Ambience" type="Node" parent="." node_paths=PackedStringArray("day_night", "clock")]
+editor_description = "Wind always, birds by day and crickets by night."
+script = ExtResource("41_ambience")
+day_night = NodePath("../DayNight")
+clock = NodePath("../Clock")
 
 [node name="Player" parent="." unique_id=1016686104 instance=ExtResource("5_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -2.5)
