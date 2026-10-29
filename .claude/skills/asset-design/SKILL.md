@@ -96,7 +96,8 @@ in the brief are rules. If the description is missing, ask for it.
 ## Gotchas
 
 - Blender is Z-up and the object's front faces -Y; the exported asset is
-  Y-up in Godot, front toward +Z. Don't rotate the model to compensate.
+  Y-up in Godot, its front toward -Z (checked in game with the weapon rack).
+  Don't rotate the model to compensate; rotate the placed Prop.
 - A lathe profile must start and end where you want caps: radius 0 makes a
   point, anything else a flat cap.
 - Glass must be its own material with `alpha` below 1; liquids inside are a

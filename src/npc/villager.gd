@@ -25,7 +25,7 @@ const WORK_STROKE := 1.6
 ## The daily program, sorted by hour: {"from": 6.0, "place": &"work",
 ## "do": &"work"}. Places are home, work and meet; activities rest, work and
 ## talk. The last step runs on past midnight until the first.
-var program: Array[Dictionary] = []
+@export var program: Array[Dictionary] = []
 var clock: WorldClock
 var terrain: FieldTerrain
 ## What it shows from, usually the player.

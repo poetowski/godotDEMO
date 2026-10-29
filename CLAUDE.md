@@ -36,7 +36,6 @@ working title and the game's design is not decided yet.
 | `npm run editor` | Opens the editor, which the MCP tools need. |
 | `npm run game -- --regions=20` | The world at 20 x 20 regions (4 km) instead of 10 x 10, for testing. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Vegetation/FarForest]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
-| `npm run game -- src/world/stress/stress_field.tscn` | The stress-test world: woodland in all 400 sectors on Perlin hills. Regenerate it with `python tools/make_stress_field.py`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
@@ -211,7 +210,7 @@ first.
 ```
 src/autoload/    global singletons (DevTools; MCPRuntime comes from the add-on)
 src/shared/      reusable code, components and shaders; nature/ holds the rocks, plants, water and stream kit
-src/world/       levels; field/ is the main scene (the sector grid), stress/ the stress-test world
+src/world/       levels; field/ is the one world (the sector grid and the open world around it)
 src/world/field/sectors/   one folder per sector design
 src/world/streaming/ streaming: SectorStreamer, baked files, WorldState
 src/audio/       sound made in code: footsteps, the world's ambience

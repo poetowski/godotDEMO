@@ -9,7 +9,7 @@ extends RefCounted
 ## wherever region designs put them. Designs add their own shapes on
 ## top, and the ground between them follows it, so hills run across sector
 ## borders without a step. Flat (amplitude 0) unless the world's root sets it,
-## as the stress-test world does.
+## as the stress-test world did.
 
 ## Metres the hills rise and fall at most; 0 for flat.
 static var amplitude := 0.0

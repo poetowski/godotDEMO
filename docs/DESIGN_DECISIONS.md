@@ -426,3 +426,37 @@ spears and shields behind them".
 Placeholders (Claude's choices beyond the brief): the roof, the wood and
 iron, the number of shields and spears, the shields' shapes, colours and
 crosses.
+
+The weapon rack was then placed against the A5 cottage's east wall, facing
+east, so the author could see it in the game (a placeholder spot: one Prop
+under `Sectors/A5RainyCottage/Props`).
+
+## 2026-10-29: Sectors C5, C6, D5, D6: an oasis, and its resident
+
+Request: "in region 1, sectors C5, C6, D5, D6 - model oasis with tents and
+put there one living npc with routine around".
+
+- A patch of low sand dunes in the field around a still pond (centre
+  30, -49, about 3.8 m across the radius) ringed by green grass, reeds and
+  lilies, with nine date palms leaning over it.
+- A camp of three tents around a campfire south of the pond (north on the
+  map): a big tent striped cream and red with an awning, a rug and clay
+  water jars; two small plain tents. Logs to sit on round the fire, which
+  glows.
+- Samir, a villager in a rust tunic, the field's first resident (under
+  `Residents` in `field.tscn`, wired to the clock by `field.gd`): works at
+  the pond's east bank from 5:30, rests at his tent from 11:30 through the
+  midday heat, works again from 15:00, sits by the fire from 18:30, and goes
+  to his tent at 22:00.
+
+Placeholders (Claude's choices beyond the brief): the layout, sizes and
+colours, the palms, reeds, lilies, rug and jars, the number of tents, the
+name Samir, his look and his hours.
+
+## 2026-10-29: One world
+
+Request: "remove stresstest world so we will have just 1 world where we
+demonstrate further". The stress world (`src/world/stress/`, its test and
+`tools/make_stress_field.py`) is removed; the field is the one world. Its
+ten villagers went with it. Its measurements stay in ARCHITECTURE.md as
+history, and old saves from it still load (their mushrooms grow back).

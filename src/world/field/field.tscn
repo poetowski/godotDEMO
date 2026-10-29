@@ -19,6 +19,9 @@
 [ext_resource type="Script" path="res://src/audio/ambience.gd" id="41_ambience"]
 [ext_resource type="Script" path="res://src/world/props/prop.gd" id="50_prop"]
 [ext_resource type="PackedScene" path="res://src/world/props/assets/alchemist_column.tscn" id="61_alchemist"]
+[ext_resource type="PackedScene" path="res://src/world/props/assets/weapon_rack.tscn" id="62_rack"]
+[ext_resource type="Script" path="res://src/world/field/sectors/c5_d6_oasis/c5_d6_oasis.gd" id="63_oasis"]
+[ext_resource type="Script" path="res://src/npc/villager.gd" id="64_villager"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -636,6 +639,9 @@ design_seed = 45
 [node name="AlchemistColumn" parent="Sectors/A5RainyCottage/Props" instance=ExtResource("61_alchemist")]
 transform = Transform3D(0.939373, 0, -0.342898, 0, 1, 0, 0.342898, 0, 0.939373, 3.0, 0.08, -44.3)
 
+[node name="WeaponRack" parent="Sectors/A5RainyCottage/Props" instance=ExtResource("62_rack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7.8, 0.08, -46.8)
+
 [node name="A7IvyStatue" type="Node3D" parent="Sectors"]
 editor_description = "A big phallic fertility statue on a plinth, overgrown with ivy."
 script = ExtResource("11_statue")
@@ -660,6 +666,35 @@ designs_root = NodePath("../Sectors")
 script = ExtResource("3_grid")
 focus = NodePath("../Player")
 terrain = NodePath("../Terrain")
+
+[node name="C5D6Oasis" type="Node3D" parent="Sectors"]
+editor_description = "An oasis: a palm-ringed pond in low sand dunes, with a camp of three tents around a campfire."
+script = ExtResource("63_oasis")
+sectors = PackedStringArray("C5", "C6", "D5", "D6")
+design_id = "c5_d6_oasis"
+design_seed = 56
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/C5D6Oasis"]
+
+[node name="Rock1" type="Node3D" parent="Sectors/C5D6Oasis/Props"]
+transform = Transform3D(-0.25979656, 0, -0.6339034, 0, 0.68507504, 0, 0.6339034, 0, -0.25979656, 22.50379, 0.2662053, -53.80252)
+script = ExtResource("50_prop")
+kind = 1
+variant = 0
+solid = true
+
+[node name="Residents" type="Node3D" parent="."]
+
+[node name="Samir" type="Node3D" parent="Residents"]
+script = ExtResource("64_villager")
+display_name = "Samir"
+tunic = Color(0.55, 0.3, 0.16, 1)
+home = Vector2(33.1, -55)
+work = Vector2(34.8, -49)
+meet = Vector2(30, -55)
+walk_speed = 1.6
+program = Array[Dictionary]([{"from": 5.5, "place": &"work", "do": &"work"}, {"from": 11.5, "place": &"home", "do": &"rest"}, {"from": 15.0, "place": &"work", "do": &"work"}, {"from": 18.5, "place": &"meet", "do": &"talk"}, {"from": 22.0, "place": &"home", "do": &"rest"}])
 
 [node name="Streamer" type="Node" parent="." node_paths=PackedStringArray("designs_root", "focus")]
 editor_description = "Loads the sector designs near the player and unloads the far ones."

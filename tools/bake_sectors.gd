@@ -10,7 +10,7 @@ extends SceneTree
 ## build them again when they enter the tree.
 
 ## The worlds whose designs are baked; design names are unique across them.
-const WORLDS: Array[String] = ["res://src/world/field/field.tscn", "res://src/world/stress/stress_field.tscn"]
+const WORLDS: Array[String] = ["res://src/world/field/field.tscn"]
 
 
 func _initialize() -> void:

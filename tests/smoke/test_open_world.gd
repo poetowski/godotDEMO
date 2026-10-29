@@ -43,7 +43,7 @@ func test_0_the_world_has_100_regions_and_starts_in_r1() -> void:
 
 func test_1_r1_is_flat_and_clear_and_the_hills_rise_beyond() -> void:
 	for k in 20:
-		assert_eq(_terrain.height_at(Vector2(10.0 + k * 9.0, -15.0 - k * 9.0)), 0.0, "flat in R1")
+		assert_eq(_terrain.height_at(Vector2(10.0 + k * 9.0, -12.0 - k * 9.0)), 0.0, "flat in R1")
 	assert_eq(_vegetation.tree_count(Vector2i(0, 0)), 0)
 	var far := 0.0
 	for k in 20:

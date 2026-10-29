@@ -3,7 +3,8 @@ extends Node3D
 ## light curtains and names, the sector designs under `Sectors` shaping the
 ## sectors they own and streamed in around the player by `Streamer`, and the
 ## player starting in A1 facing north, and the time of day (Clock, with
-## DayNight lighting the world by it). Pass `--sector=C4` after `--` on the
+## DayNight lighting the world by it), and the villagers living in it
+## (`Residents`). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at
 ## another time.
 
@@ -57,6 +58,23 @@ func _ready() -> void:
 	_hud.save_requested.connect(save_to)
 	_hud.load_requested.connect(load_from)
 	_hud.track(_player)
+	_wake_residents()
+
+
+## The villagers living in the field (under `Residents`): they follow their
+## programs on the field's clock and show near the player.
+func _wake_residents() -> void:
+	var residents := get_node_or_null("Residents")
+	if residents == null:
+		return
+	for node in residents.get_children():
+		var villager := node as Villager
+		if villager == null:
+			continue
+		villager.clock = _clock
+		villager.terrain = _terrain
+		villager.viewer = _player
+		villager.add_to_group(&"villagers")
 
 
 func _process(_delta: float) -> void:
