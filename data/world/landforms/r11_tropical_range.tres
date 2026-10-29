@@ -1,0 +1,88 @@
+[gd_resource type="Resource" script_class="LandformSet" format=3]
+
+[ext_resource type="Script" path="res://src/world/land/landform_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://src/world/land/landform.gd" id="2_landform"]
+[ext_resource type="Script" path="res://src/world/land/waterfall.gd" id="3_waterfall"]
+
+[sub_resource type="Resource" id="Resource_peak"]
+script = ExtResource("2_landform")
+kind = 0
+centre = Vector2(100, 300)
+radius = 62.0
+height = 80.0
+roughness = 0.75
+tree_density = 0.9
+tree_line = 120.0
+tropical = true
+noise_seed = 11
+
+[sub_resource type="Resource" id="Resource_west_peak"]
+script = ExtResource("2_landform")
+kind = 0
+centre = Vector2(48, 312)
+radius = 34.0
+height = 62.0
+roughness = 0.7
+tree_density = 0.9
+tropical = true
+noise_seed = 12
+
+[sub_resource type="Resource" id="Resource_east_peak"]
+script = ExtResource("2_landform")
+kind = 0
+centre = Vector2(154, 318)
+radius = 34.0
+height = 68.0
+roughness = 0.7
+tree_density = 0.9
+tropical = true
+noise_seed = 13
+
+[sub_resource type="Resource" id="Resource_spine"]
+script = ExtResource("2_landform")
+kind = 2
+centre = Vector2(40, 340)
+end = Vector2(165, 345)
+radius = 28.0
+height = 50.0
+roughness = 0.5
+tree_density = 0.9
+tropical = true
+noise_seed = 14
+
+[sub_resource type="Resource" id="Resource_ledge"]
+script = ExtResource("2_landform")
+kind = 4
+centre = Vector2(100, 265)
+radius = 40.0
+height = 38.0
+roughness = 0.0
+tree_density = 0.8
+tropical = true
+noise_seed = 15
+
+[sub_resource type="Resource" id="Resource_plunge"]
+script = ExtResource("2_landform")
+kind = 3
+centre = Vector2(100, 220)
+radius = 9.0
+height = 4.0
+roughness = 0.0
+tree_density = 0.0
+noise_seed = 16
+
+[sub_resource type="Resource" id="Resource_fall"]
+script = ExtResource("3_waterfall")
+top = Vector2(100, 246)
+bottom = Vector2(100, 221)
+width = 9.0
+pool_radius = 7.0
+pool_depth = 2.6
+
+[resource]
+script = ExtResource("1_set")
+id = "r11_tropical_range"
+regions = PackedStringArray("R11")
+brief = "create tropical mountain range in region R11 with waterfall facing south so it is visible from R1"
+landforms = Array[ExtResource("2_landform")]([SubResource("Resource_peak"), SubResource("Resource_west_peak"), SubResource("Resource_east_peak"), SubResource("Resource_spine"), SubResource("Resource_ledge"), SubResource("Resource_plunge")])
+waterfalls = Array[ExtResource("3_waterfall")]([SubResource("Resource_fall")])

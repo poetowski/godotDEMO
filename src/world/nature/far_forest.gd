@@ -124,7 +124,8 @@ func _generate(block: Vector2i) -> void:
 			for k in range(0, spots.size(), 2):
 				var spot: Array = spots[k]
 				var where: Transform3D = spot[1]
-				var kind := 0 if int(spot[0]) < 2 else 1
+				# Pines stand in as pines; round, palm and jungle trees as round.
+				var kind := 1 if int(spot[0]) in [2, 3] else 0
 				placed[kind].append(Transform3D(where.basis.scaled(Vector3.ONE * 1.25), where.origin))
 	_mutex.lock()
 	_done.append({"block": block, "placed": placed})

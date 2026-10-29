@@ -14,6 +14,10 @@ const CHUNK := TerrainChunks.CHUNK
 ## Metres between candidate tree spots (jittered).
 const TREE_SPACING := 7.0
 const ATTACH_PER_FRAME := 2
+## Tree kinds of the ordinary woods, and the tropical ones (palm, jungle
+## tree) that replace them on tropical landforms.
+const TEMPERATE_KINDS := 4
+const TROPICAL_KINDS: Array[int] = [4, 5]
 
 ## Whose surroundings grow.
 @export var focus: Node3D
@@ -65,6 +69,13 @@ func _ready() -> void:
 		else:
 			NatureKit.add_pine(batch, rng, Vector3.ZERO, 7.0)
 		_tree_meshes.append(batch.commit())
+	# Tropical kinds, on tropical landforms: a palm and a jungle tree.
+	var palm := NatureKit.Batch.new()
+	NatureKit.add_palm(palm, rng, Vector3.ZERO, 7.0, Vector2(0.9, 0.0))
+	_tree_meshes.append(palm.commit())
+	var jungle := NatureKit.Batch.new()
+	NatureKit.add_jungle_tree(jungle, rng, Vector3.ZERO, 8.0)
+	_tree_meshes.append(jungle.commit())
 	var bush := NatureKit.Batch.new()
 	NatureKit.add_bush(bush, rng, Transform3D())
 	_bush_mesh = bush.commit()
@@ -223,7 +234,9 @@ func _generate(chunk: Vector2i, detail: bool, token: int) -> void:
 
 
 ## Every tree in a chunk as [kind, transform]: candidates on a jittered grid,
-## kept where the forest is thick enough. The same every time.
+## kept where the forest is thick enough. Kinds 0 to 3 are the woods' round
+## trees and pines; on tropical landforms they turn into palms (4) and jungle
+## trees (5). The same every time.
 func tree_spots(chunk: Vector2i) -> Array[Array]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(Vector3i(chunk.x, chunk.y, vegetation_seed))
@@ -235,8 +248,10 @@ func tree_spots(chunk: Vector2i) -> Array[Array]:
 			var xz := corner + Vector2((i + rng.randf()) * TREE_SPACING, -(j + rng.randf()) * TREE_SPACING)
 			var keep := rng.randf()
 			var size := rng.randf_range(0.75, 1.3)
-			var kind := rng.randi() % _tree_meshes.size()
+			var kind := rng.randi() % TEMPERATE_KINDS
 			var turn := rng.randf() * TAU
+			if fposmod(turn * 7.31, 1.0) < Landforms.tropical(xz):
+				kind = TROPICAL_KINDS[kind % 2]
 			if keep <= forest_density(xz) * _ground_allows(xz) and _open(xz):
 				spots.append([kind, _stand(xz, turn, size, 0.1)])
 	return spots
@@ -249,7 +264,7 @@ func _ground_allows(xz: Vector2) -> float:
 	var east := _height(xz + Vector2(1.5, 0.0))
 	var north := _height(xz + Vector2(0.0, -1.5))
 	var slope := Vector2(east - ground, north - ground).length() / 1.5
-	if slope > max_slope:
+	if slope > lerpf(max_slope, Landforms.TROPICAL_MAX_SLOPE, Landforms.tropical(xz)):
 		return 0.0
 	return Landforms.tree_factor(xz, ground)
 

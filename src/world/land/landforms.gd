@@ -14,6 +14,8 @@ const SNOW := Color(0.93, 0.95, 0.98)
 ## How steep (1 - the ground's up component) bare rock begins and takes over.
 const ROCK_FROM := 0.2
 const ROCK_FULL := 0.34
+## Rise per metre up to which jungle grows on tropical landforms.
+const TROPICAL_MAX_SLOPE := 1.7
 
 static var _sets: Array[LandformSet] = []
 static var _all: Array[Landform] = []
@@ -70,11 +72,25 @@ static func tree_factor(xz: Vector2, ground: float) -> float:
 	return factor
 
 
+## How much the woods here are tropical, 0 to 1: the cover of the tropical
+## landforms over the point.
+static func tropical(xz: Vector2) -> float:
+	var north := Vector2(xz.x, -xz.y)
+	var most := 0.0
+	for k in _all.size():
+		if _all[k].tropical and _boxes[k].has_point(north):
+			most = maxf(most, _all[k].cover_at(xz))
+	return most
+
+
 ## The ground's colour at a point for the grass shader (alpha: how much grass
 ## shows): grass, rock where it's steep, snow above a landform's snow line.
 ## `up` is the ground's up component (1 flat, 0 a wall).
 static func ground_tint(xz: Vector2, ground: float, up: float) -> Color:
-	var rock := smoothstep(ROCK_FROM, ROCK_FULL, 1.0 - up)
+	# Jungle clings to steeper slopes than temperate grass: only cliffs show
+	# rock on tropical landforms.
+	var lush := tropical(xz)
+	var rock := smoothstep(lerpf(ROCK_FROM, 0.5, lush), lerpf(ROCK_FULL, 0.72, lush), 1.0 - up)
 	var tint := Color(ROCK.r, ROCK.g, ROCK.b, 1.0 - rock)
 	var north := Vector2(xz.x, -xz.y)
 	for k in _all.size():

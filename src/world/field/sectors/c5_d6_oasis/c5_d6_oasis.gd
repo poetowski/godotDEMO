@@ -15,7 +15,6 @@ const FIRE := Vector2(30.0, -55.0)
 const SAND := Color(0.84, 0.74, 0.52)
 const OASIS_GREEN := Color(0.3, 0.5, 0.2)
 const TRUNK := Color(0.47, 0.36, 0.24)
-const FROND := Color(0.29, 0.47, 0.17)
 const POLE := Color(0.36, 0.25, 0.16)
 ## Tents: centre, facing (radians, 0 = door toward -z), width, depth, height,
 ## cloth, stripe (alpha 0 = none).
@@ -194,7 +193,6 @@ func _build_campfire() -> void:
 ## Date palms around the pond, leaning out over it a little, with drooping
 ## fronds and clusters of dates.
 func _build_palms() -> void:
-	var trunk_piece := MeshKit.triangles(MeshKit.cylinder(1.0, 1.0, 1.0, 7))
 	var placed := 0
 	for attempt in palms * 8:
 		if placed >= palms:
@@ -205,56 +203,13 @@ func _build_palms() -> void:
 			continue
 		var height := rng.randf_range(4.5, 6.5)
 		var lean := (POND - xz).normalized() * rng.randf_range(0.6, 1.4)
-		_build_palm(merged("Palms", xz), trunk_piece, Vector3(xz.x, height_at(xz) - 0.1, xz.y), height, lean)
+		NatureKit.add_palm(merged("Palms", xz), rng, Vector3(xz.x, height_at(xz) - 0.1, xz.y), height, lean)
 		var shape := CylinderShape3D.new()
 		shape.radius = 0.2
 		shape.height = 2.0
 		add_collider(shape, Transform3D(Basis(), Vector3(xz.x, height_at(xz) + 1.0, xz.y)))
 		claim(xz, 0.6)
 		placed += 1
-
-
-func _build_palm(batch: NatureKit.Batch, piece: PackedVector3Array, foot: Vector3, height: float, lean: Vector2) -> void:
-	var segments := 8
-	var previous := foot
-	for k in segments:
-		var t := float(k + 1) / segments
-		var point := foot + Vector3(lean.x * t * t, height * t, lean.y * t * t)
-		var axis := point - previous
-		var radius := lerpf(0.2, 0.13, t)
-		var basis := Basis(Quaternion(Vector3.UP, axis.normalized())).scaled(Vector3(radius, axis.length() * 1.05, radius))
-		batch.add(piece, Transform3D(basis, (point + previous) * 0.5), TRUNK * (0.9 + 0.12 * float(k % 2)))
-		previous = point
-	var crown := previous
-	for k in 9:
-		var yaw := TAU * k / 9.0 + rng.randf() * 0.3
-		_add_frond(batch, crown, Vector3(cos(yaw), rng.randf_range(0.15, 0.5), sin(yaw)).normalized(), rng.randf_range(2.0, 2.8))
-	for k in 3:
-		var yaw := TAU * k / 3.0
-		var bunch := crown + Vector3(cos(yaw) * 0.22, -0.3, sin(yaw) * 0.22)
-		batch.add(MeshKit.triangles(MeshKit.sphere(0.16, 6, 4)), Transform3D(Basis().scaled(Vector3(1, 1.4, 1)), bunch), Color(0.62, 0.36, 0.14))
-
-
-## One frond: a leaf strip arching out and drooping, wide in the middle.
-func _add_frond(batch: NatureKit.Batch, crown: Vector3, out: Vector3, length: float) -> void:
-	var side := out.cross(Vector3.UP).normalized()
-	var steps := 5
-	var triangles := PackedVector3Array()
-	var previous_mid := crown
-	var previous_half := Vector3.ZERO
-	for k in steps:
-		var t := float(k + 1) / steps
-		var mid := crown + out * length * t + Vector3.DOWN * (t * t * length * 0.55)
-		var half := side * 0.32 * sin(PI * minf(t, 0.96)) + Vector3.DOWN * 0.08 * t
-		var a := previous_mid - previous_half
-		var b := previous_mid + previous_half
-		var c := mid + half
-		var e := mid - half
-		triangles.append_array(_two_sided([a, b, c]))
-		triangles.append_array(_two_sided([a, c, e]))
-		previous_mid = mid
-		previous_half = half
-	batch.add(triangles, Transform3D(), FROND * rng.randf_range(0.85, 1.12))
 
 
 func _place_rocks() -> void:

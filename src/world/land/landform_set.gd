@@ -12,6 +12,8 @@ extends Resource
 ## The brief it was made from, in the author's words.
 @export_multiline var brief: String = ""
 @export var landforms: Array[Landform] = []
+## Waterfalls over its land, drawn by Waterfalls.
+@export var waterfalls: Array[Waterfall] = []
 
 
 ## True when every region it names is in the current world.

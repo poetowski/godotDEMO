@@ -460,3 +460,22 @@ demonstrate further". The stress world (`src/world/stress/`, its test and
 `tools/make_stress_field.py`) is removed; the field is the one world. Its
 ten villagers went with it. Its measurements stay in ARCHITECTURE.md as
 history, and old saves from it still load (their mushrooms grow back).
+
+## 2026-10-29: R11: a tropical mountain range with a waterfall
+
+Request: "create tropical mountain range in region R11 with waterfall
+facing south so it is visible from R1".
+
+- R11 (x 0 to 200, 200 to 400 north, right north of R1): a main peak about
+  80 m above the land, two lower peaks west and east, and a spine ridge
+  behind them, all tropical: palms and broad-leaved jungle trees, green up
+  steep slopes, no snow.
+- A cliff ledge (a plateau) on the main peak's south face, with a waterfall
+  9 m wide falling about 40 m over it into a pool at its foot (100, 220
+  north), facing R1; seen from anywhere in R1 looking north.
+- New for this: `Landform.tropical`, and waterfalls as region-design data
+  (`Waterfall`, drawn by `Waterfalls`), both in /region-design.
+
+Placeholders (Claude's choices beyond the brief): every height, size and
+position; the number of peaks; the palm and jungle tree look; the
+waterfall's width and the pool; no river leading on from the pool.

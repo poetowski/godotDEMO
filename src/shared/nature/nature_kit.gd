@@ -127,6 +127,72 @@ static func add_pine(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, he
 		batch.add(cone, Transform3D(Basis(Vector3.UP, rng.randf() * TAU), foot + Vector3.UP * lerpf(0.3, 0.88, f) * height), green)
 
 
+## Adds a date palm about `height` metres tall at `foot`: a segmented trunk
+## curving by `lean` (metres sideways at the top), drooping fronds and
+## bunches of dates.
+static func add_palm(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, height: float, lean: Vector2) -> void:
+	var piece := MeshKit.triangles(MeshKit.cylinder(1.0, 1.0, 1.0, 7))
+	var trunk := Color(0.47, 0.36, 0.24)
+	var segments := 8
+	var previous := foot
+	for k in segments:
+		var t := float(k + 1) / segments
+		var point := foot + Vector3(lean.x * t * t, height * t, lean.y * t * t)
+		var axis := point - previous
+		var radius := lerpf(0.2, 0.13, t)
+		var basis := Basis(Quaternion(Vector3.UP, axis.normalized())).scaled(Vector3(radius, axis.length() * 1.05, radius))
+		batch.add(piece, Transform3D(basis, (point + previous) * 0.5), trunk * (0.9 + 0.12 * float(k % 2)))
+		previous = point
+	var crown := previous
+	for k in 9:
+		var yaw := TAU * k / 9.0 + rng.randf() * 0.3
+		_add_frond(batch, rng, crown, Vector3(cos(yaw), rng.randf_range(0.15, 0.5), sin(yaw)).normalized(), rng.randf_range(2.0, 2.8))
+	for k in 3:
+		var yaw := TAU * k / 3.0
+		var bunch := crown + Vector3(cos(yaw) * 0.22, -0.3, sin(yaw) * 0.22)
+		batch.add(MeshKit.triangles(MeshKit.sphere(0.16, 6, 4)), Transform3D(Basis().scaled(Vector3(1, 1.4, 1)), bunch), Color(0.62, 0.36, 0.14))
+
+
+## One palm frond: a leaf strip arching out and drooping, wide in the middle,
+## seen from both sides.
+static func _add_frond(batch: Batch, rng: RandomNumberGenerator, crown: Vector3, out: Vector3, length: float) -> void:
+	var side := out.cross(Vector3.UP).normalized()
+	var steps := 5
+	var triangles := PackedVector3Array()
+	var previous_mid := crown
+	var previous_half := Vector3.ZERO
+	for k in steps:
+		var t := float(k + 1) / steps
+		var mid := crown + out * length * t + Vector3.DOWN * (t * t * length * 0.55)
+		var half := side * 0.32 * sin(PI * minf(t, 0.96)) + Vector3.DOWN * 0.08 * t
+		var a := previous_mid - previous_half
+		var b := previous_mid + previous_half
+		var c := mid + half
+		var e := mid - half
+		triangles.append_array(PackedVector3Array([a, b, c, a, c, b, a, c, e, a, e, c]))
+		previous_mid = mid
+		previous_half = half
+	batch.add(triangles, Transform3D(), Color(0.29, 0.47, 0.17) * rng.randf_range(0.85, 1.12))
+
+
+## Adds a broad-leaved jungle tree `height` metres tall at `foot`: a tall
+## pale trunk on buttress roots under a wide, flat crown of deep greens.
+static func add_jungle_tree(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, height: float) -> void:
+	var bark := Color(0.55, 0.48, 0.38)
+	batch.add(MeshKit.triangles(MeshKit.cylinder(0.16, 0.3, height, 7)), Transform3D(Basis(), foot + Vector3.UP * height * 0.5), bark)
+	for k in 4:
+		var yaw := TAU * k / 4.0 + rng.randf() * 0.4
+		var root := Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, 0.0)
+		batch.add(MeshKit.triangles(MeshKit.box(Vector3(0.08, 1.2, 0.7))), Transform3D(root, foot + root * Vector3(0.0, 0.45, 0.32)), bark * 0.9)
+	var greens: Array[Color] = [Color(0.12, 0.34, 0.14), Color(0.16, 0.4, 0.16), Color(0.2, 0.46, 0.18)]
+	for lump in rng.randi_range(4, 6):
+		var spread := height * 0.32
+		var offset := Vector3(rng.randf_range(-spread, spread), height + rng.randf_range(-0.4, 0.6), rng.randf_range(-spread, spread))
+		var radius := rng.randf_range(0.28, 0.4) * height
+		var flat := Basis().scaled(Vector3(1.0, 0.45, 1.0))
+		batch.add(lumpy_sphere(rng, radius, 0.25, 7, 4), Transform3D(flat, foot + offset), greens[rng.randi() % greens.size()] * rng.randf_range(0.92, 1.08))
+
+
 ## A tuft of grass blades about 0.3 m tall, for MultiMesh use with
 ## `grass_material()`. UV.y runs from 0 at the roots to 1 at the tips.
 static func grass_tuft(rng: RandomNumberGenerator, blades: int = 7) -> ArrayMesh:

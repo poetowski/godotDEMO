@@ -70,3 +70,28 @@ func test_the_r2_mountain_rises_snowy_above_wooded_slopes() -> void:
 	assert_lt(Landforms.ground_tint(summit, 20.0, 0.55).a, 0.2, "bare rock on steep slopes")
 	assert_eq(Landforms.tree_factor(summit, top), 0.0, "no trees above the tree line")
 	assert_gt(Landforms.tree_factor(Vector2(230.0, -30.0), 10.0), 0.5, "trees on its foot")
+
+
+func test_the_r11_range_is_tropical_with_a_waterfall_facing_r1() -> void:
+	# The main peak towers over R1's northern edge.
+	var peak := WorldShape.height(Vector2(100.0, -300.0))
+	assert_gt(peak - WorldShape.height(Vector2(100.0, -150.0)), 70.0, "a high peak")
+	assert_gt(Landforms.tropical(Vector2(100.0, -300.0)), 0.9, "tropical on the range")
+	assert_eq(Landforms.tropical(Vector2(100.0, -100.0)), 0.0, "not in R1")
+	# A cliff over the pool: the top of the fall is well above its foot, and
+	# it faces south (toward R1).
+	var top := WorldShape.height(Vector2(100.0, -246.0))
+	var foot := WorldShape.height(Vector2(100.0, -221.0))
+	assert_gt(top - foot, 30.0, "a tall fall")
+	var falls := _world.get_node("Waterfalls") as Waterfalls
+	assert_eq(falls.count(), 1)
+	var fall: Waterfall = Landforms.sets().filter(func(s: LandformSet) -> bool: return s.id == "r11_tropical_range")[0].waterfalls[0]
+	assert_lt(fall.bottom.y, fall.top.y, "falls toward the south")
+
+
+func test_tropical_woods_grow_palms_and_jungle_trees() -> void:
+	var vegetation := _world.call("vegetation") as Vegetation
+	var kinds: Dictionary[int, int] = {}
+	for spot: Array in vegetation.tree_spots(Vegetation.chunk_at(Vector2(60.0, -330.0))):
+		kinds[int(spot[0])] = kinds.get(int(spot[0]), 0) + 1
+	assert_gt(kinds.get(4, 0) + kinds.get(5, 0), 0, "palms and jungle trees on the range")

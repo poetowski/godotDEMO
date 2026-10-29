@@ -55,7 +55,8 @@ edges. So shape the regions first, then detail sectors on top.
 4. **The brief is the author's request.** Build what it says without asking
    for approval. Your own choices (exact heights, how many landforms, rock,
    snow, tree lines) are placeholders, recorded as such. Don't add things the
-   brief didn't ask for, like lakes or rivers (those need sector designs).
+   brief didn't ask for, like lakes or rivers (those need sector designs);
+   a waterfall the brief asks for is a `Waterfall` in the set.
 5. **Data, not code.** A region design is a `LandformSet` resource; don't
    change `WorldShape`, `Landforms` or the streaming for a brief. If a brief
    needs a kind of landform that doesn't exist, say so and propose adding it.
@@ -86,7 +87,15 @@ edges. So shape the regions first, then detail sectors on top.
 | `tree_density` | trees on it compared with the woods around, 0 to 1 |
 | `tree_line` | absolute height above which no trees grow on it; 0 for none |
 | `snow_line` | absolute height above which its ground is snow; 0 for none |
+| `tropical` | palms and jungle trees instead of round trees and pines; jungle grows and grass shows on slopes up to 1.7 rise per metre, so only cliffs are bare rock |
 | `noise_seed` | so twin landforms differ |
+
+**Waterfalls** (`src/world/land/waterfall.gd`) go in the set's `waterfalls`:
+`top` and `bottom` (x east, y north), `width`, `pool_radius`, `pool_depth`.
+`Waterfalls` drapes streaming water over the ground from top to bottom, with
+a pool and spray. Shape the land for it with landforms: a PLATEAU's edge
+makes a cliff, a small VALLEY at the foot holds the pool. Falling south
+faces R1. `data/world/landforms/r11_tropical_range.tres` is an example.
 
 Landforms add up: a mountain with a ridge from its side makes a shoulder;
 hills around a mountain's foot make foothills. The land under them already
