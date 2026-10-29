@@ -22,7 +22,7 @@
 [ext_resource type="PackedScene" path="res://src/world/props/assets/weapon_rack.tscn" id="62_rack"]
 [ext_resource type="Script" path="res://src/world/field/sectors/c5_d6_oasis/c5_d6_oasis.gd" id="63_oasis"]
 [ext_resource type="Script" path="res://src/npc/villager.gd" id="64_villager"]
-[ext_resource type="Script" path="res://src/world/land/waterfalls.gd" id="65_waterfalls"]
+[ext_resource type="Script" path="res://src/world/land/waters.gd" id="65_waters"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -714,9 +714,9 @@ script = ExtResource("40_vegetation")
 focus = NodePath("../Player")
 terrain = NodePath("../Terrain")
 
-[node name="Waterfalls" type="Node3D" parent="."]
-editor_description = "The region designs' waterfalls (data/world/landforms/)."
-script = ExtResource("65_waterfalls")
+[node name="Waters" type="Node3D" parent="."]
+editor_description = "The region designs' waterfalls and lakes (data/world/landforms/)."
+script = ExtResource("65_waters")
 
 [node name="Ambience" type="Node" parent="." node_paths=PackedStringArray("day_night", "clock")]
 editor_description = "Wind always, birds by day and crickets by night."

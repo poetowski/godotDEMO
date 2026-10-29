@@ -499,3 +499,22 @@ water at least 1m deep".
   hero anywhere, moving.
 
 Placeholders: the stroke, the speeds, how high the hero floats.
+
+## 2026-10-29: R11: a big lake with an island, instead of the range
+
+Request: "now change r11 region to a big lake surrounded by trees with
+island in the middle".
+
+- The tropical range and its waterfall are gone from R11
+  (`r11_tropical_range.tres` removed); tropical landforms and waterfalls
+  stay available to /region-design.
+- R11 is now a lake about 130 m across (centre 100, 300 north), its surface
+  at 3 m, up to 5 m deep, with a wavering shore, green banks and thick woods
+  all round, and a wooded island about 48 m across rising 6 m in the middle.
+  The hero can swim in it.
+- New for this: lakes as region-design data (`Lake`, in `LandformSet.lakes`),
+  drawn by `Waters` (which the waterfall drawing became).
+
+Placeholders (Claude's choices beyond the brief): the lake's size, shape,
+depth and water level, the island's size and height, how thick the woods
+are.

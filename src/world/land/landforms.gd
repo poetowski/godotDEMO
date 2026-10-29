@@ -20,6 +20,8 @@ const TROPICAL_MAX_SLOPE := 1.7
 static var _sets: Array[LandformSet] = []
 static var _all: Array[Landform] = []
 static var _boxes: Array[Rect2] = []
+static var _lakes: Array[Lake] = []
+static var _lake_boxes: Array[Rect2] = []
 
 
 ## Loads the sets that fit the current world (RegionMap).
@@ -27,6 +29,8 @@ static func load_all() -> void:
 	_sets.clear()
 	_all.clear()
 	_boxes.clear()
+	_lakes.clear()
+	_lake_boxes.clear()
 	if not DirAccess.dir_exists_absolute(FOLDER):
 		return
 	for file in ResourceLoader.list_directory(FOLDER):
@@ -38,6 +42,9 @@ static func load_all() -> void:
 			landform.prepare()
 			_all.append(landform)
 			_boxes.append(landform.bounds())
+		for lake in landform_set.lakes:
+			_lakes.append(lake)
+			_lake_boxes.append(lake.bounds())
 
 
 static func sets() -> Array[LandformSet]:
@@ -52,6 +59,37 @@ static func height(xz: Vector2) -> float:
 		if _boxes[k].has_point(north):
 			total += _all[k].height_at(xz)
 	return total
+
+
+## The land at a world x and z after the lakes carve their basins into it.
+static func shape_lakes(xz: Vector2, land: float) -> float:
+	var north := Vector2(xz.x, -xz.y)
+	for k in _lakes.size():
+		if _lake_boxes[k].has_point(north):
+			land = _lakes[k].shape(xz, land)
+	return land
+
+
+## A lake's surface at a world x and z, or SectorDesign.NO_WATER.
+static func lake_level(xz: Vector2) -> float:
+	var north := Vector2(xz.x, -xz.y)
+	for k in _lakes.size():
+		if _lake_boxes[k].has_point(north):
+			var level := _lakes[k].level_at(xz)
+			if level != SectorDesign.NO_WATER:
+				return level
+	return SectorDesign.NO_WATER
+
+
+## How likely a tree is at a point on a lake's shores, 0 to 1 (0 away from
+## lakes).
+static func shore_woods(xz: Vector2) -> float:
+	var north := Vector2(xz.x, -xz.y)
+	var most := 0.0
+	for k in _lakes.size():
+		if _lake_boxes[k].has_point(north):
+			most = maxf(most, _lakes[k].woods_at(xz))
+	return most
 
 
 ## How thick trees grow here compared with the woods around, 0 to 1, given
@@ -87,9 +125,9 @@ static func tropical(xz: Vector2) -> float:
 ## shows): grass, rock where it's steep, snow above a landform's snow line.
 ## `up` is the ground's up component (1 flat, 0 a wall).
 static func ground_tint(xz: Vector2, ground: float, up: float) -> Color:
-	# Jungle clings to steeper slopes than temperate grass: only cliffs show
-	# rock on tropical landforms.
-	var lush := tropical(xz)
+	# Jungle clings to steeper slopes than temperate grass, and lake banks stay
+	# green: only cliffs show rock there.
+	var lush := maxf(tropical(xz), shore_woods(xz))
 	var rock := smoothstep(lerpf(ROCK_FROM, 0.5, lush), lerpf(ROCK_FULL, 0.72, lush), 1.0 - up)
 	var tint := Color(ROCK.r, ROCK.g, ROCK.b, 1.0 - rock)
 	var north := Vector2(xz.x, -xz.y)

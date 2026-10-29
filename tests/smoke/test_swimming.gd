@@ -1,6 +1,6 @@
 extends GutTest
-## The hero swims in water at least a metre deep (the oasis pond, a
-## waterfall's pool), floating at the surface with the swim animation, and
+## The hero swims in water at least a metre deep (the oasis pond, the
+## R11 lake), floating at the surface with the swim animation, and
 ## walks again on the shore.
 
 var _world: Node
@@ -42,7 +42,7 @@ func test_walks_on_dry_land_and_in_shallow_water() -> void:
 	assert_false(_player.is_swimming)
 
 
-func test_a_waterfall_pool_is_water_to_swim_in() -> void:
+func test_the_r11_lake_is_water_to_swim_in() -> void:
 	var terrain := _world.call("terrain") as FieldTerrain
-	var spot := Vector2(100.0, -221.0)
+	var spot := Vector2(100.0, -260.0)
 	assert_gt(terrain.water_level_at(spot) - terrain.height_at(spot), 1.0)

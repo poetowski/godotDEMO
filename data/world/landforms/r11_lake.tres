@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="LandformSet" format=3]
+
+[ext_resource type="Script" path="res://src/world/land/landform_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://src/world/land/lake.gd" id="2_lake"]
+
+[sub_resource type="Resource" id="Resource_lake"]
+script = ExtResource("2_lake")
+centre = Vector2(100, 300)
+radius = 66.0
+level = 3.0
+depth = 5.0
+island_radius = 24.0
+island_height = 6.0
+shore_woods = 0.85
+
+[resource]
+script = ExtResource("1_set")
+id = "r11_lake"
+regions = PackedStringArray("R11")
+brief = "now change r11 region to a big lake surrounded by trees with island in the middle"
+lakes = Array[ExtResource("2_lake")]([SubResource("Resource_lake")])

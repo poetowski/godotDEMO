@@ -4,7 +4,7 @@ extends Resource
 ## A waterfall in a region design: water running over the land from `top`
 ## down to `bottom`, where it falls into a pool. The land under it is shaped
 ## by the set's landforms (a cliff such as a plateau's edge, a valley for the
-## pool); `Waterfalls` draws the water over whatever ground is there.
+## pool); `Waters` draws the water over whatever ground is there.
 ## Positions are world metres, x east and y north, like Landform's.
 
 ## Where the water starts, on the high ground (x east, y north).

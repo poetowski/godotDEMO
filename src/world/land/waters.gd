@@ -1,9 +1,11 @@
-class_name Waterfalls
+class_name Waters
 extends Node3D
-## Draws every region design's waterfalls (LandformSet.waterfalls): a sheet
-## of streaming water draped over the ground from the top to the bottom, a
-## pool where it lands, and spray. Built once when the world starts, from
-## WorldShape's heights, so they show from any distance like the land.
+## Draws the water of every region design: its waterfalls
+## (LandformSet.waterfalls), a sheet of streaming water draped over the
+## ground from the top to the bottom, a pool where it lands, and spray; and
+## its lakes (LandformSet.lakes), a still surface following each lake's
+## wavering shore. Built once when the world starts, from WorldShape's
+## heights, so they show from any distance like the land.
 
 const WATER := Color(0.55, 0.75, 0.85)
 ## Metres between the sheet's rows down the slope.
@@ -14,6 +16,7 @@ const OUT := 1.2
 
 var _sheet_material: ShaderMaterial
 var _pool_material: StandardMaterial3D
+var _lake_material: StandardMaterial3D
 
 
 func _ready() -> void:
@@ -24,13 +27,21 @@ func _ready() -> void:
 	_pool_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_pool_material.roughness = 0.08
 	_pool_material.metallic_specular = 0.8
+	_lake_material = _pool_material.duplicate() as StandardMaterial3D
+	_lake_material.albedo_color = Color(0.18, 0.38, 0.48, 0.88)
 	for landform_set in Landforms.sets():
 		for k in landform_set.waterfalls.size():
 			_build(landform_set.waterfalls[k], "%s_%d" % [landform_set.id, k])
+		for k in landform_set.lakes.size():
+			_build_lake(landform_set.lakes[k], "%s_%d" % [landform_set.id, k])
 
 
-## The surface of a waterfall's pool at a world x and z, or NO_WATER.
-static func pool_level_at(xz: Vector2) -> float:
+## The surface of a lake or a waterfall's pool at a world x and z, or
+## NO_WATER.
+static func level_at(xz: Vector2) -> float:
+	var lake := Landforms.lake_level(xz)
+	if lake != SectorDesign.NO_WATER:
+		return lake
 	for landform_set in Landforms.sets():
 		for fall in landform_set.waterfalls:
 			var bottom := Vector2(fall.bottom.x, -fall.bottom.y)
@@ -39,8 +50,47 @@ static func pool_level_at(xz: Vector2) -> float:
 	return SectorDesign.NO_WATER
 
 
+## Waterfalls drawn.
 func count() -> int:
-	return get_child_count() / 3
+	return find_children("Sheet_*", "", false, false).size()
+
+
+## Lakes drawn.
+func lake_count() -> int:
+	return find_children("Lake_*", "", false, false).size()
+
+
+func _build_lake(lake: Lake, key: String) -> void:
+	var segments := 96
+	var vertices := PackedVector3Array()
+	var middle := Vector3(lake.centre.x, lake.level, -lake.centre.y)
+	for k in segments:
+		var a := TAU * k / segments
+		var b := TAU * (k + 1) / segments
+		vertices.append(middle)
+		vertices.append(_shore_point(lake, b))
+		vertices.append(_shore_point(lake, a))
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	var normals := PackedVector3Array()
+	normals.resize(vertices.size())
+	normals.fill(Vector3.UP)
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var water := MeshInstance3D.new()
+	water.name = "Lake_" + key
+	water.mesh = mesh
+	water.material_override = _lake_material
+	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(water)
+
+
+func _shore_point(lake: Lake, angle: float) -> Vector3:
+	var direction := Vector2(cos(angle), sin(angle))
+	var north := lake.centre + direction * lake.shore(lake.centre + direction) * Lake.WATER
+	return Vector3(north.x, lake.level, -north.y)
 
 
 func _build(fall: Waterfall, key: String) -> void:

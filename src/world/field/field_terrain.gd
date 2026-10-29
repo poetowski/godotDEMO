@@ -87,7 +87,7 @@ func height_at(xz: Vector2) -> float:
 ## Height of the water surface at a point, or SectorDesign.NO_WATER.
 func water_level_at(xz: Vector2) -> float:
 	var design := design_at(xz)
-	return design.water_level_at(xz) if design else Waterfalls.pool_level_at(xz)
+	return design.water_level_at(xz) if design else Waters.level_at(xz)
 
 
 ## The ground or the water, whichever is higher.

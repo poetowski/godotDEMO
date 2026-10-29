@@ -266,12 +266,14 @@ func _ground_allows(xz: Vector2) -> float:
 	var slope := Vector2(east - ground, north - ground).length() / 1.5
 	if slope > lerpf(max_slope, Landforms.TROPICAL_MAX_SLOPE, Landforms.tropical(xz)):
 		return 0.0
+	if Landforms.lake_level(xz) > ground - 0.3:
+		return 0.0
 	return Landforms.tree_factor(xz, ground)
 
 
 ## How likely a tree is at a point, 0.05 in clearings to 0.9 in thick woods.
 func forest_density(xz: Vector2) -> float:
-	return clampf(0.5 + 1.1 * _forest.get_noise_2d(xz.x, xz.y), 0.05, 0.9)
+	return maxf(clampf(0.5 + 1.1 * _forest.get_noise_2d(xz.x, xz.y), 0.05, 0.9), Landforms.shore_woods(xz))
 
 
 func _open(xz: Vector2) -> bool:

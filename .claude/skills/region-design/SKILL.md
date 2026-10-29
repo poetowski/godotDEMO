@@ -56,7 +56,8 @@ edges. So shape the regions first, then detail sectors on top.
    for approval. Your own choices (exact heights, how many landforms, rock,
    snow, tree lines) are placeholders, recorded as such. Don't add things the
    brief didn't ask for, like lakes or rivers (those need sector designs);
-   a waterfall the brief asks for is a `Waterfall` in the set.
+   a waterfall or lake the brief asks for is a `Waterfall` or `Lake` in the
+   set.
 5. **Data, not code.** A region design is a `LandformSet` resource; don't
    change `WorldShape`, `Landforms` or the streaming for a brief. If a brief
    needs a kind of landform that doesn't exist, say so and propose adding it.
@@ -92,10 +93,21 @@ edges. So shape the regions first, then detail sectors on top.
 
 **Waterfalls** (`src/world/land/waterfall.gd`) go in the set's `waterfalls`:
 `top` and `bottom` (x east, y north), `width`, `pool_radius`, `pool_depth`.
-`Waterfalls` drapes streaming water over the ground from top to bottom, with
+`Waters` drapes streaming water over the ground from top to bottom, with
 a pool and spray. Shape the land for it with landforms: a PLATEAU's edge
 makes a cliff, a small VALLEY at the foot holds the pool. Falling south
-faces R1. `data/world/landforms/r11_tropical_range.tres` is an example.
+faces R1. (The first one, a tropical range in R11, was replaced by the lake;
+see git history before 2026-10-29's lake for its data.)
+
+**Lakes** (`src/world/land/lake.gd`) go in the set's `lakes`: `centre`,
+`radius`, `level` (the absolute water height: measure the land around the
+shore first and pick a level near its low side; the bank rises where the
+land is lower), `depth`, `island_radius` and `island_height` (an island in
+the middle, 0 for none), `shore_woods` (tree cover on the shores). A lake
+carves its basin after the landforms, its banks stay green, nothing grows
+in its water, the hero swims in it, and `Waters` draws its surface. It
+reaches `radius * 1.3 * 1.08` from its centre: keep that inside the
+regions. `data/world/landforms/r11_lake.tres` is an example.
 
 Landforms add up: a mountain with a ridge from its side makes a shoulder;
 hills around a mountain's foot make foothills. The land under them already

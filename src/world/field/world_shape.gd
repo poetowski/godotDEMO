@@ -62,7 +62,7 @@ static func height(xz: Vector2) -> float:
 	var edge := smoothstep(0.0, border, inside)
 	# Flat worlds (no hills) get no detail either.
 	var hills := 0.0 if amplitude == 0.0 else amplitude * (_noise.get_noise_2d(xz.x, xz.y) + 0.35) + detail * _detail_noise.get_noise_2d(xz.x, xz.y)
-	return hills * edge * rise + Landforms.height(xz) * edge
+	return Landforms.shape_lakes(xz, hills * edge * rise + Landforms.height(xz) * edge)
 
 
 ## True inside the flat home area.
