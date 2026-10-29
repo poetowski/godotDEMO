@@ -25,6 +25,7 @@
 [ext_resource type="Script" path="res://src/world/land/waters.gd" id="65_waters"]
 [ext_resource type="Script" path="res://src/world/field/sectors/b5_great_tree/b5_great_tree.gd" id="66_great_tree"]
 [ext_resource type="Resource" path="res://data/dialogue/samir.tres" id="67_samir_talk"]
+[ext_resource type="Script" path="res://src/world/time/sky_planet.gd" id="68_planet"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -77,6 +78,11 @@ clock = NodePath("../Clock")
 sun = NodePath("../Sun")
 moon = NodePath("../Moon")
 world_environment = NodePath("../WorldEnvironment")
+
+[node name="SkyPlanet" type="Node3D" parent="." node_paths=PackedStringArray("day_night")]
+editor_description = "A giant ringed planet in the day sky, fading at night."
+script = ExtResource("68_planet")
+day_night = NodePath("../DayNight")
 
 [node name="Sectors" type="Node3D" parent="." unique_id=1128904256]
 editor_description = "One SectorDesign per designed area; each shapes only the sectors it owns."

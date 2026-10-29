@@ -586,3 +586,13 @@ and teal, thinning toward the horizon; they come out and fade with the
 stars. Generated once at start from noise (`DayNight._nebulae`), the same
 every run; `nebula_strength` sets how strongly they show (0.42).
 Placeholders: the colours, the shapes, the strength.
+
+## 2026-10-29: A giant ringed planet in the day sky
+
+Request: "big saturn with a ring planet on the sky during day. big
+planet". A Saturn-like planet about 21 degrees across in the north-east sky
+(`SkyPlanet`): cream, tan and gold bands with a pale storm, and wide tilted
+rings with a dark gap. It's lit by the sun (warm at dusk), always at the
+same place in the sky wherever you go, and fades out after dusk and in
+after dawn, so it never clutters the nebulae at night. Placeholders: its
+place, size, colours, ring tilt, and that it hides at night.
