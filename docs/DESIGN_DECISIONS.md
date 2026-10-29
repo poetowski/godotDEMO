@@ -577,3 +577,12 @@ be about fetching one flower from B1 sector."
 Placeholders (Claude's choices beyond the brief): Samir's daughter and her
 fever, every line he says, the quest's title and text, no reward, the
 quest log's look.
+
+## 2026-10-29: Nebulae in the night sky
+
+Request: "colorful nebulas on night sky during night". Soft clouds of
+glowing gas across the night sky under the stars, in magenta, violet, blue
+and teal, thinning toward the horizon; they come out and fade with the
+stars. Generated once at start from noise (`DayNight._nebulae`), the same
+every run; `nebula_strength` sets how strongly they show (0.42).
+Placeholders: the colours, the shapes, the strength.
