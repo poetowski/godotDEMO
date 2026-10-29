@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://src/world/field/sectors/c5_d6_oasis/c5_d6_oasis.gd" id="63_oasis"]
 [ext_resource type="Script" path="res://src/npc/villager.gd" id="64_villager"]
 [ext_resource type="Script" path="res://src/world/land/waters.gd" id="65_waters"]
+[ext_resource type="Script" path="res://src/world/field/sectors/b5_great_tree/b5_great_tree.gd" id="66_great_tree"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -667,6 +668,13 @@ designs_root = NodePath("../Sectors")
 script = ExtResource("3_grid")
 focus = NodePath("../Player")
 terrain = NodePath("../Terrain")
+
+[node name="B5GreatTree" type="Node3D" parent="Sectors"]
+editor_description = "A great tree, 18 m tall, with a thick trunk, a big crown and glowing vines."
+script = ExtResource("66_great_tree")
+sectors = PackedStringArray("B5")
+design_id = "b5_great_tree"
+design_seed = 25
 
 [node name="C5D6Oasis" type="Node3D" parent="Sectors"]
 editor_description = "An oasis: a palm-ringed pond in low sand dunes, with a camp of three tents around a campfire."

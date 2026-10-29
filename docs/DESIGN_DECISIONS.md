@@ -536,3 +536,20 @@ Placeholders: the sounds themselves (until real recordings), their volume.
 The first splash (a slap, rushing water, a gurgle) was not liked; the
 author asked for "more bubbly". A stroke is now mostly bubbles: 10 to 16
 small rising bubble tones over a soft low wash (3 to 5 while paddling).
+
+## 2026-10-29: Sector B5: a great tree with glowing vines
+
+Request: "in r1, sector B5 - create big tree with thick trunk and big crown,
+tall 18m with glowing vines".
+
+- An 18 m tree on a low mound of roots in the middle of B5: a trunk about
+  2.2 m thick at the base flaring into seven buttress roots, six big limbs
+  from a fork at 8.5 m, and a crown of leafy masses about 9 m across.
+- Pale green glowing vines hang from the limbs (up to 7 m long, with
+  glowing buds) and three spiral down the trunk; a soft green light lies
+  around the tree, which shows most at night.
+- The crown is as wide as B5 allows (designs stay inside their sectors);
+  a wider crown would need B5's neighbours too.
+
+Placeholders (Claude's choices beyond the brief): the shapes, the colours,
+the vine colour and brightness, the number of limbs and vines, the mound.
