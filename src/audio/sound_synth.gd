@@ -32,35 +32,32 @@ static func footstep(surface: StringName, variant: int) -> AudioStreamWAV:
 	return _wav(samples, false)
 
 
-## A swimming stroke: a hand slapping into the water (a sharp bright
-## splash), then the water rushing and gurgling with a few bubbles popping as
-## the arm pulls. Not `strong`: just a soft lap of a paddling hand.
+## A swimming stroke: a burst of bubbles as the hand pulls through the
+## water, over a soft, low wash. Many small bubbles, each a short tone
+## gliding up as it rises, most early in the stroke and thinning out. Not
+## `strong`: a few gentle bubbles from a paddling hand.
 static func swim_stroke(variant: int, strong: bool) -> AudioStreamWAV:
 	var rng := _rng(301 + variant + (0 if strong else 40))
-	var length := 0.55 if strong else 0.35
+	var length := 0.6 if strong else 0.4
 	var samples := PackedFloat32Array()
 	samples.resize(int(length * RATE))
+	var bubbles: Array[Vector4] = []
+	for k in rng.randi_range(10, 16) if strong else rng.randi_range(3, 5):
+		# When (s, bunched early), pitch (Hz), how long (s), how loud.
+		var start := pow(rng.randf(), 1.8) * length * 0.75
+		bubbles.append(Vector4(start, rng.randf_range(260.0, 820.0), rng.randf_range(0.03, 0.07), rng.randf_range(0.12, 0.3)))
 	var low := 0.0
-	var lower := 0.0
-	var pops: Array[Vector3] = []
-	for k in rng.randi_range(2, 4) if strong else 1:
-		# When (s), pitch (Hz), how long (s).
-		pops.append(Vector3(rng.randf_range(0.08, length * 0.7), rng.randf_range(350.0, 900.0), rng.randf_range(0.02, 0.05)))
 	for k in samples.size():
 		var t := float(k) / RATE
-		var noise := rng.randf_range(-1.0, 1.0)
-		low = lerpf(low, noise, 0.5)
-		lower = lerpf(lower, noise, 0.08)
-		var slap := (noise - low * 0.5) * _envelope(t, 0.003, 0.09) * (0.8 if strong else 0.0)
-		var rush := low * _envelope(t, 0.02, length) * (0.5 if strong else 0.35)
-		var gurgle := lower * (0.6 + 0.4 * sin(TAU * 13.0 * t)) * _envelope(t, 0.05, length) * 0.9
-		var bubbles := 0.0
-		for pop in pops:
-			var since := t - pop.x
-			if since > 0.0 and since < pop.z:
-				# A bubble: a short tone gliding up.
-				bubbles += sin(TAU * pop.y * since * (1.0 + since * 12.0)) * _envelope(since, 0.002, pop.z) * 0.3
-		samples[k] = slap + rush + gurgle + bubbles
+		low = lerpf(low, rng.randf_range(-1.0, 1.0), 0.04)
+		var wash := low * _envelope(t, 0.04, length) * (0.35 if strong else 0.2)
+		var sound := wash
+		for bubble in bubbles:
+			var since := t - bubble.x
+			if since > 0.0 and since < bubble.z:
+				var pitch := bubble.y * (1.0 + 6.0 * since)
+				sound += sin(TAU * pitch * since) * _envelope(since, 0.003, bubble.z) * bubble.w
+		samples[k] = sound
 	return _wav(samples, false)
 
 

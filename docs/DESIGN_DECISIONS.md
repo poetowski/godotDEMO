@@ -532,3 +532,7 @@ water splashing".
   water, a gurgle and a few bubbles, four variants.
 
 Placeholders: the sounds themselves (until real recordings), their volume.
+
+The first splash (a slap, rushing water, a gurgle) was not liked; the
+author asked for "more bubbly". A stroke is now mostly bubbles: 10 to 16
+small rising bubble tones over a soft low wash (3 to 5 while paddling).
