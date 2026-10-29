@@ -553,3 +553,27 @@ tall 18m with glowing vines".
 
 Placeholders (Claude's choices beyond the brief): the shapes, the colours,
 the vine colour and brightness, the number of limbs and vines, the mound.
+
+## 2026-10-29: Talking to Samir, quests, and his cornflower quest
+
+Request: "implement talk to samir, implement quest, quest popup on pressing
+Q like inventory but quest pop from left side. the quest given by samir can
+be about fetching one flower from B1 sector."
+
+- Walk up to Samir and press E to talk: he stops and turns to you, and the
+  conversation runs in the choice menu (his name, his line, your numbered
+  answers). What he says depends on the quest and on what you carry.
+- His quest, "A Flower for the Fever": his daughter has a fever, and he
+  trusts the old remedy of a blue cornflower's petals; bring him the
+  cornflower from the meadow in B1. Two steps (pick it: ticks while carried;
+  bring it to him). Handing it over finishes the quest; he takes the flower.
+- Q opens the quest log, a drawer sliding in from the left like the
+  inventory from the right: active quests with giver, description and
+  steps; completed quests below, dimmed.
+- Dialogue and quests are data (data/dialogue/, data/quests/) with a small
+  condition/action language, so new NPCs and quests need no code. Saves are
+  format 4 (the quest log), older saves upgrade with no quests.
+
+Placeholders (Claude's choices beyond the brief): Samir's daughter and her
+fever, every line he says, the quest's title and text, no reward, the
+quest log's look.

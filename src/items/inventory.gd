@@ -85,6 +85,19 @@ func remove_at(slot: int) -> ItemData:
 	return item
 
 
+## Takes one of an item out of the stacks it's in; false if there's none.
+func take(id: StringName) -> bool:
+	for slot in _slots.size():
+		if _slots[slot] and _slots[slot].id == id:
+			_amounts[slot] -= 1
+			if _amounts[slot] <= 0:
+				_slots[slot] = null
+				_amounts[slot] = 0
+			changed.emit()
+			return true
+	return false
+
+
 ## How many slots are taken.
 func count() -> int:
 	return _slots.filter(func(item: ItemData) -> bool: return item != null).size()

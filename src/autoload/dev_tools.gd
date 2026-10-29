@@ -9,6 +9,8 @@ extends Node
 ##   --shot-frame=A1:C3    ...or from a camera framing those sectors from above
 ##   --shot-player=x,y,z   put the player there first
 ##   --shot-hold=<action>  keep an input action pressed until the shot
+##   --shot-press=a,b,1    press input actions (or digit keys) one after
+##                         another before the shot, a third of a second apart
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
 ## the editor); F3 (dev_overlay) toggles the performance overlay; F4 toggles
@@ -30,6 +32,7 @@ class Options:
 	var has_shot_player: bool = false
 	var shot_player := Vector3.ZERO
 	var shot_hold: StringName = &""
+	var shot_presses := PackedStringArray()
 
 
 var _overlay_layer: CanvasLayer
@@ -52,6 +55,8 @@ static func parse_args(args: PackedStringArray) -> Options:
 		elif arg.begins_with("--shot-player="):
 			options.shot_player = _parse_vector(arg.trim_prefix("--shot-player="))
 			options.has_shot_player = true
+		elif arg.begins_with("--shot-press="):
+			options.shot_presses = arg.trim_prefix("--shot-press=").split(",", false)
 		elif arg.begins_with("--shot-hold="):
 			options.shot_hold = StringName(arg.trim_prefix("--shot-hold="))
 		elif arg.begins_with("--shot-look="):
@@ -198,6 +203,10 @@ func _capture_and_quit(options: Options) -> void:
 		Input.action_press(options.shot_hold)
 	for i in options.shot_frames:
 		await get_tree().process_frame
+	for press in options.shot_presses:
+		_press(press)
+		for i in 20:
+			await get_tree().process_frame
 	if options.has_shot_camera and get_tree().current_scene is Node3D:
 		var camera := Camera3D.new()
 		get_tree().current_scene.add_child(camera)
@@ -209,6 +218,23 @@ func _capture_and_quit(options: Options) -> void:
 	await RenderingServer.frame_post_draw
 	var error := save_screenshot(options.shot_path)
 	get_tree().quit(0 if error == OK else 1)
+
+
+## Presses an input action, or a digit key for a choice menu, as the player
+## would.
+func _press(what: String) -> void:
+	var event: InputEvent
+	if what.is_valid_int():
+		var key := InputEventKey.new()
+		key.keycode = KEY_0 + what.to_int() as Key
+		key.pressed = true
+		event = key
+	else:
+		var action := InputEventAction.new()
+		action.action = StringName(what)
+		action.pressed = true
+		event = action
+	Input.parse_input_event(event)
 
 
 ## Waits, up to a few seconds, until every sector streamer has loaded what

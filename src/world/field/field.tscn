@@ -24,6 +24,7 @@
 [ext_resource type="Script" path="res://src/npc/villager.gd" id="64_villager"]
 [ext_resource type="Script" path="res://src/world/land/waters.gd" id="65_waters"]
 [ext_resource type="Script" path="res://src/world/field/sectors/b5_great_tree/b5_great_tree.gd" id="66_great_tree"]
+[ext_resource type="Resource" path="res://data/dialogue/samir.tres" id="67_samir_talk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -703,6 +704,7 @@ home = Vector2(33.1, -55)
 work = Vector2(34.8, -49)
 meet = Vector2(30, -55)
 walk_speed = 1.6
+dialogue = ExtResource("67_samir_talk")
 program = Array[Dictionary]([{"from": 5.5, "place": &"work", "do": &"work"}, {"from": 11.5, "place": &"home", "do": &"rest"}, {"from": 15.0, "place": &"work", "do": &"work"}, {"from": 18.5, "place": &"meet", "do": &"talk"}, {"from": 22.0, "place": &"home", "do": &"rest"}])
 
 [node name="Streamer" type="Node" parent="." node_paths=PackedStringArray("designs_root", "focus")]

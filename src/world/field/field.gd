@@ -36,6 +36,7 @@ const SWORD_SCENE := preload("res://src/items/sword/sword.tscn")
 ## A new field is a new game.
 func _init() -> void:
 	WorldState.reset()
+	QuestLog.reset()
 	var regions := REGIONS
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--regions="):
@@ -135,6 +136,7 @@ func capture() -> Dictionary:
 		"inventory": Array(_player.inventory.ids()),
 		"amounts": Array(_player.inventory.amounts()),
 		"world": WorldState.snapshot(),
+		"quests": QuestLog.snapshot(),
 		"time": {"day": _clock.day, "hour": _clock.hour},
 	}
 
@@ -162,6 +164,7 @@ func load_from(slot: String) -> bool:
 ## come back.
 func apply(data: Dictionary) -> void:
 	WorldState.restore(data.get("world", {}))
+	QuestLog.restore(data.get("quests", {}))
 	var time: Dictionary = data.get("time", {})
 	_clock.day = int(time.get("day", 1))
 	_clock.hour = float(time.get("hour", _clock.start_hour))

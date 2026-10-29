@@ -1,8 +1,9 @@
 class_name Hud
 extends CanvasLayer
 ## On-screen text: the current sector, the interaction prompt, a line of
-## controls and a hint to click the window for mouse look; and the inventory,
-## opened with I. While it's open the hero stands still and the mouse is
+## controls and a hint to click the window for mouse look; the inventory,
+## opened with I, and the quest log, opened with Q; and conversations, run
+## here from dialogue data through the choice menu. While it's open the hero stands still and the mouse is
 ## free. Esc opens the game menu, which pauses the game and saves and loads;
 ## F5 quicksaves and F9 quickloads. The field does the saving and loading
 ## through `save_requested` and `load_requested`. Placeholder style.
@@ -16,6 +17,8 @@ var _controls: Label
 var _sector: Label
 var _clock: Label
 var _inventory: InventoryPanel
+var _quests: QuestPanel
+var _talk: Talk
 var _choices: ChoiceMenu
 var _menu: GameMenu
 var _toast: Label
@@ -44,7 +47,7 @@ func _ready() -> void:
 	_prompt.offset_top = -230.0
 	_prompt.offset_bottom = -170.0
 	_controls = _label(24, Color(1.0, 1.0, 1.0, 0.85))
-	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load")
+	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load")
 	_controls.anchor_top = 1.0
 	_controls.anchor_bottom = 1.0
 	_controls.anchor_right = 1.0
@@ -60,6 +63,11 @@ func _ready() -> void:
 	add_child(_inventory)
 	_inventory.opened.connect(_on_inventory_opened)
 	_inventory.closed.connect(_on_inventory_closed)
+	_quests = QuestPanel.new()
+	_quests.name = "Quests"
+	add_child(_quests)
+	_quests.opened.connect(_on_inventory_opened)
+	_quests.closed.connect(_on_inventory_closed)
 	_choices = ChoiceMenu.new()
 	_choices.name = "Choices"
 	add_child(_choices)
@@ -82,11 +90,17 @@ func track(player: Player) -> void:
 	_player = player
 	player.prompt_changed.connect(_on_prompt_changed)
 	player.choice_requested.connect(_on_choice_requested)
+	player.talk_requested.connect(_on_talk_requested)
 	_inventory.bind(player.inventory)
+	_quests.bind(player.inventory)
 
 
 func inventory_panel() -> InventoryPanel:
 	return _inventory
+
+
+func quest_panel() -> QuestPanel:
+	return _quests
 
 
 func choice_menu() -> ChoiceMenu:
@@ -112,6 +126,7 @@ func toast_text() -> String:
 func close_menus() -> void:
 	_menu.close()
 	_inventory.close()
+	_quests.close()
 	if _choices.is_open():
 		_choices.pick(-1)
 
@@ -134,8 +149,10 @@ func sector_text() -> String:
 func _process(delta: float) -> void:
 	_toast_left -= delta
 	_toast.visible = _toast_left > 0.0
-	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not _inventory.is_open()
-	_controls.visible = not _inventory.is_open() and not _choices.is_open()
+	var panel_open := _inventory.is_open() or _quests.is_open()
+	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not panel_open and not _choices.is_open()
+	_controls.visible = not panel_open and not _choices.is_open()
+	_prompt.visible = not panel_open and not _choices.is_open()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -147,21 +164,28 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("quick_load"):
 		load_requested.emit(SaveGame.QUICK)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("ui_cancel") and not _inventory.is_open():
+	elif event.is_action_pressed("ui_cancel") and not _inventory.is_open() and not _quests.is_open():
 		_menu.open()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("inventory"):
+		_quests.close()
 		_inventory.toggle()
 		get_viewport().set_input_as_handled()
-	elif _inventory.is_open() and event.is_action_pressed("ui_cancel"):
+	elif event.is_action_pressed("quests"):
 		_inventory.close()
+		_quests.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel"):
+		_inventory.close()
+		_quests.close()
 		get_viewport().set_input_as_handled()
 
 
-func _on_choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable) -> void:
+func _on_choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable, body: String = "") -> void:
 	_inventory.close()
+	_quests.close()
 	_on_chosen = on_chosen
-	_choices.ask(title, labels)
+	_choices.ask(title, labels, body)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if _player:
 		_player.input_enabled = false
@@ -176,8 +200,52 @@ func _on_choice_made(choice: int) -> void:
 		reply.call(choice)
 
 
+## Opens a conversation where its dialogue opens now.
+func _on_talk_requested(talk: Talk) -> void:
+	_talk = talk
+	_say(talk.dialogue.opening(_player.inventory))
+
+
+func is_talking() -> bool:
+	return _talk != null
+
+
+## Shows what the speaker says at an entry and the answers; null ends the
+## conversation.
+func _say(entry: DialogueEntry) -> void:
+	if entry == null or _talk == null:
+		_end_talk()
+		return
+	var choices := _talk.dialogue.choices_of(entry, _player.inventory)
+	var labels := PackedStringArray()
+	for choice in choices:
+		labels.append(choice.text)
+	if labels.is_empty():
+		labels.append(Text.mark("Goodbye."))
+	_player.ask(_talk.speaker(), labels, _answer.bind(entry, choices), entry.line)
+
+
+func _answer(picked: int, entry: DialogueEntry, choices: Array[DialogueChoice]) -> void:
+	if picked < 0 or picked >= choices.size():
+		_end_talk()
+		return
+	var choice := choices[picked]
+	var messages := DialogueRules.run(choice.then, _player.inventory)
+	if not messages.is_empty():
+		notify("    ".join(messages))
+	_say(_talk.dialogue.entry(choice.goto) if not choice.goto.is_empty() else null)
+
+
+func _end_talk() -> void:
+	var talk := _talk
+	_talk = null
+	if talk and is_instance_valid(talk):
+		talk.finish(_player)
+
+
 func _on_menu_opened() -> void:
 	_inventory.close()
+	_quests.close()
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 

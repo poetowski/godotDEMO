@@ -1,7 +1,8 @@
 class_name ChoiceMenu
 extends Control
 ## A small menu in the middle of the screen asking the player to choose:
-## a title and a numbered button per choice. Number keys or clicks choose;
+## a title, an optional body of text (what someone says), and a numbered
+## button per choice. Number keys or clicks choose;
 ## Esc cancels, which reports choice -1. Built in code; placeholder style.
 
 signal chosen(choice: int)
@@ -13,6 +14,7 @@ const ACCENT := Color(0.75, 0.95, 1.0)
 
 var _panel: PanelContainer
 var _title: Label
+var _body: Label
 var _buttons: VBoxContainer
 var _count := 0
 
@@ -39,6 +41,12 @@ func _ready() -> void:
 	_title.add_theme_font_size_override("font_size", 40)
 	_title.add_theme_color_override("font_color", ACCENT)
 	column.add_child(_title)
+	_body = Label.new()
+	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_body.custom_minimum_size = Vector2(760.0, 0.0)
+	_body.add_theme_font_size_override("font_size", 30)
+	_body.add_theme_color_override("font_color", Color(0.92, 0.93, 0.95))
+	column.add_child(_body)
 	_buttons = VBoxContainer.new()
 	_buttons.add_theme_constant_override("separation", 10)
 	column.add_child(_buttons)
@@ -56,8 +64,10 @@ func is_open() -> bool:
 
 
 ## Shows the choices; `chosen` reports the pick.
-func ask(title: String, labels: PackedStringArray) -> void:
+func ask(title: String, labels: PackedStringArray, body: String = "") -> void:
 	_title.text = tr(title)
+	_body.text = tr(body)
+	_body.visible = not body.is_empty()
 	for child in _buttons.get_children():
 		_buttons.remove_child(child)
 		child.queue_free()
@@ -94,6 +104,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_cancel"):
 		pick(-1)
 		get_viewport().set_input_as_handled()
+
+
+## The title and body shown, for tests.
+func text() -> String:
+	return "%s\n%s" % [_title.text, _body.text]
 
 
 func _box(color: Color) -> StyleBoxFlat:

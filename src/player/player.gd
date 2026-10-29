@@ -13,7 +13,9 @@ signal sword_equipped
 signal swung
 ## Something asks the player to choose; the HUD shows the choices and calls
 ## `on_chosen` with the pick's index, or -1 when cancelled.
-signal choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable)
+signal choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable, body: String)
+## The player started talking to someone; the HUD runs the conversation.
+signal talk_requested(talk: Talk)
 signal gesture_finished(gesture: StringName)
 
 ## Gestures the hero can perform with perform().
@@ -176,8 +178,13 @@ func look_toward(target: Vector3) -> void:
 
 ## Asks the player to choose between `labels`; `on_chosen` gets the pick's
 ## index, or -1 when the player cancels.
-func ask(title: String, labels: PackedStringArray, on_chosen: Callable) -> void:
-	choice_requested.emit(title, labels, on_chosen)
+func ask(title: String, labels: PackedStringArray, on_chosen: Callable, body: String = "") -> void:
+	choice_requested.emit(title, labels, on_chosen, body)
+
+
+## Starts a conversation with someone.
+func talk(with: Talk) -> void:
+	talk_requested.emit(with)
 
 
 ## Performs a gesture for some seconds, standing still meanwhile: &"pray"

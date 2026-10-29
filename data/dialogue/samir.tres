@@ -1,0 +1,112 @@
+[gd_resource type="Resource" script_class="DialogueData" format=3]
+
+[ext_resource type="Script" path="res://src/dialogue/dialogue_data.gd" id="1_dialogue"]
+[ext_resource type="Script" path="res://src/dialogue/dialogue_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://src/dialogue/dialogue_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_c_help"]
+script = ExtResource("3_choice")
+text = "You look troubled. Can I help?"
+goto = &"ask"
+
+[sub_resource type="Resource" id="Resource_c_bye"]
+script = ExtResource("3_choice")
+text = "Goodbye."
+
+[sub_resource type="Resource" id="Resource_greet"]
+script = ExtResource("2_entry")
+id = &"greet"
+opening = true
+when = "quest:samirs_cornflower:none"
+line = "Peace be with you, traveller. Forgive me if I'm poor company today."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_help"), SubResource("Resource_c_bye")])
+
+[sub_resource type="Resource" id="Resource_c_accept"]
+script = ExtResource("3_choice")
+text = "I'll bring you a cornflower."
+then = "start:samirs_cornflower"
+goto = &"accepted"
+
+[sub_resource type="Resource" id="Resource_c_decline"]
+script = ExtResource("3_choice")
+text = "I can't right now."
+goto = &"declined"
+
+[sub_resource type="Resource" id="Resource_ask"]
+script = ExtResource("2_entry")
+id = &"ask"
+line = "My daughter lies in the tent with a fever, and the heat makes it worse. My mother cooled fevers with the petals of a blue cornflower, steeped in water. One grows in the meadow in sector B1, to the south-west. My legs are too old for the walk. Would you bring me one?"
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_accept"), SubResource("Resource_c_decline")])
+
+[sub_resource type="Resource" id="Resource_c_thanks_bye"]
+script = ExtResource("3_choice")
+text = "I'll be back soon."
+
+[sub_resource type="Resource" id="Resource_accepted"]
+script = ExtResource("2_entry")
+id = &"accepted"
+line = "Bless you. Look for the blue flower among the grass in B1. I'll be here."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_thanks_bye")])
+
+[sub_resource type="Resource" id="Resource_declined"]
+script = ExtResource("2_entry")
+id = &"declined"
+line = "I understand. If you find the time, come back to me."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_bye")])
+
+[sub_resource type="Resource" id="Resource_c_give"]
+script = ExtResource("3_choice")
+text = "Here is the cornflower."
+then = "take:cornflower;complete:samirs_cornflower"
+goto = &"thanks"
+
+[sub_resource type="Resource" id="Resource_c_later"]
+script = ExtResource("3_choice")
+text = "Not yet."
+
+[sub_resource type="Resource" id="Resource_found"]
+script = ExtResource("2_entry")
+id = &"found"
+opening = true
+when = "quest:samirs_cornflower:active & has:cornflower"
+line = "Is that blue I see in your hand? You found one!"
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_give"), SubResource("Resource_c_later")])
+
+[sub_resource type="Resource" id="Resource_c_welcome"]
+script = ExtResource("3_choice")
+text = "I'm glad I could help."
+
+[sub_resource type="Resource" id="Resource_thanks"]
+script = ExtResource("2_entry")
+id = &"thanks"
+line = "I'll steep it at once. You have done a kindness I won't forget. Whenever you pass this way, there is water and shade for you here."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_welcome")])
+
+[sub_resource type="Resource" id="Resource_c_onit"]
+script = ExtResource("3_choice")
+text = "I'm on my way."
+
+[sub_resource type="Resource" id="Resource_waiting"]
+script = ExtResource("2_entry")
+id = &"waiting"
+opening = true
+when = "quest:samirs_cornflower:active"
+line = "The cornflower grows in the meadow in sector B1, to the south-west. Please hurry, the fever hasn't broken."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_onit")])
+
+[sub_resource type="Resource" id="Resource_c_take_care"]
+script = ExtResource("3_choice")
+text = "Take care, Samir."
+
+[sub_resource type="Resource" id="Resource_after"]
+script = ExtResource("2_entry")
+id = &"after"
+opening = true
+when = "quest:samirs_cornflower:done"
+line = "The fever broke in the night, and my daughter is asking for figs again. Rest in the shade as long as you like, friend."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_c_take_care")])
+
+[resource]
+script = ExtResource("1_dialogue")
+speaker = "Samir"
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_greet"), SubResource("Resource_ask"), SubResource("Resource_accepted"), SubResource("Resource_declined"), SubResource("Resource_found"), SubResource("Resource_thanks"), SubResource("Resource_waiting"), SubResource("Resource_after")])

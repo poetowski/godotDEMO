@@ -31,7 +31,7 @@
 //                                npm test -- -gselect=test_player
 //   npm run shot [-- <scene>] [--out=<png>] [--frames=<n>] [--size=<WxH>]
 //                [--camera=x,y,z --look=x,y,z | --frame=A1:C3] [--sector=C4] [--hour=6]
-//                [--player=x,y,z] [--hold=<action>]
+//                [--player=x,y,z] [--hold=<action>] [--press=interact,1,quests]
 //                                play a scene in a window, save a PNG, quit;
 //                                with --camera or --frame, shoot from there;
 //                                --player puts the hero there, --hold keeps
@@ -334,6 +334,7 @@ const commands = {
     if (options.frame) args.push(`--shot-frame=${options.frame}`);
     if (options.player) args.push(`--shot-player=${options.player}`);
     if (options.hold) args.push(`--shot-hold=${options.hold}`);
+    if (options.press) args.push(`--shot-press=${options.press}`);
     if (options.sector) args.push(`--sector=${options.sector}`);
     if (options.hour) args.push(`--hour=${options.hour}`);
     const ok = report('shot', await godot(args, { timeoutMs: 3 * 60_000 }));

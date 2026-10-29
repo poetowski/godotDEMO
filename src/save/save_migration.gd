@@ -20,6 +20,8 @@ static func upgrade(data: Dictionary) -> Dictionary:
 				result = _from_1(result)
 			2:
 				result = _from_2(result)
+			3:
+				result = _from_3(result)
 			_:
 				return {}
 		version = int(result.get("version", 0))
@@ -58,4 +60,12 @@ static func _from_1(data: Dictionary) -> Dictionary:
 static func _from_2(data: Dictionary) -> Dictionary:
 	data["time"] = {"day": 1, "hour": 8.0}
 	data["version"] = 3
+	return data
+
+
+## Format 3 to 4 (2026-10-29): saves gained the quest log. Older games had
+## no quests.
+static func _from_3(data: Dictionary) -> Dictionary:
+	data["quests"] = {}
+	data["version"] = 4
 	return data

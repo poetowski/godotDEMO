@@ -21,6 +21,9 @@ const WORK_STROKE := 1.6
 @export var walk_speed: float = 2.0
 ## Metres from the player within which the body is shown.
 @export var show_distance: float = 60.0
+## What they say when the player talks to them; none, and they can't be
+## talked to.
+@export var dialogue: DialogueData
 
 ## The daily program, sorted by hour: {"from": 6.0, "place": &"work",
 ## "do": &"work"}. Places are home, work and meet; activities rest, work and
@@ -37,6 +40,8 @@ var _moving: bool = false
 var _stroke: float = 0.0
 var _body: HeroBody
 var _label: Label3D
+## Whom they stop to talk to; null while going about their day.
+var _listener: Node3D
 
 
 func _ready() -> void:
@@ -55,11 +60,26 @@ func _ready() -> void:
 	_label.outline_size = 10
 	_label.visibility_range_end = 12.0
 	add_child(_label)
+	if dialogue:
+		var talk := Talk.new()
+		talk.name = "Talk"
+		talk.dialogue = dialogue
+		add_child(talk)
 	_place()
 
 
 func _process(delta: float) -> void:
 	advance(delta)
+
+
+## Stops and faces someone while talking to them; null goes back to the
+## day's program.
+func listen_to(listener: Node3D) -> void:
+	_listener = listener
+
+
+func is_listening() -> bool:
+	return _listener != null
 
 
 ## The program step for an hour.
@@ -96,6 +116,13 @@ func ground_position() -> Vector2:
 ## Runs the program for real seconds: walks on (faster when the clock is
 ## fast-forwarded) and acts.
 func advance(delta: float) -> void:
+	if _listener:
+		var to_listener := Vector2(_listener.global_position.x, _listener.global_position.z) - _at
+		_facing = atan2(to_listener.x, to_listener.y)
+		_moving = false
+		_place()
+		_body.move(0.0, false, false, delta)
+		return
 	var goal := target()
 	var reach := walk_speed * delta * clock.speed
 	var to_goal := goal - _at

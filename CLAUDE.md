@@ -24,6 +24,7 @@ working title and the game's design is not decided yet.
 | `npm run shot -- [scene] [--out=x.png] [--frames=60] [--size=1280x720]` | Plays a scene (default: the main scene) in a window, saves `.shots/<scene>.png` and quits. Read the PNG to see it. |
 | `npm run shot -- --camera=x,y,z --look=x,y,z --out=.shots/view.png` | The same, shot from a temporary camera at any viewpoint. |
 | `npm run shot -- --frame=A1:C3 --out=.shots/area.png` | The same, from a camera framing those sectors from above. |
+| `npm run shot -- --player=x,y,z --hold=move_forward --press=interact,1,quests` | Puts the hero somewhere, holds an input action, and presses actions or digit keys (dialogue answers) in turn before the shot. |
 | `npm run shot -- --hour=0 --out=.shots/night.png` | Any shot at a time of day: the world is lit by the clock, so check designs by night too. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
