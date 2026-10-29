@@ -84,6 +84,30 @@ editor_description = "A giant ringed planet in the day sky, fading at night."
 script = ExtResource("68_planet")
 day_night = NodePath("../DayNight")
 
+[node name="BluePlanet" type="Node3D" parent="." node_paths=PackedStringArray("day_night")]
+editor_description = "A smaller blue-teal planet in the north-west day sky."
+script = ExtResource("68_planet")
+day_night = NodePath("../DayNight")
+direction = Vector3(-0.62, 0.5, -0.6)
+radius = 170.0
+ring_tilt = -15.0
+has_rings = false
+bands = Array[Color]([Color(0.45, 0.72, 0.85, 1), Color(0.3, 0.55, 0.75, 1), Color(0.55, 0.82, 0.86, 1), Color(0.35, 0.62, 0.68, 1), Color(0.7, 0.88, 0.92, 1)])
+pattern_seed = 31
+has_storm = false
+
+[node name="RedPlanet" type="Node3D" parent="." node_paths=PackedStringArray("day_night")]
+editor_description = "A small rusty-red planet low in the south-east day sky."
+script = ExtResource("68_planet")
+day_night = NodePath("../DayNight")
+direction = Vector3(0.75, 0.22, 0.62)
+radius = 95.0
+ring_tilt = 8.0
+has_rings = false
+bands = Array[Color]([Color(0.78, 0.4, 0.28, 1), Color(0.66, 0.32, 0.22, 1), Color(0.85, 0.55, 0.38, 1), Color(0.58, 0.28, 0.2, 1)])
+pattern_seed = 47
+has_storm = false
+
 [node name="Sectors" type="Node3D" parent="." unique_id=1128904256]
 editor_description = "One SectorDesign per designed area; each shapes only the sectors it owns."
 

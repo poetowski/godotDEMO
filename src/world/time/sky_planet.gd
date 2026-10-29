@@ -1,7 +1,7 @@
 class_name SkyPlanet
 extends Node3D
-## A giant ringed planet in the day sky: a banded sphere and a tilted ring
-## system far beyond the land, kept at the same place in the sky wherever the
+## A planet in the day sky: a banded sphere, with a tilted ring system if it
+## has rings, far beyond the land, kept at the same place in the sky wherever the
 ## camera goes (it can never be reached), lit by the sun so its lit side
 ## follows the day, and fading out at dusk and in at dawn. Mountains and trees
 ## pass in front of it. Textures are made in code. Placeholder look.
@@ -17,8 +17,13 @@ extends Node3D
 @export var ring_tilt: float = 22.0
 @export var ring_inner: float = 1.35
 @export var ring_outer: float = 2.35
-
-const BANDS: Array[Color] = [Color(0.93, 0.85, 0.66), Color(0.82, 0.68, 0.48), Color(0.96, 0.9, 0.74), Color(0.75, 0.6, 0.42), Color(0.9, 0.79, 0.58), Color(0.68, 0.55, 0.4)]
+@export var has_rings: bool = true
+## Band colours (sRGB), mixed across its latitudes.
+@export var bands: Array[Color] = [Color(0.93, 0.85, 0.66), Color(0.82, 0.68, 0.48), Color(0.96, 0.9, 0.74), Color(0.75, 0.6, 0.42), Color(0.9, 0.79, 0.58), Color(0.68, 0.55, 0.4)]
+## Shapes its bands, so planets differ.
+@export var pattern_seed: int = 9
+## A pale storm in its bands.
+@export var has_storm: bool = true
 
 var _planet_material: StandardMaterial3D
 var _ring_material: StandardMaterial3D
@@ -39,16 +44,25 @@ func _ready() -> void:
 	planet.material_override = _planet_material
 	planet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(planet)
+	_ring_material = _material(_ring_texture()) if has_rings else null
+	if has_rings:
+		_add_rings()
+	_orient()
+
+
+func _add_rings() -> void:
 	var rings := MeshInstance3D.new()
 	rings.name = "Rings"
 	rings.mesh = _ring_mesh()
-	_ring_material = _material(_ring_texture())
 	_ring_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	# Drawn after the planet, so the planet's depth hides only the far side.
 	_ring_material.render_priority = 1
 	rings.material_override = _ring_material
 	rings.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(rings)
+
+
+func _orient() -> void:
 	# The axis leans toward the viewer, so the rings open into a wide
 	# ellipse, and tilts sideways by `ring_tilt`.
 	var toward_viewer := -direction.normalized()
@@ -66,7 +80,8 @@ func _process(_delta: float) -> void:
 	var shown := smoothstep(0.15, 0.7, day)
 	visible = shown > 0.01
 	_planet_material.albedo_color.a = shown
-	_ring_material.albedo_color.a = shown
+	if _ring_material:
+		_ring_material.albedo_color.a = shown
 
 
 ## How much it shows now, 0 at night to 1 by day.
@@ -93,10 +108,10 @@ func _material(texture: Texture2D) -> StandardMaterial3D:
 func _band_texture() -> Texture2D:
 	var image := Image.create(512, 256, false, Image.FORMAT_RGBA8)
 	var wobble := FastNoiseLite.new()
-	wobble.seed = 5
+	wobble.seed = pattern_seed + 1
 	wobble.frequency = 0.02
 	var rng := RandomNumberGenerator.new()
-	rng.seed = 9
+	rng.seed = pattern_seed
 	var stripes := PackedFloat32Array()
 	for k in 24:
 		stripes.append(rng.randf())
@@ -104,10 +119,10 @@ func _band_texture() -> Texture2D:
 		for x in image.get_width():
 			var latitude := float(y) / image.get_height() + 0.012 * wobble.get_noise_2d(x * 0.6, y * 3.0)
 			var band := clampi(int(latitude * stripes.size()), 0, stripes.size() - 1)
-			var pick := stripes[band] * (BANDS.size() - 1)
-			var colour := BANDS[int(pick)].lerp(BANDS[mini(int(pick) + 1, BANDS.size() - 1)], pick - int(pick))
+			var pick := stripes[band] * (bands.size() - 1)
+			var colour := bands[int(pick)].lerp(bands[mini(int(pick) + 1, bands.size() - 1)], pick - int(pick))
 			var storm := Vector2((x - 330.0) / 26.0, (y - 160.0) / 12.0).length()
-			if storm < 1.0:
+			if has_storm and storm < 1.0:
 				colour = colour.lerp(Color(0.97, 0.92, 0.8), 1.0 - storm)
 			image.set_pixel(x, y, Color(colour, 1.0))
 	return ImageTexture.create_from_image(image)

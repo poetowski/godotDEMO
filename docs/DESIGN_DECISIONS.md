@@ -596,3 +596,10 @@ rings with a dark gap. It's lit by the sun (warm at dusk), always at the
 same place in the sky wherever you go, and fades out after dusk and in
 after dawn, so it never clutters the nebulae at night. Placeholders: its
 place, size, colours, ring tilt, and that it hides at night.
+
+Then (request: "create second, smaller planet, on different spot, maybe two
+planets somewhere else, smaller and no rings"): two more, without rings, also
+day-only: a blue-teal banded planet in the north-west (about 6.5 degrees
+across) and a small rusty-red one low in the south-east (about 3.6
+degrees). `SkyPlanet` now takes `has_rings`, `bands`, `pattern_seed` and
+`has_storm`. Placeholders: their places, sizes and colours.

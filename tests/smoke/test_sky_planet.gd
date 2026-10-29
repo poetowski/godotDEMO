@@ -32,3 +32,14 @@ func test_fades_away_at_night() -> void:
 	await wait_process_frames(2)
 	assert_false(_planet.visible)
 	_clock.hour = 12.0
+
+
+func test_two_smaller_planets_without_rings_elsewhere() -> void:
+	_clock.hour = 12.0
+	await wait_process_frames(2)
+	for planet_name: String in ["BluePlanet", "RedPlanet"]:
+		var planet := _world.get_node(planet_name) as SkyPlanet
+		assert_true(planet.visible, planet_name)
+		assert_lt(planet.radius, _planet.radius * 0.5, "%s is smaller" % planet_name)
+		assert_null(planet.get_node_or_null("Rings"), "%s has no rings" % planet_name)
+		assert_lt(planet.direction.normalized().dot(_planet.direction.normalized()), 0.5, "%s is elsewhere" % planet_name)
