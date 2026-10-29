@@ -131,19 +131,35 @@ static func add_pine(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, he
 ## curving by `lean` (metres sideways at the top), drooping fronds and
 ## bunches of dates.
 static func add_palm(batch: Batch, rng: RandomNumberGenerator, foot: Vector3, height: float, lean: Vector2) -> void:
-	var piece := MeshKit.triangles(MeshKit.cylinder(1.0, 1.0, 1.0, 7))
-	var trunk := Color(0.47, 0.36, 0.24)
-	var segments := 8
-	var previous := foot
-	for k in segments:
-		var t := float(k + 1) / segments
-		var point := foot + Vector3(lean.x * t * t, height * t, lean.y * t * t)
-		var axis := point - previous
-		var radius := lerpf(0.2, 0.13, t)
-		var basis := Basis(Quaternion(Vector3.UP, axis.normalized())).scaled(Vector3(radius, axis.length() * 1.05, radius))
-		batch.add(piece, Transform3D(basis, (point + previous) * 0.5), trunk * (0.9 + 0.12 * float(k % 2)))
-		previous = point
-	var crown := previous
+	# One continuous trunk: rings along the curve joined into a single
+	# tapering tube, slightly ridged where the old fronds fell.
+	var sides := 7
+	var rings := 16
+	var paint := PackedColorArray()
+	var triangles := PackedVector3Array()
+	var previous_ring: Array[Vector3] = []
+	var crown := foot
+	for k in rings + 1:
+		var t := float(k) / rings
+		var centre := foot + Vector3(lean.x * t * t, height * t, lean.y * t * t)
+		var along := Vector3(2.0 * lean.x * t, height, 2.0 * lean.y * t).normalized()
+		var side := along.cross(Vector3.FORWARD).normalized()
+		var other := along.cross(side).normalized()
+		var radius := lerpf(0.22, 0.13, t) * (1.0 + 0.06 * float(k % 2))
+		var ring: Array[Vector3] = []
+		for j in sides:
+			var angle := TAU * j / sides
+			ring.append(centre + (side * cos(angle) + other * sin(angle)) * radius)
+		if k > 0:
+			var shade := Color(0.47, 0.36, 0.24) * (0.94 + 0.08 * float(k % 2))
+			for j in sides:
+				var n := (j + 1) % sides
+				triangles.append_array(PackedVector3Array([previous_ring[j], ring[j], ring[n], previous_ring[j], ring[n], previous_ring[n]]))
+				for v in 6:
+					paint.append(shade)
+		previous_ring = ring
+		crown = centre
+	batch.add_painted(triangles, paint, Transform3D())
 	for k in 9:
 		var yaw := TAU * k / 9.0 + rng.randf() * 0.3
 		_add_frond(batch, rng, crown, Vector3(cos(yaw), rng.randf_range(0.15, 0.5), sin(yaw)).normalized(), rng.randf_range(2.0, 2.8))
