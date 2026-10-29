@@ -479,3 +479,23 @@ facing south so it is visible from R1".
 Placeholders (Claude's choices beyond the brief): every height, size and
 position; the number of peaks; the palm and jungle tree look; the
 waterfall's width and the pool; no river leading on from the pool.
+
+## 2026-10-29: Swimming
+
+Request: "develop swimming animation and run it when the player is in the
+water at least 1m deep".
+
+- A front crawl (`swim`, in `build_hero.py`): the body face down along the
+  surface, arms reaching and pulling in turn with a high-elbow recovery,
+  legs fluttering, the chest rolling. It plays slower when swimming slowly
+  and as a gentle paddle when still.
+- From 1 m of water the hero swims: floats with the back at the surface,
+  2.4 m/s (3.6 sprinting), no jumping, no sword swings, no footsteps. They
+  stop swimming below 0.85 m, so the shore doesn't flicker.
+- Waterfall pools count as water; the oasis pond is now about 1.6 m deep in
+  the middle so it can be swum in, and its lilies are shrunk to their real
+  size (they were several times too big).
+- `npm run shot` takes `--player=x,y,z` and `--hold=<action>` to shoot the
+  hero anywhere, moving.
+
+Placeholders: the stroke, the speeds, how high the hero floats.

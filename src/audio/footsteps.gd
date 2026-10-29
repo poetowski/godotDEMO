@@ -40,7 +40,8 @@ func _physics_process(_delta: float) -> void:
 		return
 	var moved := Vector2(global_position.x - _last.x, global_position.z - _last.z).length()
 	_last = global_position
-	var on_floor := body.is_on_floor()
+	var player := body as Player
+	var on_floor := body.is_on_floor() and not (player != null and player.is_swimming)
 	if on_floor and not _was_on_floor:
 		step(1.3)
 		_walked = 0.0

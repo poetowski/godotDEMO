@@ -30,6 +30,14 @@ const SWING_STRIKE := 0.3
 @export var air_acceleration: float = 4.0
 @export var jump_velocity: float = 5.2
 @export var turn_speed: float = 10.0
+@export_group("Swimming")
+## Metres of water under the hero from which they swim.
+@export var swim_depth: float = 1.0
+@export var swim_speed: float = 2.4
+@export var swim_sprint_speed: float = 3.6
+## Metres the hero's feet (their origin) hang below the surface while
+## swimming, so the back is just under it.
+@export var float_depth: float = 0.9
 @export_group("Camera")
 @export var mouse_sensitivity: float = 0.0025
 @export var stick_look_speed: float = 2.6
@@ -41,6 +49,8 @@ const SWING_STRIKE := 0.3
 @export var swing_duration: float = 0.5
 
 var has_sword: bool = false
+## True while in water at least `swim_depth` deep.
+var is_swimming: bool = false
 var is_swinging: bool = false
 ## What the hero carries.
 var inventory := Inventory.new()
@@ -122,15 +132,23 @@ func _physics_process(delta: float) -> void:
 	if look != Vector2.ZERO:
 		_turn_camera(-look.x * stick_look_speed * delta, -look.y * stick_look_speed * delta)
 
-	if not is_on_floor():
+	var surface := _update_swimming()
+	if is_swimming:
+		# Float at the surface: ease toward it rather than fall.
+		velocity.y = clampf((surface - float_depth - global_position.y) * 4.0, -3.0, 3.0)
+	elif not is_on_floor():
 		velocity.y -= _gravity * delta
 	elif free and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_velocity
 
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") if free else Vector2.ZERO
 	var direction := Basis(Vector3.UP, _yaw) * Vector3(input.x, 0.0, input.y)
-	var speed := sprint_speed if Input.is_action_pressed("sprint") else walk_speed
+	var sprinting := Input.is_action_pressed("sprint")
+	var speed := sprint_speed if sprinting else walk_speed
 	var rate := acceleration if is_on_floor() else air_acceleration
+	if is_swimming:
+		speed = swim_sprint_speed if sprinting else swim_speed
+		rate = acceleration * 0.4
 	var horizontal := Vector2(velocity.x, velocity.z).move_toward(Vector2(direction.x, direction.z) * speed, rate * delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.y
@@ -250,6 +268,8 @@ func equip_sword(sword: Node3D) -> void:
 
 ## Starts a diagonal swing if the sword is in hand and no swing is running.
 func try_attack() -> bool:
+	if is_swimming:
+		return false
 	if not has_sword or is_swinging:
 		return false
 	is_swinging = true
@@ -270,10 +290,27 @@ func _turn_camera(yaw_delta: float, pitch_delta: float) -> void:
 
 
 ## Tells the body how the hero moves: idle, walk and run by ground speed,
-## falling while airborne, the sword arm while holding the sword.
+## falling while airborne, the sword arm while holding the sword, swimming in
+## deep water.
 func _animate(delta: float) -> void:
 	var ground_speed := Vector2(velocity.x, velocity.z).length()
-	_body.move(ground_speed, not is_on_floor(), has_sword, delta)
+	_body.move(ground_speed, not is_on_floor() and not is_swimming, has_sword, delta)
+	_body.swim(is_swimming, ground_speed, delta)
+
+
+## Whether the hero swims here, from the water's depth under them (a little
+## shallower to stop than to start, so they don't flicker at the edge).
+## Returns the water's surface height, or -INF on dry land.
+func _update_swimming() -> float:
+	var terrain := get_tree().get_first_node_in_group(&"terrains") as FieldTerrain if is_inside_tree() else null
+	if terrain == null:
+		is_swimming = false
+		return -INF
+	var xz := Vector2(global_position.x, global_position.z)
+	var level := terrain.water_level_at(xz)
+	var depth := level - terrain.height_at(xz)
+	is_swimming = depth >= (swim_depth - 0.15 if is_swimming else swim_depth)
+	return level
 
 
 ## Blends the body into the gesture at its start and back out at its end.

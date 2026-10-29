@@ -29,6 +29,16 @@ func _ready() -> void:
 			_build(landform_set.waterfalls[k], "%s_%d" % [landform_set.id, k])
 
 
+## The surface of a waterfall's pool at a world x and z, or NO_WATER.
+static func pool_level_at(xz: Vector2) -> float:
+	for landform_set in Landforms.sets():
+		for fall in landform_set.waterfalls:
+			var bottom := Vector2(fall.bottom.x, -fall.bottom.y)
+			if xz.distance_to(bottom) < fall.pool_radius:
+				return WorldShape.height(bottom) + fall.pool_depth
+	return SectorDesign.NO_WATER
+
+
 func count() -> int:
 	return get_child_count() / 3
 

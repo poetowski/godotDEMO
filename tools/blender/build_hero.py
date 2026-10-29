@@ -344,6 +344,33 @@ def build_animations(armature):
         (8, pose(**weep)),
         (12, pose(**{**weep, "Chest": 14, "LeftShoulder": (0, 0, 4), "RightShoulder": (0, 0, 4)})),
     ], loop=True)
+    # Swimming a front crawl: the body face down along the surface (the hips
+    # tipped forward), head up to breathe-look ahead, arms reaching and
+    # pulling in turn, the high elbow recovering over the water, legs
+    # fluttering, the chest rolling toward the pulling arm.
+    flat = dict(Hips=78, Neck=-25, Head=-35, LeftFoot=-55, RightFoot=-55)
+    def crawl(reach, pull, roll, kick):
+        other = "Right" if reach == "Left" else "Left"
+        return pose(**flat, **{
+            f"{reach}UpperArm": (170, 0, 12), f"{reach}LowerArm": 5, f"{reach}Hand": -10,
+            f"{other}UpperArm": (pull, 0, 10), f"{other}LowerArm": 15, f"{other}Hand": 10,
+            "Spine": (0, roll, 0), "Chest": (0, roll, 0),
+            "LeftUpperLeg": kick, "RightUpperLeg": -kick, "LeftLowerLeg": -12 - max(kick, 0), "RightLowerLeg": -12 - max(-kick, 0),
+        })
+    def recover(pulling, roll, kick):
+        other = "Right" if pulling == "Left" else "Left"
+        return pose(**flat, **{
+            f"{pulling}UpperArm": (85, 0, 6), f"{pulling}LowerArm": 30, f"{pulling}Hand": 15,
+            f"{other}UpperArm": (60, 0, 55), f"{other}LowerArm": 95, f"{other}Hand": -20,
+            "Spine": (0, roll, 0), "Chest": (0, roll, 0),
+            "LeftUpperLeg": kick, "RightUpperLeg": -kick, "LeftLowerLeg": -12 - max(kick, 0), "RightLowerLeg": -12 - max(-kick, 0),
+        })
+    key_action(armature, "swim", [
+        (0, crawl("Left", -15, 12, 14)),
+        (8, recover("Left", -6, -14)),
+        (16, crawl("Right", -15, -12, 14)),
+        (24, recover("Right", 6, -14)),
+    ], loop=True)
     armature.animation_data.action = None
     for bone in armature.pose.bones:
         bone.rotation_euler = (0, 0, 0)

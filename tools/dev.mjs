@@ -31,8 +31,11 @@
 //                                npm test -- -gselect=test_player
 //   npm run shot [-- <scene>] [--out=<png>] [--frames=<n>] [--size=<WxH>]
 //                [--camera=x,y,z --look=x,y,z | --frame=A1:C3] [--sector=C4] [--hour=6]
+//                [--player=x,y,z] [--hold=<action>]
 //                                play a scene in a window, save a PNG, quit;
-//                                with --camera or --frame, shoot from there
+//                                with --camera or --frame, shoot from there;
+//                                --player puts the hero there, --hold keeps
+//                                an input action pressed (move_forward)
 //   npm run api                  dump the engine's class reference to .godot-api/
 //   npm run where                print the Godot binary in use
 //
@@ -329,6 +332,8 @@ const commands = {
     args.push('--', `--shot=${out}`, `--shot-frames=${options.frames ?? 60}`);
     if (options.camera) args.push(`--shot-camera=${options.camera}`, `--shot-look=${options.look ?? '0,0,0'}`);
     if (options.frame) args.push(`--shot-frame=${options.frame}`);
+    if (options.player) args.push(`--shot-player=${options.player}`);
+    if (options.hold) args.push(`--shot-hold=${options.hold}`);
     if (options.sector) args.push(`--sector=${options.sector}`);
     if (options.hour) args.push(`--hour=${options.hour}`);
     const ok = report('shot', await godot(args, { timeoutMs: 3 * 60_000 }));

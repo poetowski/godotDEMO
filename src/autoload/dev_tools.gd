@@ -7,6 +7,8 @@ extends Node
 ##   --shot-camera=x,y,z   take the shot from a temporary camera at this point
 ##   --shot-look=x,y,z     ...looking at this point (default: the world origin)
 ##   --shot-frame=A1:C3    ...or from a camera framing those sectors from above
+##   --shot-player=x,y,z   put the player there first
+##   --shot-hold=<action>  keep an input action pressed until the shot
 ##
 ## Hotkeys: F12 (dev_screenshot) saves a PNG into .shots/ (user://shots outside
 ## the editor); F3 (dev_overlay) toggles the performance overlay; F4 toggles
@@ -25,6 +27,9 @@ class Options:
 	var has_shot_camera: bool = false
 	var shot_camera := Vector3.ZERO
 	var shot_look := Vector3.ZERO
+	var has_shot_player: bool = false
+	var shot_player := Vector3.ZERO
+	var shot_hold: StringName = &""
 
 
 var _overlay_layer: CanvasLayer
@@ -44,6 +49,11 @@ static func parse_args(args: PackedStringArray) -> Options:
 		elif arg.begins_with("--shot-camera="):
 			options.shot_camera = _parse_vector(arg.trim_prefix("--shot-camera="))
 			options.has_shot_camera = true
+		elif arg.begins_with("--shot-player="):
+			options.shot_player = _parse_vector(arg.trim_prefix("--shot-player="))
+			options.has_shot_player = true
+		elif arg.begins_with("--shot-hold="):
+			options.shot_hold = StringName(arg.trim_prefix("--shot-hold="))
 		elif arg.begins_with("--shot-look="):
 			options.shot_look = _parse_vector(arg.trim_prefix("--shot-look="))
 		elif arg.begins_with("--shot-frame="):
@@ -179,6 +189,13 @@ func save_screenshot(path: String) -> Error:
 
 
 func _capture_and_quit(options: Options) -> void:
+	await get_tree().process_frame
+	var scene := get_tree().current_scene
+	if options.has_shot_player and scene and scene.has_method(&"player"):
+		var player := scene.call(&"player") as Node3D
+		player.global_position = options.shot_player
+	if options.shot_hold != &"" and InputMap.has_action(options.shot_hold):
+		Input.action_press(options.shot_hold)
 	for i in options.shot_frames:
 		await get_tree().process_frame
 	if options.has_shot_camera and get_tree().current_scene is Node3D:

@@ -59,7 +59,7 @@ func _ground(xz: Vector2) -> float:
 	var shore := _from_shore(xz)
 	if shore < 0.0:
 		var reach := clampf(-shore / POND_RADIUS, 0.0, 1.0)
-		return WATER - 0.12 - 0.7 * (1.0 - pow(1.0 - reach, 2.0))
+		return WATER - 0.12 - 1.5 * (1.0 - pow(1.0 - reach, 2.0))
 	var lip := 0.16 * (1.0 - smoothstep(0.0, 1.5, shore))
 	var dunes := dune_height * (0.5 + 0.5 * _dunes.get_noise_2d(xz.x, xz.y)) * _sandiness(xz)
 	# The camp ground around the fire stays level.
@@ -253,7 +253,7 @@ func _place_lilies() -> void:
 		var xz := POND + Vector2(cos(angle), sin(angle)) * rng.randf_range(1.0, POND_RADIUS - 0.6)
 		if _from_shore(xz) > -0.5:
 			continue
-		var size := rng.randf_range(0.8, 1.2)
+		var size := rng.randf_range(0.18, 0.3)
 		transforms.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * size), Vector3(xz.x, WATER + 0.01, xz.y)))
 		colors.append(Color.WHITE)
 	add_multimesh("Lilies", NatureKit.lily_pad(rng, true), NatureKit.floating_material(), transforms, colors, 45.0)

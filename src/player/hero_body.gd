@@ -5,7 +5,8 @@ extends Node3D
 ## player tells it how it moves; it blends the animations:
 ##   idle, walk and run by ground speed; fall while airborne;
 ##   hold_sword on the right arm while a sword is held; swing on the upper
-##   body; pray or cry over everything while a gesture runs.
+##   body; pray or cry over everything while a gesture runs; swim over
+##   everything in deep water, faster the faster it moves.
 ## It also carries the attachment points: the right hand and the eyes.
 
 ## Bones a swing moves; the legs keep walking underneath.
@@ -15,7 +16,10 @@ const UPPER_BODY: Array[String] = [
 	"RightShoulder", "RightUpperArm", "RightLowerArm", "RightHand",
 ]
 const SWORD_ARM: Array[String] = ["RightUpperArm", "RightLowerArm", "RightHand"]
-const LOOPS: Array[StringName] = [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"pray", &"cry"]
+const LOOPS: Array[StringName] = [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"pray", &"cry", &"swim"]
+## Metres per second the swim animation is made for; slower swimming plays it
+## slower, down to a gentle paddle when still.
+const SWIM_SPEED := 2.4
 ## Metres per second the walk and run animations are made for.
 const WALK_SPEED := 4.5
 const RUN_SPEED := 7.5
@@ -91,6 +95,13 @@ func swing() -> void:
 	_tree.set("parameters/swing/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 
+## Swims (or stops swimming) at `speed` metres per second, easing in and out.
+func swim(swimming: bool, speed: float, delta: float) -> void:
+	var amount := float(_tree.get("parameters/water/blend_amount"))
+	_tree.set("parameters/water/blend_amount", move_toward(amount, 1.0 if swimming else 0.0, delta * 3.0))
+	_tree.set("parameters/swim_pace/scale", clampf(speed / SWIM_SPEED, 0.35, 1.6))
+
+
 ## Blends a gesture (&"pray" or &"cry") over the whole body by `weight`,
 ## 0 to 1.
 func gesture(name_of_gesture: StringName, weight: float) -> void:
@@ -144,6 +155,9 @@ func _build_tree(skeleton: NodePath) -> AnimationNodeBlendTree:
 	root.add_node(&"cry", _clip(&"cry"))
 	root.add_node(&"gesture_pick", pick)
 	root.add_node(&"gesture", AnimationNodeBlend2.new())
+	root.add_node(&"swim", _clip(&"swim"))
+	root.add_node(&"swim_pace", AnimationNodeTimeScale.new())
+	root.add_node(&"water", AnimationNodeBlend2.new())
 	root.connect_node(&"air", 0, &"locomotion")
 	root.connect_node(&"air", 1, &"fall")
 	root.connect_node(&"hold", 0, &"air")
@@ -152,7 +166,10 @@ func _build_tree(skeleton: NodePath) -> AnimationNodeBlendTree:
 	root.connect_node(&"swing", 1, &"swing_clip")
 	root.connect_node(&"gesture_pick", 0, &"pray")
 	root.connect_node(&"gesture_pick", 1, &"cry")
-	root.connect_node(&"gesture", 0, &"swing")
+	root.connect_node(&"swim_pace", 0, &"swim")
+	root.connect_node(&"water", 0, &"swing")
+	root.connect_node(&"water", 1, &"swim_pace")
+	root.connect_node(&"gesture", 0, &"water")
 	root.connect_node(&"gesture", 1, &"gesture_pick")
 	root.connect_node(&"output", 0, &"gesture")
 	return root
