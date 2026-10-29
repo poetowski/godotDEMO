@@ -2,7 +2,7 @@ class_name SoundSynth
 extends RefCounted
 ## Sounds made in code, like the models: short mono 16-bit clips built from
 ## noise, sines and envelopes, the same every time for the same variant.
-## Footsteps on grass and in water, a wind loop, birdsong and crickets.
+## Footsteps on grass and in water, swimming strokes, a wind loop, birdsong and crickets.
 ## Placeholders until real recordings or a sound designer's work arrive.
 
 const RATE := 22050
@@ -29,6 +29,38 @@ static func footstep(surface: StringName, variant: int) -> AudioStreamWAV:
 			var rustle := low * _envelope(t, 0.004, length * 0.9) * 0.6
 			var thump := sin(TAU * thump_pitch * t) * _envelope(t, 0.002, 0.05) * 0.5
 			samples[k] = rustle + thump
+	return _wav(samples, false)
+
+
+## A swimming stroke: a hand slapping into the water (a sharp bright
+## splash), then the water rushing and gurgling with a few bubbles popping as
+## the arm pulls. Not `strong`: just a soft lap of a paddling hand.
+static func swim_stroke(variant: int, strong: bool) -> AudioStreamWAV:
+	var rng := _rng(301 + variant + (0 if strong else 40))
+	var length := 0.55 if strong else 0.35
+	var samples := PackedFloat32Array()
+	samples.resize(int(length * RATE))
+	var low := 0.0
+	var lower := 0.0
+	var pops: Array[Vector3] = []
+	for k in rng.randi_range(2, 4) if strong else 1:
+		# When (s), pitch (Hz), how long (s).
+		pops.append(Vector3(rng.randf_range(0.08, length * 0.7), rng.randf_range(350.0, 900.0), rng.randf_range(0.02, 0.05)))
+	for k in samples.size():
+		var t := float(k) / RATE
+		var noise := rng.randf_range(-1.0, 1.0)
+		low = lerpf(low, noise, 0.5)
+		lower = lerpf(lower, noise, 0.08)
+		var slap := (noise - low * 0.5) * _envelope(t, 0.003, 0.09) * (0.8 if strong else 0.0)
+		var rush := low * _envelope(t, 0.02, length) * (0.5 if strong else 0.35)
+		var gurgle := lower * (0.6 + 0.4 * sin(TAU * 13.0 * t)) * _envelope(t, 0.05, length) * 0.9
+		var bubbles := 0.0
+		for pop in pops:
+			var since := t - pop.x
+			if since > 0.0 and since < pop.z:
+				# A bubble: a short tone gliding up.
+				bubbles += sin(TAU * pop.y * since * (1.0 + since * 12.0)) * _envelope(since, 0.002, pop.z) * 0.3
+		samples[k] = slap + rush + gurgle + bubbles
 	return _wav(samples, false)
 
 

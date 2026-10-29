@@ -46,3 +46,20 @@ func test_the_r11_lake_is_water_to_swim_in() -> void:
 	var terrain := _world.call("terrain") as FieldTerrain
 	var spot := Vector2(100.0, -260.0)
 	assert_gt(terrain.water_level_at(spot) - terrain.height_at(spot), 1.0)
+
+
+func test_splashes_while_swimming_and_not_on_land() -> void:
+	var terrain := _world.call("terrain") as FieldTerrain
+	var sounds := _player.get_node("SwimSounds") as SwimSounds
+	var splashes: Array[bool] = []
+	sounds.splashed.connect(func(strong: bool) -> void: splashes.append(strong))
+	var spot := Vector2(28.0, -49.0)
+	_player.global_position = Vector3(spot.x, terrain.water_level_at(spot) - 0.5, spot.y)
+	Input.action_press(&"move_right")
+	await wait_physics_frames(75)
+	Input.action_release(&"move_right")
+	assert_gt(splashes.count(true), 1, "strokes splash")
+	splashes.clear()
+	_player.global_position = Vector3(25.0, terrain.height_at(Vector2(25.0, -42.5)) + 0.1, -42.5)
+	await wait_physics_frames(60)
+	assert_eq(splashes.size(), 0, "silent on land")

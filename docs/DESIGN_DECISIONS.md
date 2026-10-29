@@ -518,3 +518,17 @@ island in the middle".
 Placeholders (Claude's choices beyond the brief): the lake's size, shape,
 depth and water level, the island's size and height, how thick the woods
 are.
+
+## 2026-10-29: Swimming sounds
+
+Request: "swimming sound when player swims in the water. something like
+water splashing".
+
+- `SwimSounds` on the player: a splash each time a hand comes down, in time
+  with the swim animation (about two a second at normal speed, faster when
+  sprinting), and a soft lap now and then while paddling in place. Silent
+  on land; no footsteps while swimming.
+- The splashes are made in code (`SoundSynth.swim_stroke`): a slap, rushing
+  water, a gurgle and a few bubbles, four variants.
+
+Placeholders: the sounds themselves (until real recordings), their volume.
