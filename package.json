@@ -12,6 +12,7 @@
     "bake": "node tools/dev.mjs bake",
     "strings": "node tools/dev.mjs strings",
     "perf": "node tools/dev.mjs perf",
+    "props": "node tools/dev.mjs props",
     "models": "node tools/dev.mjs models",
     "blender": "node tools/dev.mjs blender",
     "import": "node tools/dev.mjs import",

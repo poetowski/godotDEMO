@@ -49,6 +49,10 @@ const CLAIM_BUCKET := 2.0
 ## Metres over which the ground eases back to flat at edges shared with
 ## sectors this design doesn't own.
 @export var edge_blend: float = 2.0
+## True once the design's props are placed in the scene, as Prop nodes under
+## its `Props` node, editable by hand (npm run props -- <Design> freezes the
+## ones its code places). Its code then stops placing them.
+@export var props_frozen: bool = false
 
 ## Seeded with `design_seed` before `_populate`; use it for every random choice.
 var rng := RandomNumberGenerator.new()
@@ -67,6 +71,9 @@ var _merged: Dictionary[String, NatureKit.Batch] = {}
 ## square each claim touches.
 var _claims: Dictionary[Vector2i, Array] = {}
 var _issued: Dictionary[String, bool] = {}
+## Props placed by the design's code this generation: {kind, variant,
+## where, solid}, for freezing them into the scene.
+var _placed_props: Array[Dictionary] = []
 var _colliders: StaticBody3D
 ## The content being generated, and the content attached.
 var _building: Node3D
@@ -140,13 +147,16 @@ func generate_content() -> Node3D:
 	_merged.clear()
 	_claims.clear()
 	_issued.clear()
+	_placed_props.clear()
 	_colliders = null
 	_building = Node3D.new()
 	_building.name = "Content"
 	rng.seed = design_seed
 	_build_ground()
 	_build_water()
+	_add_scene_props()
 	_populate()
+	_commit_props()
 	var built := _building
 	_building = null
 	return built
@@ -432,6 +442,61 @@ func instance_transforms(node_name: StringName) -> Array[Transform3D]:
 
 
 ## Makes a shape solid for the player and the camera.
+## Places a prop from code: merged into the sector's meshes like a prop
+## placed by hand, solid if `solid`, and its room claimed. Call it only
+## while `props_frozen` is false; `npm run props` turns these into Prop nodes.
+func place_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool) -> void:
+	_placed_props.append({"kind": kind, "variant": variant, "where": where, "solid": solid})
+	_merge_prop(kind, variant, where, solid)
+
+
+## The props the design's code placed in the last generation.
+func placed_props() -> Array[Dictionary]:
+	return _placed_props
+
+
+## The Prop nodes placed by hand under `Props`.
+func scene_props() -> Array[Prop]:
+	var found: Array[Prop] = []
+	var holder := get_node_or_null("Props")
+	if holder:
+		for child in holder.get_children():
+			if child is Prop:
+				found.append(child as Prop)
+	return found
+
+
+func _add_scene_props() -> void:
+	for prop in scene_props():
+		var where := prop.placement()
+		if Engine.is_editor_hint():
+			# The editor shows each prop by itself; only keep room for it.
+			claim(Vector2(where.origin.x, where.origin.z), PropLibrary.room(prop.kind, where))
+		else:
+			_merge_prop(prop.kind, prop.variant, where, prop.solid)
+
+
+func _merge_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool) -> void:
+	var xz := Vector2(where.origin.x, where.origin.z)
+	PropLibrary.add_to(merged(PropLibrary.group(kind), xz), kind, variant, where)
+	if solid:
+		var shape := PropLibrary.collider(kind, where)
+		if not shape.is_empty():
+			add_collider(shape[0], shape[1])
+	claim(xz, PropLibrary.room(kind, where))
+
+
+## Commits the props' meshes the design's own code didn't commit.
+func _commit_props() -> void:
+	var groups: Dictionary[String, bool] = {}
+	for key: String in _merged.keys():
+		for group_name in PropLibrary.GROUPS:
+			if key.begins_with(group_name + "_"):
+				groups[group_name] = true
+	for group_name: String in groups:
+		commit_merged(group_name, PropLibrary.material(group_name))
+
+
 func add_collider(shape: Shape3D, where: Transform3D) -> void:
 	if _colliders == null:
 		_colliders = StaticBody3D.new()

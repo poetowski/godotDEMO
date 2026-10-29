@@ -29,11 +29,12 @@ working title and the game's design is not decided yet.
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
 | `npm run models` | Runs every Blender script in `tools/blender/` headless with factory settings (the hero: `build_hero.py`), writing `.glb` files into `assets/models/`, then imports them. Commit the `.glb` with the script that made it. |
 | `npm run blender` | Opens Blender for the MCP tools, with the add-on's telemetry and update check off. |
+| `npm run props -- <Design>` | Freezes the props a sector design's code places (`place_prop`) into `field.tscn` as `Prop` nodes to edit by hand, and marks the design `props_frozen`. Adds lines only. Close the editor first. |
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
 | `npm run game -- --regions=20` | The world at 20 x 20 regions (4 km) instead of 10 x 10, for testing. |
-| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. Run plugged in. |
+| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Vegetation/FarForest]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- src/world/stress/stress_field.tscn` | The stress-test world: woodland in all 400 sectors on Perlin hills. Regenerate it with `python tools/make_stress_field.py`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
@@ -130,6 +131,11 @@ heights, water and flow stay known everywhere. So:
 - Content comes and goes. Anything the player changes must be recorded in
   `WorldState` (see `persist_id` on `ItemPickup` and `SwordChest`), or it
   resets when its sector reloads.
+- Bushes, rocks and trees are props (`Prop`, `PropLibrary`): code places
+  them with `place_prop` while a design is being made, and
+  `npm run props -- <Design>` freezes them into the scene, after which
+  they're edited by hand and the code places none (`props_frozen`). Grass,
+  flowers and other masses stay scattered in code (MultiMesh).
 - Ids in `WorldState` end up in players' saves, so they must never change:
   every design has a `design_id` (lowercase, unique, set once), hand-placed
   things use `content_id("local_name")` and scattered ones

@@ -18,6 +18,8 @@ design arrives.
 | The world | `src/world/field/` | The field is the whole world: 10 x 10 regions (2 km, R1 to R100; `--regions=20` makes 4 km). R1, the south-west region, is flat and clear: it's where the world is built from by hand, and holds the sector designs. Beyond it rolling hills (34 m) rise over 300 m (`WorldShape.home`) and woods grow, all streamed around the player. |
 | Landforms | `src/world/land/`, `data/world/landforms/` | Region designs: each `LandformSet` (made by `/region-design`) is a few `Landform`s (mountain, hill, ridge, valley, plateau) for some regions. `WorldShape` adds them up with the rolling hills and a little small detail; `Landforms` also answers where trees thin out (tree density, tree line, no trees on cliffs) and the ground's colour (rock where steep, snow above a snow line). Tests keep every landform inside its regions and off designed sectors. The first: a big mountain in R2. |
 | Streamed ground | `src/world/field/terrain_chunks.gd` | `TerrainChunks`, the ground of a `chunked` FieldTerrain: the 3 x 3 regions around the player in 100 m chunks with collision (1 m samples next to the player, 4 m beyond), farther regions as single 200 m tiles (8 m, then 20 m) out to 6 regions. Skirts hide the cracks between levels of detail; tiles are built on worker threads and attached two a frame. Designed sectors are left open for their designs' own ground. |
+| Props | `src/world/props/`, `tools/freeze_props.gd` | Bushes, rocks and trees as `Prop` nodes under a design's `Props` node in `field.tscn`: selected, moved, turned, scaled, duplicated or deleted in the editor, where each shows a preview. The game never draws them one by one: the design merges them (`PropLibrary`) into one mesh per kind and sector, with their collision, when its content is built and baked. A design's code places props with `place_prop` while it's being made; `npm run props -- <Design>` freezes them into the scene for hand editing. The A1-A3 stream's 75 rocks and bushes are props. |
+| Far forest | `src/world/nature/far_forest.gd`, `far_forest.gdshader` | Stand-in trees beyond the real ones (350 m) out to 1.3 km, where Vegetation's trees stand (every other one, a little bigger), in 400 m blocks, one MultiMesh per kind and block; each dissolves where the real trees take over. |
 | Vegetation | `src/world/nature/vegetation.gd` | Woods that grow on their own over open ground, streamed in 100 m chunks: trees out to 3 chunks (350 m), bushes, grass and trunk collision within 1 chunk. Thick where a world-wide noise says forest, thin in clearings; the same every time; built on worker threads, one MultiMesh per kind and chunk. |
 | Sound | `src/audio/`, `default_bus_layout.tres` | Made in code like the models (`SoundSynth`): footsteps on grass and splashing in water (`Footsteps` on the player: a step every stride, longer strides when sprinting, a heavier one on landing), and one ambient for the whole world (`Ambience`: wind always, birds by day, crickets by night, by the light). Buses: Effects and Ambient, for volume settings later. |
 | Benchmark | `tools/perf.gd`, `npm run perf` | Travels the player across a world in a straight line and reports frame times, GPU time, draw calls, memory over time, streamed tiles and every frame over 40 ms with where it happened, to `.perf/<world>.json`. |
@@ -127,8 +129,8 @@ used to stall a frame for 130 ms (the sector grid rebuilt itself on the main
 thread); it now works out the new region on a worker thread, and the worst
 frame of the run is 17 ms.
 
-Not done yet: forests beyond 350 m (far hills are bare: region-sized forest
-stand-ins would fill them), and moving the world's origin with the player.
+Not done yet: moving the world's origin with the player. (Forests beyond
+350 m, missing then, are filled by FarForest since.)
 Positions stay precise to well under a millimetre within 4 km, so the shift
 only matters for worlds of about 8 km or more.
 

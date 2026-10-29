@@ -8,6 +8,7 @@ extends Node3D
 ## the chunk's position and `vegetation_seed`, built on worker threads and
 ## drawn as one MultiMesh per kind and chunk. Designed sectors and the flat
 ## home area being built by hand (WorldShape.home, R1) are left alone.
+## Beyond the trees, FarForest carries the woods on to the horizon.
 
 const CHUNK := TerrainChunks.CHUNK
 ## Metres between candidate tree spots (jittered).
@@ -29,6 +30,10 @@ const ATTACH_PER_FRAME := 2
 @export var check_interval: float = 0.25
 ## Rise per metre beyond which trees, bushes and grass don't grow.
 @export var max_slope: float = 0.8
+## Metres out to which the distant forest's stand-ins reach.
+@export var far_distance: float = 1300.0
+
+var far_forest: FarForest
 
 var _forest: FastNoiseLite
 var _tree_meshes: Array[ArrayMesh] = []
@@ -65,6 +70,13 @@ func _ready() -> void:
 	_bush_mesh = bush.commit()
 	_grass_mesh = NatureKit.grass_tuft(rng)
 	_tree_material = MeshKit.lowpoly_material(Color.WHITE, 0.95)
+	far_forest = FarForest.new()
+	far_forest.name = "FarForest"
+	far_forest.focus = focus
+	far_forest.vegetation = self
+	far_forest.view_distance = far_distance
+	far_forest.hide_within = tree_chunks * CHUNK
+	add_child(far_forest)
 	_grass_material = NatureKit.grass_material()
 
 
@@ -178,7 +190,7 @@ func _next_token() -> int:
 func _generate(chunk: Vector2i, detail: bool, token: int) -> void:
 	var corner := Vector2(chunk.x * CHUNK, -chunk.y * CHUNK)
 	var result := {"chunk": chunk, "detail": detail, "token": token}
-	var spots := _tree_spots(chunk)
+	var spots := tree_spots(chunk)
 	if not detail:
 		var trees: Array[Array] = []
 		for kind in _tree_meshes.size():
@@ -212,7 +224,7 @@ func _generate(chunk: Vector2i, detail: bool, token: int) -> void:
 
 ## Every tree in a chunk as [kind, transform]: candidates on a jittered grid,
 ## kept where the forest is thick enough. The same every time.
-func _tree_spots(chunk: Vector2i) -> Array[Array]:
+func tree_spots(chunk: Vector2i) -> Array[Array]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(Vector3i(chunk.x, chunk.y, vegetation_seed))
 	var corner := Vector2(chunk.x * CHUNK, -chunk.y * CHUNK)

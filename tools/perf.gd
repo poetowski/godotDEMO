@@ -11,11 +11,14 @@ extends SceneTree
 ##   --speed=12           metres per second
 ##   --heading=45         degrees from north toward east
 ##   --regions=10         passed on to the field (20 makes 4 km)
+##   --without=A,B        switch off these nodes (paths from the world's
+##                        root, such as Vegetation/FarForest), to measure
+##                        what they cost
 
 const DEFAULT_SCENE := "res://src/world/field/field.tscn"
 const SETTLE_FRAMES := 120
 
-var _options := {"scene": DEFAULT_SCENE, "seconds": 60.0, "speed": 12.0, "heading": 45.0}
+var _options := {"scene": DEFAULT_SCENE, "seconds": 60.0, "speed": 12.0, "heading": 45.0, "without": ""}
 
 
 func _initialize() -> void:
@@ -24,7 +27,7 @@ func _initialize() -> void:
 			var key := arg.trim_prefix("--").get_slice("=", 0)
 			var value := arg.get_slice("=", 1)
 			if _options.has(key):
-				_options[key] = value if key == "scene" else value.to_float()
+				_options[key] = value if key in ["scene", "without"] else value.to_float()
 	_run()
 
 
@@ -36,6 +39,12 @@ func _run() -> void:
 	var load_ms := Time.get_ticks_msec() - started
 	for k in SETTLE_FRAMES:
 		await process_frame
+	for path in String(_options["without"]).split(",", false):
+		var node := world.get_node_or_null(path)
+		if node:
+			node.process_mode = Node.PROCESS_MODE_DISABLED
+			if node is Node3D:
+				(node as Node3D).visible = false
 	var player := world.call("player") as Player
 	var terrain := world.call("terrain") as FieldTerrain
 	var streamer := world.call("streamer") as SectorStreamer
@@ -98,6 +107,7 @@ func _run() -> void:
 			video.append(Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0)
 	var report := {
 		"scene": _options["scene"],
+		"without": _options["without"],
 		"regions": "%dx%d" % [RegionMap.columns, RegionMap.rows],
 		"world_km": snappedf(extent.x / 1000.0, 0.1),
 		"load_ms": load_ms,

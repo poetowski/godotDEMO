@@ -31,6 +31,9 @@ const MOUNDS: Array[Vector4] = [
 const BANK_RISE := 0.16
 const MUD := Color(0.45, 0.39, 0.28)
 const WET_EARTH := Color(0.34, 0.28, 0.19)
+## Shapes (with their colours) the rocks and bushes are picked from.
+const ROCK_VARIANTS := 12
+const BUSH_VARIANTS := 8
 
 ## How far the ground rises and dips, in metres.
 @export var bumpiness: float = 0.35
@@ -103,16 +106,14 @@ func _ground_tint(xz: Vector2) -> Color:
 
 
 func _populate() -> void:
-	var shapes: Array[PackedVector3Array] = []
-	for k in 6:
-		shapes.append(NatureKit.rock_shape(rng))
-	_place_spring_rocks(shapes)
-	_place_boulders(shapes)
-	_place_bank_stones(shapes)
-	_place_scattered_rocks(shapes)
-	commit_merged("Rocks", MeshKit.lowpoly_material(Color.WHITE, 0.95))
-	_place_bushes()
-	commit_merged("Bushes", MeshKit.lowpoly_material(Color.WHITE, 0.9))
+	# Rocks and bushes are props: placed here until they're frozen into the
+	# scene (npm run props -- A1A3Stream), then edited by hand.
+	if not props_frozen:
+		_place_spring_rocks()
+		_place_boulders()
+		_place_bank_stones()
+		_place_scattered_rocks()
+		_place_bushes()
 	_place_lilies()
 	_place_grass()
 
@@ -143,45 +144,45 @@ func _hit(xz: Vector2) -> StreamPath.Hit:
 
 ## A boulder the spring wells up beside, and a ring of rocks around it, open
 ## where the stream leaves.
-func _place_spring_rocks(shapes: Array[PackedVector3Array]) -> void:
+func _place_spring_rocks() -> void:
 	var spring := Vector2(STREAM[0].x, STREAM[0].y)
 	var outflow := (Vector2(STREAM[1].x, STREAM[1].y) - spring).normalized()
-	_try_rock(shapes, spring - outflow * (STREAM[0].z + 0.35), 0.85, 0.1, false)
+	_try_rock(spring - outflow * (STREAM[0].z + 0.35), 0.85, 0.1, false)
 	var count := 10
 	for k in count:
 		var angle := TAU * k / count + rng.randf_range(-0.15, 0.15)
 		var direction := Vector2(cos(angle), sin(angle))
 		if direction.dot(outflow) > 0.7:
 			continue
-		_try_rock(shapes, spring + direction * (STREAM[0].z + rng.randf_range(0.05, 0.2)), rng.randf_range(0.3, 0.52), 0.15, false)
+		_try_rock(spring + direction * (STREAM[0].z + rng.randf_range(0.05, 0.2)), rng.randf_range(0.3, 0.52), 0.15, false)
 
 
 ## A boulder on each mound with a few smaller rocks at its feet.
-func _place_boulders(shapes: Array[PackedVector3Array]) -> void:
+func _place_boulders() -> void:
 	for mound in MOUNDS:
 		var top := Vector2(mound.x, mound.y) + Vector2(rng.randf_range(-0.4, 0.4), rng.randf_range(-0.4, 0.4))
-		_try_rock(shapes, top, rng.randf_range(0.65, 0.9), 0.15, true)
+		_try_rock(top, rng.randf_range(0.65, 0.9), 0.15, true)
 		for k in 3:
 			var angle := rng.randf() * TAU
-			_try_rock(shapes, top + Vector2(cos(angle), sin(angle)) * rng.randf_range(0.7, 1.3), rng.randf_range(0.14, 0.3), 0.15, true)
+			_try_rock(top + Vector2(cos(angle), sin(angle)) * rng.randf_range(0.7, 1.3), rng.randf_range(0.14, 0.3), 0.15, true)
 
 
 ## Stones along the banks, half in the water, and two in the stream itself.
-func _place_bank_stones(shapes: Array[PackedVector3Array]) -> void:
+func _place_bank_stones() -> void:
 	var along := 1.5
 	while along < _stream.length() - 1.0:
 		var at := _stream_index(along)
 		var side := _side(at) * (1.0 if rng.randf() < 0.5 else -1.0)
 		var xz := _stream.points[at] + side * (_stream.half_widths[at] + rng.randf_range(-0.05, 0.35))
-		_try_rock(shapes, xz, rng.randf_range(0.12, 0.3), 0.3, false)
+		_try_rock(xz, rng.randf_range(0.12, 0.3), 0.3, false)
 		along += rng.randf_range(1.2, 2.6)
 	for along_stream: float in [9.0, 16.5]:
 		var at := _stream_index(along_stream)
 		var xz := _stream.points[at] + _side(at) * _stream.half_widths[at] * 0.45
-		_try_rock(shapes, xz, rng.randf_range(0.48, 0.55), 0.0, false)
+		_try_rock(xz, rng.randf_range(0.48, 0.55), 0.0, false)
 
 
-func _place_scattered_rocks(shapes: Array[PackedVector3Array]) -> void:
+func _place_scattered_rocks() -> void:
 	for cell in cells():
 		var corner := SectorMap.corner_of(cell)
 		var placed := 0
@@ -189,7 +190,7 @@ func _place_scattered_rocks(shapes: Array[PackedVector3Array]) -> void:
 			if placed >= rocks_per_sector:
 				break
 			var xz := Vector2(corner.x + rng.randf() * SectorMap.SIZE, corner.z - rng.randf() * SectorMap.SIZE)
-			if is_dry(xz, 0.12) and _try_rock(shapes, xz, lerpf(0.12, 0.55, pow(rng.randf(), 2.0)), 0.15, true):
+			if is_dry(xz, 0.12) and _try_rock(xz, lerpf(0.12, 0.55, pow(rng.randf(), 2.0)), 0.15, true):
 				placed += 1
 
 
@@ -286,7 +287,7 @@ func _place_grass() -> void:
 
 ## Places a rock `size` metres across if it fits, resting on the lowest ground
 ## under it and sunk by `sink` of its size. Wide rocks become solid.
-func _try_rock(shapes: Array[PackedVector3Array], xz: Vector2, size: float, sink: float, keep_dry: bool) -> bool:
+func _try_rock(xz: Vector2, size: float, sink: float, keep_dry: bool) -> bool:
 	var radius := size * 0.62
 	if not fits(xz, radius) or crowds_start(xz, radius) or not is_clear(xz, radius):
 		return false
@@ -294,12 +295,7 @@ func _try_rock(shapes: Array[PackedVector3Array], xz: Vector2, size: float, sink
 		return false
 	var base := lowest_ground(xz, radius * 0.7) - sink * size * 0.5
 	var where := Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * size), Vector3(xz.x, base, xz.y))
-	merged("Rocks", xz).add(shapes[rng.randi() % shapes.size()], where, NatureKit.rock_color(rng))
-	claim(xz, radius)
-	if size >= 0.45:
-		var shape := SphereShape3D.new()
-		shape.radius = size * 0.38
-		add_collider(shape, Transform3D(Basis(), Vector3(xz.x, base + size * 0.12, xz.y)))
+	place_prop(PropLibrary.Kind.ROCK, rng.randi() % ROCK_VARIANTS, where, size >= 0.45)
 	return true
 
 
@@ -308,8 +304,7 @@ func _try_bush(xz: Vector2, size: float) -> bool:
 	if not fits(xz, radius) or crowds_start(xz, radius) or not is_clear(xz, radius) or not is_dry(xz, 0.12):
 		return false
 	var where := Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * size), Vector3(xz.x, lowest_ground(xz, radius * 0.4) - 0.04, xz.y))
-	NatureKit.add_bush(merged("Bushes", xz), rng, where)
-	claim(xz, radius)
+	place_prop(PropLibrary.Kind.BUSH, rng.randi() % BUSH_VARIANTS, where, false)
 	return true
 
 

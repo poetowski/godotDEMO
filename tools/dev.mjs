@@ -17,6 +17,8 @@
 //   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20]
 //                                benchmark a world (default: the field)
 //                                in a window; writes .perf/<world>.json
+//   npm run props -- <Design>    freeze a sector design's code-placed props
+//                                into field.tscn as Prop nodes to edit by hand
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
@@ -240,9 +242,24 @@ const commands = {
     const scene = positional[0] ? toResPath(positional[0]) : 'res://src/world/field/field.tscn';
     const seconds = Number(options.seconds ?? 60);
     if (!(await ensureImported()) || !(await ensureBaked())) return false;
-    const passed = ['seconds', 'speed', 'heading', 'regions'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
+    const passed = ['seconds', 'speed', 'heading', 'regions', 'without'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
     const args = ['--path', ROOT, '--resolution', options.size ?? '1280x720', '--script', 'res://tools/perf.gd', '--', `--scene=${scene}`, ...passed];
     return report('perf', await godot(args, { timeoutMs: (seconds + 180) * 1000 }));
+  },
+
+  // Freezes a sector design's code-placed props into field.tscn as Prop
+  // nodes to edit by hand. The editor must be closed.
+  async props(argv) {
+    const { positional } = parseOptions(argv);
+    if (!positional[0]) {
+      console.error('usage: npm run props -- <DesignNodeName>');
+      return false;
+    }
+    if (!(await ensureImported())) return false;
+    const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/freeze_props.gd', '--', positional[0]], {
+      timeoutMs: 3 * 60_000,
+    });
+    return report('props', result);
   },
 
   async strings() {

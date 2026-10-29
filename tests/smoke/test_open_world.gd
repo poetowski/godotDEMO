@@ -100,3 +100,14 @@ func test_5_going_elsewhere_streams_it_in_and_lets_the_old_place_go() -> void:
 	assert_eq((_world.get_node("SectorGrid") as Node).call("region"), Vector2i.ZERO, "the grid follows into R1")
 	_world.call("teleport", SectorMap.cell_named("R56:J10"))
 	await wait_physics_frames(2)
+
+
+func test_6_the_distant_forest_reaches_the_horizon() -> void:
+	var far := _vegetation.far_forest
+	far.update()
+	await wait_until(far.is_settled, 30.0)
+	assert_gt(far.block_count(), 4)
+	assert_lt(far.block_count(), 50, "only blocks in view")
+	var block := FarForest.block_at(_xz() + Vector2(700.0, -300.0))
+	assert_gt(far.tree_count(block), 100, "woods far off")
+	assert_eq(far.hide_within, _vegetation.tree_chunks * Vegetation.CHUNK, "the stand-ins give way where the real trees stand")

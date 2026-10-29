@@ -61,6 +61,14 @@ sectors.
    names or placing order, and never change one once it has shipped.
    Anything the player reads (prompts, titles, choices) is English wrapped
    in `Text.mark("...")`; the node translates it where it's shown.
+6b. **Props for things worth placing by hand.** Bushes, rocks and trees go
+   through `place_prop(kind, variant, where, solid)` (PropLibrary.Kind:
+   BUSH, ROCK, ROUND_TREE, PINE), never straight into a merged mesh, and
+   only while `props_frozen` is false (`if not props_frozen:` around the
+   placing code). Once the design is done (step 6b of the workflow) they're
+   frozen into the scene as Prop nodes the author edits by hand. Grass,
+   flowers, lilies and other masses stay scattered in code. See the A1-A3
+   stream.
 7. **The player can always start.** Props stay clear of every owned sector's
    start point (`crowds_start`), and A1's start point stays dry ground.
 8. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
@@ -121,6 +129,10 @@ sectors.
    area's edge, density, colours that clash with the field, black pixels
    with white glow around them (NaN in a shader), and anything outside the
    sectors. Iterate until it looks right.
+6b. **Freeze the props** once the shots look right:
+   `npm run props -- <PascalSlug>` (editor closed). Run `npm run verify`
+   again and check that `git diff src/world/field/field.tscn` only adds the
+   design's `props_frozen` and its props.
 7. **Record it** in `docs/DESIGN_DECISIONS.md`, newest last:
    `## YYYY-MM-DD: Sectors A1 to A3: <short title>`, with the brief quoted
    word for word, what was built and where, and a list of the placeholders.

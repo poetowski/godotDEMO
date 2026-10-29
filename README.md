@@ -56,7 +56,8 @@ npm run bake      bake the sector designs for streaming (game, shot and
 npm run models    rebuild the Blender-made models (the hero) and import them
 npm run blender   open Blender for the Blender MCP tools
 npm run strings   collect the player-facing text into locale/messages.pot
-npm run perf      benchmark a world (default: the big world, 2 km)
+npm run perf      benchmark the world (2 km)
+npm run props     freeze a sector design's props into the scene to edit by hand
 npm run api       dump the engine class reference to .godot-api/
 ```
 
