@@ -409,3 +409,20 @@ look (wood, brass, copper, how many shelves and flasks, their shapes and
 colours, the burner), and placing it by the A5 cottage (move or delete the
 Prop to change that).
 
+
+## 2026-10-29: A weapon rack
+
+Request (`/asset-design`): "weaponry rack 4m width 3m tall, containing some
+spears and shields behind them".
+
+- The weapon rack, 4.2 × 0.8 × 3.0 m (4 m between the posts, the roof
+  overhangs): three oak posts, a plank back wall with iron bands, a small
+  shingled roof; six painted shields hang on the wall (five round, one tower
+  shield) and eleven iron-tipped spears stand in front of them between two
+  rails.
+- Not placed in the world; its prop scene is
+  `src/world/props/assets/weapon_rack.tscn`.
+
+Placeholders (Claude's choices beyond the brief): the roof, the wood and
+iron, the number of shields and spears, the shields' shapes, colours and
+crosses.

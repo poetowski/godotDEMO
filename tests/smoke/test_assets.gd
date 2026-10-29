@@ -8,7 +8,7 @@ extends GutTest
 const FOLDER := "res://assets/models/props"
 const PROP_FOLDER := "res://src/world/props/assets"
 ## Expected height in metres (low, high) per asset, from its brief.
-const HEIGHTS := {"alchemist_column": Vector2(1.8, 2.2)}
+const HEIGHTS := {"alchemist_column": Vector2(1.8, 2.2), "weapon_rack": Vector2(2.7, 3.3)}
 
 
 func _slugs() -> PackedStringArray:
