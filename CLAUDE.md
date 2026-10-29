@@ -27,7 +27,8 @@ working title and the game's design is not decided yet.
 | `npm run shot -- --hour=0 --out=.shots/night.png` | Any shot at a time of day: the world is lit by the clock, so check designs by night too. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
-| `npm run models` | Runs every Blender script in `tools/blender/` headless with factory settings (the hero: `build_hero.py`), writing `.glb` files into `assets/models/`, then imports them. Commit the `.glb` with the script that made it. |
+| `npm run asset-preview -- <slug>` | Renders an asset in Godot from three sides next to a 1.8 m figure, into `.shots/assets/`. |
+| `npm run models [-- <slug>]` | Runs the Blender scripts headless with factory settings (the hero, `build_hero.py`, and every asset in `tools/blender/assets/`, or only the named asset), writing `.glb` files into `assets/models/`, then imports them. Commit the `.glb` with the script that made it. |
 | `npm run blender` | Opens Blender for the MCP tools, with the add-on's telemetry and update check off. |
 | `npm run props -- <Design>` | Freezes the props a sector design's code places (`place_prop`) into `field.tscn` as `Prop` nodes to edit by hand, and marks the design `props_frozen`. Adds lines only. Close the editor first. |
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
@@ -144,10 +145,12 @@ heights, water and flow stay known everywhere. So:
 
 ## Regions
 
-- Two design skills, two scales: `/region-design <regions> <brief>` shapes
+- Design skills at three scales: `/region-design <regions> <brief>` shapes
   the land of whole regions with landforms (data in
   `data/world/landforms/`); `/environment-design <sectors> <brief>` builds
-  the detail of sectors on top. Shape the regions first.
+  the detail of sectors on top; `/asset-design <brief>` makes one object in
+  Blender (`tools/blender/assets/`) to place as a prop. Shape the regions
+  first.
 
 - The world is regions of 20 x 20 sectors (200 m) named R1, R2... from the
   south-west, east along each row, then north. In a world of several

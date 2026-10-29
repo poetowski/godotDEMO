@@ -66,5 +66,7 @@ func _bake_world(path: String) -> int:
 func _own(node: Node, root: Node) -> void:
 	for child in node.get_children():
 		child.owner = root
-		if child.get_script() == null:
+		# An instanced scene (a model from assets/) is saved as a reference
+		# to its file, not copied in.
+		if child.get_script() == null and child.scene_file_path.is_empty():
 			_own(child, root)

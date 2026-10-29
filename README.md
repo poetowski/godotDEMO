@@ -53,7 +53,8 @@ npm run game      play the game (-- --hour=21 to start at night; F7
 npm run import    import new assets without the editor
 npm run bake      bake the sector designs for streaming (game, shot and
                   test do it when needed)
-npm run models    rebuild the Blender-made models (the hero) and import them
+npm run models    rebuild the Blender-made models (the hero, assets) and import them
+npm run asset-preview -- <slug>   render an asset next to a 1.8 m figure
 npm run blender   open Blender for the Blender MCP tools
 npm run strings   collect the player-facing text into locale/messages.pot
 npm run perf      benchmark the world (2 km)

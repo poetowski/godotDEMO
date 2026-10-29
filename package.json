@@ -15,6 +15,7 @@
     "props": "node tools/dev.mjs props",
     "models": "node tools/dev.mjs models",
     "blender": "node tools/dev.mjs blender",
+    "asset-preview": "node tools/dev.mjs asset-preview",
     "import": "node tools/dev.mjs import",
     "check": "node tools/dev.mjs check",
     "test": "node tools/dev.mjs test",

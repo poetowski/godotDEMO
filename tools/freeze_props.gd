@@ -12,7 +12,7 @@ extends SceneTree
 const SCENE := "res://src/world/field/field.tscn"
 const PROP_SCRIPT := "res://src/world/props/prop.gd"
 const PROP_ID := "50_prop"
-const NAMES: Array[String] = ["Bush", "Rock", "Tree", "Pine"]
+const NAMES: Array[String] = ["Bush", "Rock", "Tree", "Pine", "Asset"]
 
 
 func _initialize() -> void:
@@ -61,6 +61,11 @@ static func _with_props(text: String, design_name: String, placed: Array[Diction
 	var parent := "Sectors/%s" % design_name
 	lines.append('[node name="Props" type="Node3D" parent="%s"]' % parent)
 	var counts := {}
+	var asset_ids := {}
+	for entry in placed:
+		var model := entry.get("asset") as PackedScene
+		if model and not asset_ids.has(model.resource_path):
+			asset_ids[model.resource_path] = "%d_asset" % (60 + asset_ids.size())
 	for entry in placed:
 		var kind: int = entry["kind"]
 		counts[kind] = int(counts.get(kind, 0)) + 1
@@ -71,11 +76,19 @@ static func _with_props(text: String, design_name: String, placed: Array[Diction
 		lines.append("kind = %d" % kind)
 		lines.append("variant = %d" % int(entry["variant"]))
 		lines.append("solid = %s" % ("true" if entry["solid"] else "false"))
+		var model := entry.get("asset") as PackedScene
+		if model:
+			lines.append('asset = ExtResource("%s")' % asset_ids[model.resource_path])
 	text = text.substr(0, end) + "\n" + "\n".join(lines) + text.substr(end)
+	var resources: PackedStringArray = []
 	if not text.contains('id="%s"' % PROP_ID):
+		resources.append('[ext_resource type="Script" path="%s" id="%s"]' % [PROP_SCRIPT, PROP_ID])
+	for path: String in asset_ids:
+		resources.append('[ext_resource type="PackedScene" path="%s" id="%s"]' % [path, asset_ids[path]])
+	if not resources.is_empty():
 		var last := text.rfind("[ext_resource ")
 		var line_end := text.find("\n", last)
-		text = text.substr(0, line_end + 1) + '[ext_resource type="Script" path="%s" id="%s"]\n' % [PROP_SCRIPT, PROP_ID] + text.substr(line_end + 1)
+		text = text.substr(0, line_end + 1) + "\n".join(resources) + "\n" + text.substr(line_end + 1)
 	return text
 
 

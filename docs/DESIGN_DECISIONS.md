@@ -386,3 +386,26 @@ Placeholders (Claude's choices beyond the brief): the mountain's exact
 height, shape and craggedness, the snow cap, the tree line, the shoulder
 ridge and the foothill, and the rock and snow colours.
 
+## 2026-10-29: Asset design, and an alchemist's column
+
+Request: a skill that takes a description and makes the object in Blender,
+exported as an asset to use in the game; first: "alchemist column system
+medieval flasks, whole object size around 2m".
+
+- `/asset-design <description>` builds an object with a Blender script
+  (`tools/blender/assets/<slug>.py`), exports it with its own collision,
+  previews it in Godot next to a 1.8 m figure, and gives it a prop scene to
+  place it with.
+- The alchemist's column, 2.07 m: a dark wooden column on an octagonal
+  stone plinth with three brass-bound round shelves of glass flasks and
+  stoppered bottles holding glowing potions (green, violet, amber, red,
+  blue); a copper alembic on top whose pipes run down from flask to flask
+  into a big round flask over a burner of glowing coals.
+- Placed beside the A5 cottage's open door, as one Prop under the cottage's
+  `Props` node, to show it in the world.
+
+Placeholders (Claude's choices beyond the brief): every part of the column's
+look (wood, brass, copper, how many shelves and flasks, their shapes and
+colours, the burner), and placing it by the A5 cottage (move or delete the
+Prop to change that).
+

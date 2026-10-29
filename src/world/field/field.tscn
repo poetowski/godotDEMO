@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://src/world/nature/vegetation.gd" id="40_vegetation"]
 [ext_resource type="Script" path="res://src/audio/ambience.gd" id="41_ambience"]
 [ext_resource type="Script" path="res://src/world/props/prop.gd" id="50_prop"]
+[ext_resource type="PackedScene" path="res://src/world/props/assets/alchemist_column.tscn" id="61_alchemist"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -629,6 +630,11 @@ script = ExtResource("10_cottage")
 sectors = PackedStringArray("A5")
 design_id = "a5_rainy_cottage"
 design_seed = 45
+
+[node name="Props" type="Node3D" parent="Sectors/A5RainyCottage"]
+
+[node name="AlchemistColumn" parent="Sectors/A5RainyCottage/Props" instance=ExtResource("61_alchemist")]
+transform = Transform3D(0.939373, 0, -0.342898, 0, 1, 0, 0.342898, 0, 0.939373, 3.0, 0.08, -44.3)
 
 [node name="A7IvyStatue" type="Node3D" parent="Sectors"]
 editor_description = "A big phallic fertility statue on a plinth, overgrown with ivy."

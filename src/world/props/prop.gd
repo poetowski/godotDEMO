@@ -20,6 +20,12 @@ extends Node3D
 		_refresh()
 ## Whether the player bumps into it.
 @export var solid: bool = false
+## For an ASSET prop: the model (assets/models/props/<slug>/<slug>.glb),
+## with its own collision.
+@export var asset: PackedScene:
+	set(value):
+		asset = value
+		_refresh()
 
 var _preview: MeshInstance3D
 
@@ -41,5 +47,12 @@ func _refresh() -> void:
 		_preview = MeshInstance3D.new()
 		_preview.name = "Preview"
 		add_child(_preview)
+	for child in _preview.get_children():
+		child.queue_free()
+	if kind == PropLibrary.Kind.ASSET:
+		_preview.mesh = null
+		if asset:
+			_preview.add_child(asset.instantiate())
+		return
 	_preview.mesh = PropLibrary.mesh(kind, variant)
 	_preview.material_override = PropLibrary.material(PropLibrary.group(kind))

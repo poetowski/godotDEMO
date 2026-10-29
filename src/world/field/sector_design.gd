@@ -445,9 +445,9 @@ func instance_transforms(node_name: StringName) -> Array[Transform3D]:
 ## Places a prop from code: merged into the sector's meshes like a prop
 ## placed by hand, solid if `solid`, and its room claimed. Call it only
 ## while `props_frozen` is false; `npm run props` turns these into Prop nodes.
-func place_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool) -> void:
-	_placed_props.append({"kind": kind, "variant": variant, "where": where, "solid": solid})
-	_merge_prop(kind, variant, where, solid)
+func place_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool, asset: PackedScene = null) -> void:
+	_placed_props.append({"kind": kind, "variant": variant, "where": where, "solid": solid, "asset": asset})
+	_merge_prop(kind, variant, where, solid, asset)
 
 
 ## The props the design's code placed in the last generation.
@@ -471,13 +471,21 @@ func _add_scene_props() -> void:
 		var where := prop.placement()
 		if Engine.is_editor_hint():
 			# The editor shows each prop by itself; only keep room for it.
-			claim(Vector2(where.origin.x, where.origin.z), PropLibrary.room(prop.kind, where))
+			claim(Vector2(where.origin.x, where.origin.z), PropLibrary.room(prop.kind, where, prop.asset))
 		else:
-			_merge_prop(prop.kind, prop.variant, where, prop.solid)
+			_merge_prop(prop.kind, prop.variant, where, prop.solid, prop.asset)
 
 
-func _merge_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool) -> void:
+func _merge_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid: bool, asset: PackedScene = null) -> void:
 	var xz := Vector2(where.origin.x, where.origin.z)
+	if kind == PropLibrary.Kind.ASSET:
+		# A whole model: placed as it is, with its own collision.
+		if asset:
+			var model := asset.instantiate() as Node3D
+			model.transform = where
+			add_content(model)
+			claim(xz, PropLibrary.room(kind, where, asset))
+		return
 	PropLibrary.add_to(merged(PropLibrary.group(kind), xz), kind, variant, where)
 	if solid:
 		var shape := PropLibrary.collider(kind, where)
@@ -491,7 +499,7 @@ func _commit_props() -> void:
 	var groups: Dictionary[String, bool] = {}
 	for key: String in _merged.keys():
 		for group_name in PropLibrary.GROUPS:
-			if key.begins_with(group_name + "_"):
+			if not group_name.is_empty() and key.begins_with(group_name + "_"):
 				groups[group_name] = true
 	for group_name: String in groups:
 		commit_merged(group_name, PropLibrary.material(group_name))

@@ -5,20 +5,25 @@ extends RefCounted
 ## same every time for the same variant), which merged mesh it joins in a
 ## sector, how much room it takes, and whether and how it's solid. Props are
 ## built at the origin, standing on it, one metre across at scale 1 for
-## bushes and rocks; trees are their real height.
+## bushes and rocks; trees are their real height. An ASSET prop is a whole
+## model from assets/models/props/ (made by /asset-design): placed as it is,
+## with its own collision, never merged.
 
-enum Kind { BUSH, ROCK, ROUND_TREE, PINE }
+enum Kind { BUSH, ROCK, ROUND_TREE, PINE, ASSET }
 
-## The merged mesh each kind joins in a sector, named <group><sector>.
-const GROUPS: Array[String] = ["Bushes", "Rocks", "Trees", "Trees"]
-## Metres of room each kind takes around its foot, at scale 1.
-const ROOM: Array[float] = [0.75, 0.62, 1.4, 1.2]
+## The merged mesh each kind joins in a sector, named <group><sector>
+## (assets join none).
+const GROUPS: Array[String] = ["Bushes", "Rocks", "Trees", "Trees", ""]
+## Metres of room each kind takes around its foot, at scale 1 (an asset's
+## comes from its size).
+const ROOM: Array[float] = [0.75, 0.62, 1.4, 1.2, 0.0]
 ## Whether a new prop of each kind is solid unless set otherwise.
-const SOLID: Array[bool] = [false, true, true, true]
+const SOLID: Array[bool] = [false, true, true, true, true]
 
 static var _parts: Dictionary[Vector2i, Array] = {}
 static var _meshes: Dictionary[Vector2i, ArrayMesh] = {}
 static var _materials: Dictionary[String, Material] = {}
+static var _asset_rooms: Dictionary[String, float] = {}
 static var _mutex := Mutex.new()
 
 
@@ -56,9 +61,36 @@ static func material(group_name: String) -> Material:
 	return _materials[group_name]
 
 
-## Metres of room a prop placed by `where` takes around its foot.
-static func room(kind: Kind, where: Transform3D) -> float:
+## Metres of room a prop placed by `where` takes around its foot; for an
+## asset, half its width.
+static func room(kind: Kind, where: Transform3D, asset: PackedScene = null) -> float:
+	if kind == Kind.ASSET:
+		return asset_room(asset) * where.basis.get_scale().x
 	return ROOM[kind] * where.basis.get_scale().x
+
+
+## Half an asset's widest side, measured once.
+static func asset_room(asset: PackedScene) -> float:
+	if asset == null:
+		return 0.0
+	if not _asset_rooms.has(asset.resource_path):
+		var model := asset.instantiate() as Node3D
+		var box := AABB()
+		for child in model.find_children("*", "MeshInstance3D", true, false):
+			var mesh_instance := child as MeshInstance3D
+			box = box.merge(_transform_to(model, mesh_instance) * mesh_instance.get_aabb())
+		model.free()
+		_asset_rooms[asset.resource_path] = maxf(box.size.x, box.size.z) * 0.5
+	return _asset_rooms[asset.resource_path]
+
+
+static func _transform_to(root: Node3D, node: Node3D) -> Transform3D:
+	var where := Transform3D()
+	var at: Node = node
+	while at != root and at is Node3D:
+		where = (at as Node3D).transform * where
+		at = at.get_parent()
+	return where
 
 
 ## The collision shape of a solid prop placed by `where`, and where it goes;

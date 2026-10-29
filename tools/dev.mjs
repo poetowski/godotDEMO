@@ -10,9 +10,13 @@
 //   npm run bake                 generate every sector design's content into
 //                                baked/sectors/; game, shot and test do it
 //                                first whenever the baked files are stale
-//   npm run models               build the models made by Blender scripts in
-//                                tools/blender/ (the hero) into assets/models/,
-//                                then import them
+//   npm run models [-- <slug>]   build the models made by Blender scripts in
+//                                tools/blender/ (the hero, assets/*.py) into
+//                                assets/models/, then import them; a slug
+//                                builds only that asset
+//   npm run asset-preview -- <slug>
+//                                render an asset in Godot from three sides
+//                                into .shots/assets/
 //   npm run blender              open Blender (for the MCP tools)
 //   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20]
 //                                benchmark a world (default: the field)
@@ -45,6 +49,8 @@ const GODOT_VERSION = '4.7.2';
 const BLENDER_VERSION = '5.2.3';
 // Each builds one model; run in this order by `npm run models`.
 const BLENDER_SCRIPTS = ['tools/blender/build_hero.py'];
+// Asset scripts, one per prop asset: tools/blender/assets/<slug>.py.
+const ASSET_SCRIPTS = path.join('tools', 'blender', 'assets');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ANSI = /\x1b\[[0-9;]*m/g;
 const ERROR_LINE = /^\s*(SCRIPT ERROR|SHADER ERROR|USER ERROR|ERROR):/;
@@ -218,13 +224,37 @@ const commands = {
 
   bake,
 
-  async models() {
-    for (const script of BLENDER_SCRIPTS) {
+  // Builds every model, or only the named assets: npm run models -- <slug>.
+  async models(argv) {
+    const { positional } = parseOptions(argv);
+    const assets = existsSync(path.join(ROOT, ASSET_SCRIPTS))
+      ? readdirSync(path.join(ROOT, ASSET_SCRIPTS)).filter((name) => name.endsWith('.py')).map((name) => path.join(ASSET_SCRIPTS, name))
+      : [];
+    const scripts = positional.length
+      ? positional.map((slug) => path.join(ASSET_SCRIPTS, `${slug}.py`))
+      : [...BLENDER_SCRIPTS, ...assets];
+    for (const script of scripts) {
+      if (!existsSync(path.join(ROOT, script))) {
+        console.error(`[dev] no such asset script: ${script}`);
+        return false;
+      }
       const code = await blender(script);
       console.log(`\n[dev] blender ${script}: exit ${code}`);
       if (code !== 0) return false;
     }
     return importAssets();
+  },
+
+  // Renders an asset in Godot from three sides next to a 1.8 m figure.
+  async ['asset-preview'](argv) {
+    const { positional } = parseOptions(argv);
+    if (!positional[0]) {
+      console.error('usage: npm run asset-preview -- <slug>');
+      return false;
+    }
+    if (!(await ensureImported())) return false;
+    const args = ['--path', ROOT, '--resolution', '1280x720', '--script', 'res://tools/asset_preview.gd', '--', positional[0]];
+    return report('asset-preview', await godot(args, { timeoutMs: 3 * 60_000 }));
   },
 
   // Opens Blender with the MCP for Blender add-on's telemetry and its
