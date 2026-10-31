@@ -27,6 +27,12 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "regarding different lanterns, i ment you can use different in eadh
+segment, not opposite. opposite must be same of course so it makes sense and in this case
+brudge should have been covered just by 1 design" **Rule:** things facing each other match;
+variety is between segments. The bridge now has two pairs of `lantern_post`, one pair at each
+end. `lantern_hook` and `lantern_stone` stay for other places. **Placeholder:** which design.
+
 Request (2026-10-31): "we need to somehow implement also if something is meters below in
 cave system or in upper third or fifth level of tall building, those are just examplease.
 implement system so we are ready when this happen. because - problem now is when i walk on

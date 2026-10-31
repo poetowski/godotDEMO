@@ -27,8 +27,6 @@
 [ext_resource type="Script" uid="uid://co6sxvfrart4c" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
 [ext_resource type="PackedScene" path="res://assets/models/props/wooden_bridge/wooden_bridge.glb" id="90_river"]
 [ext_resource type="PackedScene" path="res://assets/models/props/lantern_post/lantern_post.glb" id="91_river"]
-[ext_resource type="PackedScene" path="res://assets/models/props/lantern_hook/lantern_hook.glb" id="92_river"]
-[ext_resource type="PackedScene" path="res://assets/models/props/lantern_stone/lantern_stone.glb" id="93_river"]
 [ext_resource type="Script" uid="uid://dtfcbitpb00x5" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
 [ext_resource type="Script" uid="uid://b64gve6bfui2o" path="res://src/world/field/zone_border.gd" id="73_border"]
 [ext_resource type="Script" uid="uid://4jy1deghh6ib" path="res://src/world/field/sectors/r4_lakeside/r4_lakeside.gd" id="74_lakeside"]
@@ -182,41 +180,29 @@ script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("90_river")
 
-[node name="LanternSouthPost" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(0.8, 0, 0.6, 0, 1, 0, -0.6, 0, 0.8, 46.3, 0.0, -1.5)
+[node name="LanternSouthEast" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.9751, 0, 0.2216, 0, 1, 0, -0.2216, 0, 0.9751, 45.5, 0, -2.1)
 script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("91_river")
 
-[node name="LanternSouthHook" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41.3, 0.0, -1.0)
-script = ExtResource("50_prop")
-kind = 4
-asset = ExtResource("92_river")
-
-[node name="LanternSouthStone" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.0, -0.8427, -3.1)
-script = ExtResource("50_prop")
-kind = 4
-asset = ExtResource("93_river")
-
-[node name="LanternNorthPost" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(0.6, 0, -0.8, 0, 1, 0, 0.8, 0, 0.6, 37.2, 0.8888, -22.4)
+[node name="LanternSouthWest" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.9751, 0, 0.2216, 0, 1, 0, -0.2216, 0, 0.9751, 42.38, 0, -1.4)
 script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("91_river")
 
-[node name="LanternNorthHook" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(-0.8, 0, -0.6, 0, 1, 0, 0.6, 0, -0.8, 41.9, 0.8127, -23.3)
+[node name="LanternNorthEast" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.9751, 0, 0.2216, 0, 1, 0, -0.2216, 0, 0.9751, 41.12, 0.3375, -21.4)
 script = ExtResource("50_prop")
 kind = 4
-asset = ExtResource("92_river")
+asset = ExtResource("91_river")
 
-[node name="LanternNorthStone" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.0, 0.1907, -20.8)
+[node name="LanternNorthWest" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.9751, 0, 0.2216, 0, 1, 0, -0.2216, 0, 0.9751, 38.0, 0, -20.7)
 script = ExtResource("50_prop")
 kind = 4
-asset = ExtResource("93_river")
+asset = ExtResource("91_river")
 
 [node name="R1WatersideF1" type="Node3D" parent="Sectors" unique_id=990530520]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from F1."

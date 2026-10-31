@@ -93,6 +93,9 @@ sectors.
    floor set `keep_height`, and repeated floors put the level in `scatter_id`'s kind. Keep
    masses off a hole yourself: nothing else does.
 
+11. **Opposite things match.** Lanterns and the like facing each other are the same design;
+   vary them between segments, and a bridge is one segment. See `docs/world/art.md`.
+
 ## Workflow
 
 1. **Resolve the sectors.** Write down each sector's bounds: a sector at column

@@ -283,7 +283,19 @@ func test_lanterns_stand_by_the_bridge_and_light_only_at_night() -> void:
 	var flames := 0
 	for design in _designs:
 		flames += design.content().find_children("*", "NightLight", false, false).size()
-	assert_eq(flames, 6, "one flame per lantern")
+	assert_eq(flames, 4, "one flame per lantern")
+	var inverse := _bridge().transform.affine_inverse()
+	var lanterns: Array[Vector3] = []
+	for design in _designs:
+		for prop in design.scene_props():
+			if PropLibrary.slug_of(prop.asset).begins_with("lantern"):
+				assert_eq(PropLibrary.slug_of(prop.asset), "lantern_post", "one design on one bridge")
+				lanterns.append(inverse * prop.position)
+	for lantern in lanterns:
+		var opposite := false
+		for other in lanterns:
+			opposite = opposite or (absf(other.x + lantern.x) < 0.05 and absf(other.z - lantern.z) < 0.05)
+		assert_true(opposite, "a lantern faces each lantern across the bridge")
 	assert_eq(NightLight.amount_at(12.0), 0.0, "noon")
 	assert_eq(NightLight.amount_at(23.0), 1.0, "midnight")
 	assert_eq(NightLight.amount_at(3.0), 1.0, "before dawn")
