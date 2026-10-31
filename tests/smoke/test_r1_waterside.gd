@@ -240,3 +240,50 @@ func test_no_prop_floats() -> void:
 		for prop in design.scene_props():
 			var xz := Vector2(prop.position.x, prop.position.z)
 			assert_lt(prop.position.y - WorldShape.height(xz), 0.6, "%s/%s" % [design.name, prop.name])
+
+
+func _bridge() -> Prop:
+	for design in _designs:
+		for prop in design.scene_props():
+			if PropLibrary.slug_of(prop.asset) == "wooden_bridge":
+				return prop
+	return null
+
+
+func test_the_bridge_crosses_the_river_and_can_be_walked() -> void:
+	var bridge := _bridge()
+	assert_not_null(bridge)
+	assert_almost_eq(bridge.rotation.y, 0.2235, 0.01, "turned a little")
+	var middle := bridge.position * Vector3(1.0, 0.0, 1.0)
+	assert_ne(WaterField.level_at(Vector2(middle.x, middle.z)), SectorDesign.NO_WATER, "over the water")
+	await wait_physics_frames(2)
+	var space := (_world as Node3D).get_world_3d().direct_space_state
+	for along: float in [-9.5, -5.0, 0.0, 5.0, 9.5]:
+		var at := bridge.transform * Vector3(0.0, 0.0, along)
+		var query := PhysicsRayQueryParameters3D.create(Vector3(at.x, 12.0, at.z), Vector3(at.x, -12.0, at.z))
+		var hit := space.intersect_ray(query)
+		assert_false(hit.is_empty(), "a deck %.1f m along" % along)
+		var height := (hit.get("position", Vector3.ZERO) as Vector3).y
+		assert_gt(height, -0.5, "not the river bed, %.1f m along" % along)
+		assert_lt(height, 2.6, "%.1f m along" % along)
+
+
+func test_nothing_grows_up_through_the_bridge() -> void:
+	var inverse := _bridge().transform.affine_inverse()
+	for design in _designs:
+		for node in design.content().find_children("*", "BakedMultiMesh", false, false):
+			for where in (node as BakedMultiMesh).transforms():
+				var local := inverse * Vector3(where.origin.x, _bridge().position.y, where.origin.z)
+				assert_false(absf(local.x) < 1.4 and absf(local.z) < 10.9, "%s under the bridge at %s" % [node.name, where.origin])
+
+
+func test_lanterns_stand_by_the_bridge_and_light_only_at_night() -> void:
+	var flames := 0
+	for design in _designs:
+		flames += design.content().find_children("*", "NightLight", false, false).size()
+	assert_eq(flames, 6, "one flame per lantern")
+	assert_eq(NightLight.amount_at(12.0), 0.0, "noon")
+	assert_eq(NightLight.amount_at(23.0), 1.0, "midnight")
+	assert_eq(NightLight.amount_at(3.0), 1.0, "before dawn")
+	assert_eq(NightLight.amount_at(7.0), 0.0, "morning")
+

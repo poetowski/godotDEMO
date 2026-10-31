@@ -27,6 +27,10 @@ const HEIGHTS := {
 	"lake_alder": Vector2(5.5, 7.5),
 	"fallen_alder": Vector2(0.6, 1.5),
 	"shore_slab": Vector2(0.15, 0.6),
+	"wooden_bridge": Vector2(8.3, 9.5),
+	"lantern_post": Vector2(1.9, 2.5),
+	"lantern_hook": Vector2(2.1, 2.7),
+	"lantern_stone": Vector2(0.6, 1.0),
 }
 
 

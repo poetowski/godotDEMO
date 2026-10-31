@@ -21,6 +21,9 @@ the other way round: it follows if the ground is sculpted again.
   0.5 m at the sill near N4, then 0.2 m at the very edge.
 - **Sectors with water in R1:** A1, B1, C1-2, D1-2, E1-2, F1-3, G1-3, H2-3, I2-4, J3-5,
   K3-5, L3-5, M3-5, N2-4, O2-5, P1-5, Q1-5, R1-6, S1-13, T1-15.
+- **Bridge:** a log bridge over the outflow, from about E1 to D3, with lanterns at both
+  ends. It's a prop under `R1WatersideA1/Props`, and being turned, it keeps its height
+  when the land is sculpted: move it by hand if the banks change. **Placeholder:** where.
 - **River on:** the outflow crosses R1's edge at A1 and runs on to the western
   ravine; see `R8/terrain.md`.
 
@@ -35,7 +38,7 @@ They change neither the land nor the water.
   either changes. **Lilies** keep to still water up to about 3 m deep; **reeds and
   cattails** to the waterline, in beds; **stones** gather where the rivers run
   shallow.
-- **Props** (51: boulders, driftwood, stumps, willow shrubs, young willows) are nodes
+- **Props** (boulders, driftwood, stumps, willow shrubs, young willows) are nodes
   under each block's `Props`, to move or delete by hand. They stay put if the land
   is sculpted again. Add more from `src/world/props/assets/`.
 - The deep middle of the lake is left open.

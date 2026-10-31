@@ -215,6 +215,21 @@ def collision_box(name, centre, size):
     return model.finish()
 
 
+def collision_slab(name, a, b, width, height):
+    """A slab along the line from `a` to `b`, `width` wide across X and `height` up
+    from it, for ramps and walls that follow a curve."""
+    model = Model(name + "-convcolonly")
+    half = width / 2
+    verts = []
+    for at in (a, b):
+        for x, z in ((-half, 0.0), (half, 0.0), (half, height), (-half, height)):
+            verts.append(model.bm.verts.new((at[0] + x, at[1], at[2] + z)))
+    for face in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+        model.bm.faces.new([verts[k] for k in face])
+    model._paint(verts, material("Collision", (1, 0, 1)))
+    return model.finish()
+
+
 def collision_cylinder(name, bottom, top, radius, segments=10):
     model = Model(name + "-convcolonly")
     model.cylinder(bottom, top, radius, radius, material("Collision", (1, 0, 1)), segments=segments)

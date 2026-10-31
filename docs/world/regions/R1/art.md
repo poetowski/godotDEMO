@@ -35,7 +35,9 @@ standing back from the water, and alders fallen into it.
 
 ## Buildings and objects
 
-No buildings. Mossy boulders, river stones, pebbles, driftwood and old stumps.
+No buildings. Mossy boulders, river stones, pebbles, driftwood and old stumps. One old
+log bridge with gaps in its deck and fences, and lanterns of dark iron, wood and stone
+giving a warm light at night.
 
 ## Light and weather
 

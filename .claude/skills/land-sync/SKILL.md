@@ -59,6 +59,7 @@ Claude session started in this project.
    | shores with no decoration | Add blocks, one per line of the report, to the region's design; new props frozen with `npm run props -- <Block>` |
    | block with no water near | Propose removing it |
    | border or fog points off the drop | Drag them back on the same rim: `ZoneBorder/Line` about 6 m below the land, `MistBarrier/FogLine` about 15 m |
+   | a bridge's ends off the banks (look: settle leaves `PropLibrary.SPANS` alone) | Move or lower it by hand, or propose moving it |
    | undecorated land: steep, high, dug | Propose props, or new assets if nothing suits |
 
 4. **New assets: only when nothing fits.** Check `src/world/props/assets/` first. Name what

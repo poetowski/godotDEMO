@@ -27,6 +27,17 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "now generate new asset in blender. it is wooden curven bridge with
+small fences, some logs might be missing, few columns in the water. then put it to cross
+river on R1 sectors near E sector column or D. rotate a bit. then redecorate if needed.
+also generate lantern asset in blender which emits some light during night and create few
+variants you can put them near bridge." The bridge (`wooden_bridge`) spans the outflow
+across D and E, turned about 13 degrees, and two props were moved out from under it.
+Lanterns: `lantern_post`, `lantern_hook`, `lantern_stone`, two of each at the ends. They
+burn from 19:30 to 05:30, fading over half an hour. **Placeholder:** the bridge's size and
+the place of its ends, how many logs are gone, the lanterns' look and places, and the
+light's colour, strength, reach and hours.
+
 Request (2026-10-31): "i changed terrain, please redecorate like you did and also define
 this as a skill so if i change terrain, you detect and propose lowering of flying
 objects, or puting new objects, or even generating new assets." The skill is `/land-sync`,

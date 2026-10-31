@@ -25,6 +25,10 @@
 [ext_resource type="Script" uid="uid://6ov4j0b8nfbk" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
 [ext_resource type="PackedScene" uid="uid://b7088gmksqx4j" path="res://assets/models/props/lake_alder/lake_alder.glb" id="71_asset"]
 [ext_resource type="Script" uid="uid://co6sxvfrart4c" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
+[ext_resource type="PackedScene" path="res://assets/models/props/wooden_bridge/wooden_bridge.glb" id="90_river"]
+[ext_resource type="PackedScene" path="res://assets/models/props/lantern_post/lantern_post.glb" id="91_river"]
+[ext_resource type="PackedScene" path="res://assets/models/props/lantern_hook/lantern_hook.glb" id="92_river"]
+[ext_resource type="PackedScene" path="res://assets/models/props/lantern_stone/lantern_stone.glb" id="93_river"]
 [ext_resource type="Script" uid="uid://dtfcbitpb00x5" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
 [ext_resource type="Script" uid="uid://b64gve6bfui2o" path="res://src/world/field/zone_border.gd" id="73_border"]
 [ext_resource type="Script" uid="uid://4jy1deghh6ib" path="res://src/world/field/sectors/r4_lakeside/r4_lakeside.gd" id="74_lakeside"]
@@ -155,13 +159,13 @@ solid = true
 asset = ExtResource("60_asset")
 
 [node name="Asset10" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=519085821]
-transform = Transform3D(-1.0200013, 0, 0.4099071, 0, 1.0992845, 0, -0.4099071, 0, -1.0200013, 42.832054, -0.7399844, -3.2770326)
+transform = Transform3D(-1.0200013, 0, 0.4099071, 0, 1.0992845, 0, -0.4099071, 0, -1.0200013, 47.4, -0.7399844, -2.5)
 script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("61_asset")
 
 [node name="Asset11" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=297082280]
-transform = Transform3D(0.21301854, 0, -0.9964908, 0, 1.0190048, 0, 0.9964908, 0, 0.21301854, 40.787003, -1.1902902, -19.481737)
+transform = Transform3D(0.21301854, 0, -0.9964908, 0, 1.0190048, 0, 0.9964908, 0, 0.21301854, 36.4, -1.1902902, -17.8)
 script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("65_asset")
@@ -171,6 +175,48 @@ transform = Transform3D(0.91595584, 0, 0.2582119, 0, 0.9516557, 0, -0.2582119, 0
 script = ExtResource("50_prop")
 kind = 4
 asset = ExtResource("61_asset")
+
+[node name="Bridge" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.9751, 0, 0.2216, 0, 1, 0, -0.2216, 0, 0.9751, 41.75, -5.9, -11.4)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("90_river")
+
+[node name="LanternSouthPost" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.8, 0, 0.6, 0, 1, 0, -0.6, 0, 0.8, 46.3, 0.0, -1.5)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("91_river")
+
+[node name="LanternSouthHook" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41.3, 0.0, -1.0)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("92_river")
+
+[node name="LanternSouthStone" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.0, -0.8427, -3.1)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("93_river")
+
+[node name="LanternNorthPost" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(0.6, 0, -0.8, 0, 1, 0, 0.8, 0, 0.6, 37.2, 0.8888, -22.4)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("91_river")
+
+[node name="LanternNorthHook" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(-0.8, 0, -0.6, 0, 1, 0, 0.6, 0, -0.8, 41.9, 0.8127, -23.3)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("92_river")
+
+[node name="LanternNorthStone" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.0, 0.1907, -20.8)
+script = ExtResource("50_prop")
+kind = 4
+asset = ExtResource("93_river")
 
 [node name="R1WatersideF1" type="Node3D" parent="Sectors" unique_id=990530520]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from F1."

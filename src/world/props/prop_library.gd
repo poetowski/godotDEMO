@@ -18,6 +18,17 @@ const GROUPS: Array[String] = ["Bushes", "Rocks", "Trees", "Trees", ""]
 ## Metres of room each kind takes around its foot, at scale 1 (an asset's
 ## comes from its size).
 const ROOM: Array[float] = [0.75, 0.62, 1.4, 1.2, 0.0]
+## Where the flame of each asset that burns at night is, in the model.
+const NIGHT_LIGHTS: Dictionary[String, Vector3] = {
+	"lantern_post": Vector3(0.0, 1.9, 0.0),
+	"lantern_hook": Vector3(0.5, 1.72, 0.0),
+	"lantern_stone": Vector3(0.0, 0.54, 0.0),
+}
+## Half the width and length of what's kept clear under each asset that spans ground.
+## They claim this strip instead of a circle, and keep the height they were given.
+const SPANS: Dictionary[String, Vector2] = {
+	"wooden_bridge": Vector2(1.5, 11.0),
+}
 ## Whether a new prop of each kind is solid unless set otherwise.
 const SOLID: Array[bool] = [false, true, true, true, true]
 
@@ -32,6 +43,11 @@ static var _mutex := Mutex.new()
 ## The scene of an asset (assets/models/props/), by its slug.
 static func asset_scene(slug: String) -> PackedScene:
 	return load("res://assets/models/props/%s/%s.glb" % [slug, slug]) as PackedScene
+
+
+## An asset's slug, from its scene.
+static func slug_of(asset: PackedScene) -> String:
+	return asset.resource_path.get_file().get_basename()
 
 
 ## An asset's mesh for scattering in masses (a MultiMesh), with its materials'
@@ -99,6 +115,8 @@ static func material(group_name: String) -> Material:
 ## asset, half its width.
 static func room(kind: Kind, where: Transform3D, asset: PackedScene = null) -> float:
 	if kind == Kind.ASSET:
+		if asset and SPANS.has(slug_of(asset)):
+			return 0.0
 		return asset_room(asset) * where.basis.get_scale().x
 	return ROOM[kind] * where.basis.get_scale().x
 

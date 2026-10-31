@@ -521,12 +521,170 @@ def shore_slab():
     kit.collision_box("ShoreSlab", (0, 0, 0.1), (2.8, 2.0, 0.24))
 
 
+# The bridge, in metres: along Y, its deck's top at this height at each end and this
+# much higher in the middle.
+BRIDGE_LENGTH = 21.0
+BRIDGE_WIDTH = 2.2
+BRIDGE_END = 6.0
+BRIDGE_RISE = 2.0
+FENCE_HEIGHT = 0.75
+
+
+def _deck_height(y):
+    return BRIDGE_END + BRIDGE_RISE * (1.0 - (2.0 * y / BRIDGE_LENGTH) ** 2)
+
+
+def wooden_bridge():
+    """An old curved bridge of logs: small fences with some rails gone, a few deck logs
+    missing, and pairs of columns standing in the water. Its origin is below the river
+    bed, so placing it takes its columns down there."""
+    p = palette()
+    rng = random.Random(51)
+    model = kit.Model("WoodenBridge")
+    half = BRIDGE_LENGTH / 2
+    # The deck: logs across, some darker, a few gone, never two together or near the ends.
+    y = -half
+    gone_last = False
+    while y <= half:
+        missing = not gone_last and abs(y) < half - 1.5 and rng.random() < 0.07
+        gone_last = missing
+        if not missing:
+            z = _deck_height(y) - 0.08
+            reach = BRIDGE_WIDTH / 2 + rng.uniform(-0.1, 0.12)
+            tone = p["wood_drift"] if rng.random() < 0.3 else p["bark"]
+            model.cylinder((-reach, y, z + rng.uniform(-0.012, 0.012)), (reach, y + rng.uniform(-0.03, 0.03), z), 0.095, rng.uniform(0.08, 0.095), tone, segments=6)
+        y += 0.235
+    # Two beams under it, along the curve.
+    steps = 14
+    for side in (-0.72, 0.72):
+        for k in range(steps):
+            a = -half + BRIDGE_LENGTH * k / steps
+            b = -half + BRIDGE_LENGTH * (k + 1) / steps
+            model.cylinder((side, a, _deck_height(a) - 0.27), (side, b, _deck_height(b) - 0.27), 0.12, 0.12, p["wood_wet"], segments=6)
+    # The columns: pairs leaning in a little, each with a beam across and some braced.
+    for at in (-6.6, -2.2, 2.2, 6.6):
+        top = _deck_height(at) - 0.36
+        for side in (-0.82, 0.82):
+            lean = rng.uniform(-0.05, 0.05)
+            model.cylinder((side * 1.14, at + lean, 0.0), (side, at, top), 0.17, 0.12, p["wood_wet"], segments=7)
+        model.cylinder((-1.05, at, top - 0.05), (1.05, at, top + 0.02), 0.09, 0.09, p["bark"], segments=6)
+        if at < 3.0:
+            model.cylinder((-0.92, at, top - 2.6), (0.88, at, top - 0.25), 0.05, 0.05, p["wood_drift"], segments=5)
+        # Weed at the waterline, about where the river stands on it.
+        model.rock((0.86, at, 3.95), 0.2, p["moss"], rng, scale=(1.0, 1.0, 0.45), roughness=0.14)
+    # The fences: a post every so often, and two rails with some lengths gone.
+    posts = 9
+    for side in (-1.04, 1.04):
+        heights = []
+        for k in range(posts + 1):
+            at = -half + 0.2 + (BRIDGE_LENGTH - 0.4) * k / posts
+            deck = _deck_height(at)
+            tall = FENCE_HEIGHT * (0.55 if rng.random() < 0.1 else rng.uniform(0.93, 1.04))
+            model.cylinder((side, at, deck - 0.3), (side, at + rng.uniform(-0.02, 0.02), deck + tall), 0.05, 0.042, p["bark"], segments=6)
+            heights.append((at, deck))
+        for (a, deck_a), (b, deck_b) in zip(heights, heights[1:]):
+            if rng.random() > 0.14:
+                model.cylinder((side, a, deck_a + FENCE_HEIGHT * 0.92), (side, b, deck_b + FENCE_HEIGHT * 0.92), 0.034, 0.034, p["wood_drift"], segments=5)
+            if rng.random() > 0.22:
+                model.cylinder((side, a, deck_a + FENCE_HEIGHT * 0.5), (side, b, deck_b + FENCE_HEIGHT * 0.5), 0.026, 0.026, p["wood_drift"], segments=4)
+    for at in (-7.2, 1.3, 8.1):
+        model.rock((rng.choice((-0.85, 0.85)), at, _deck_height(at) + 0.01), 0.16, p["moss"], rng, scale=(1.6, 1.0, 0.3), roughness=0.14)
+    model.finish()
+    # What's walked on, and what keeps the walker on it. Gaps in the deck are too
+    # small to fall through, so one surface covers them.
+    pieces = 14
+    for k in range(pieces):
+        # Overlapping a little, so there's no seam to slip through.
+        a = -half + BRIDGE_LENGTH * k / pieces - 0.03
+        b = -half + BRIDGE_LENGTH * (k + 1) / pieces + 0.03
+        start = (0.0, a, _deck_height(a) - 0.3)
+        end = (0.0, b, _deck_height(b) - 0.3)
+        kit.collision_slab(f"WoodenBridgeDeck{k}", start, end, BRIDGE_WIDTH, 0.32)
+        for n, side in enumerate((-1.04, 1.04)):
+            kit.collision_slab(f"WoodenBridgeFence{k}x{n}", (side, a, _deck_height(a)), (side, b, _deck_height(b)), 0.1, FENCE_HEIGHT)
+    for n, at in enumerate((-6.6, -2.2, 2.2, 6.6)):
+        for m, side in enumerate((-0.9, 0.9)):
+            kit.collision_cylinder(f"WoodenBridgeColumn{n}x{m}", (side, at, 0.0), (side, at, _deck_height(at) - 0.3), 0.15, segments=6)
+
+
+def _lantern_parts():
+    m = kit.material
+    return {
+        "iron": m("LanternIron", (0.16, 0.15, 0.14), roughness=0.7, metallic=0.4),
+        "glass": m("LanternGlass", (0.95, 0.8, 0.5), roughness=0.2, alpha=0.35),
+        "candle": m("LanternCandle", (0.9, 0.82, 0.6), roughness=0.8),
+    }
+
+
+def _lantern_head(model, parts, x, y, z, size=0.13):
+    """A small iron cage with glass, a candle and a pointed roof; `z` is its floor."""
+    tall = size * 2.2
+    model.box((x, y, z + 0.012), (size * 2.1, size * 2.1, 0.025), parts["iron"])
+    model.box((x, y, z + tall / 2), (size * 1.7, size * 1.7, tall), parts["glass"])
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            model.cylinder((x + sx * size, y + sy * size, z), (x + sx * size, y + sy * size, z + tall), 0.012, 0.012, parts["iron"], segments=4)
+    model.cylinder((x, y, z + 0.02), (x, y, z + 0.14), 0.03, 0.028, parts["candle"], segments=6)
+    model.cylinder((x, y, z + tall), (x, y, z + tall + size * 0.9), size * 1.5, 0.015, parts["iron"], segments=4)
+    model.sphere((x, y, z + tall + size * 1.0), 0.022, parts["iron"], segments=6, rings=4)
+
+
+def lantern_post():
+    """A lantern on top of a plain wooden post, about 2.2 m."""
+    p = palette()
+    parts = _lantern_parts()
+    rng = random.Random(52)
+    model = kit.Model("LanternPost")
+    model.cylinder((0, 0, 0), (0, 0, 1.72), 0.075, 0.06, p["bark"], segments=6)
+    model.box((0, 0, 1.73), (0.32, 0.32, 0.04), p["wood_wet"])
+    for k in range(4):
+        angle = math.tau * k / 4 + 0.4
+        model.rock((math.cos(angle) * 0.16, math.sin(angle) * 0.16, 0.05), 0.09, p["stone_mid"], rng, scale=(1.0, 0.9, 0.7))
+    _lantern_head(model, parts, 0, 0, 1.75)
+    model.finish()
+    kit.collision_cylinder("LanternPost", (0, 0, 0), (0, 0, 2.0), 0.1, segments=6)
+
+
+def lantern_hook():
+    """A lantern hanging from a shepherd's crook of bent wood, about 2.4 m."""
+    p = palette()
+    parts = _lantern_parts()
+    model = kit.Model("LanternHook")
+    bend = [(0, 0, 0), (0.0, 0, 1.3), (0.01, 0, 1.95), (0.08, 0, 2.22), (0.26, 0, 2.36), (0.44, 0, 2.3), (0.5, 0, 2.14)]
+    radii = [0.06, 0.05, 0.042, 0.036, 0.03, 0.026, 0.02]
+    for k in range(len(bend) - 1):
+        model.cylinder(bend[k], bend[k + 1], radii[k], radii[k + 1], p["bark"], segments=6)
+    model.cylinder((0.5, 0, 2.14), (0.5, 0, 1.95), 0.008, 0.008, parts["iron"], segments=4)
+    _lantern_head(model, parts, 0.5, 0, 1.6, size=0.11)
+    model.finish()
+    kit.collision_cylinder("LanternHook", (0, 0, 0), (0, 0, 2.2), 0.08, segments=6)
+
+
+def lantern_stone():
+    """A low stone lantern with a window on each side and a mossy cap, about 0.8 m."""
+    p = palette()
+    parts = _lantern_parts()
+    rng = random.Random(53)
+    model = kit.Model("LanternStone")
+    model.rock((0, 0, 0.1), 0.26, p["stone_dark"], rng, scale=(1.0, 1.0, 0.6))
+    model.cylinder((0, 0, 0.12), (0, 0, 0.4), 0.11, 0.09, p["stone_mid"], segments=6)
+    model.box((0, 0, 0.42), (0.34, 0.34, 0.05), p["stone_light"])
+    for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+        model.box((sx * 0.13, sy * 0.13, 0.54), (0.06, 0.06, 0.2), p["stone_mid"])
+    model.box((0, 0, 0.54), (0.2, 0.2, 0.18), parts["glass"])
+    model.cylinder((0, 0, 0.445), (0, 0, 0.56), 0.03, 0.028, parts["candle"], segments=6)
+    model.cylinder((0, 0, 0.64), (0, 0, 0.8), 0.27, 0.03, p["stone_light"], segments=6)
+    model.rock((-0.06, 0.05, 0.66), 0.13, p["moss"], rng, scale=(1.2, 1.0, 0.4), roughness=0.14)
+    model.finish()
+    kit.collision_cylinder("LanternStone", (0, 0, 0), (0, 0, 0.8), 0.2, segments=6)
+
+
 BUILDERS = {fn.__name__: fn for fn in (
     river_stone_a, river_stone_b, river_stone_c, pebbles_patch, mossy_boulder_a, mossy_boulder_b,
     lily_pads, lily_white, lily_pink, reeds_a, reeds_b, cattails, sedge_a, sedge_b, waterside_fern,
     blue_flag_iris, marsh_marigold, driftwood_log, driftwood_branch, mossy_stump, willow_shrub, young_willow,
     rapid_stone_a, rapid_stone_b, gravel_bar, spray_moss, cliff_outcrop_a, cliff_outcrop_b, wind_snag,
-    lake_alder, fallen_alder, shore_slab,
+    lake_alder, fallen_alder, shore_slab, wooden_bridge, lantern_post, lantern_hook, lantern_stone,
 )}
 
 

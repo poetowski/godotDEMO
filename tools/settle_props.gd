@@ -50,6 +50,8 @@ func _initialize() -> void:
 
 
 static func standing_height(prop: Prop) -> float:
+	if PropLibrary.SPANS.has(PropLibrary.slug_of(prop.asset)):
+		return prop.position.y
 	var xz := Vector2(prop.position.x, prop.position.z)
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
 	if not prop.asset.resource_path.contains("outcrop"):

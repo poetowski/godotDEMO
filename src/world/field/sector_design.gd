@@ -76,6 +76,8 @@ var _claims: Dictionary[Vector2i, Array] = {}
 var _issued: Dictionary[String, bool] = {}
 ## Props placed by the design's code this generation: {kind, variant,
 ## where, solid}, for freezing them into the scene.
+## What assets that span ground keep clear: [inverse placement, half size].
+var _spans: Array[Array] = []
 var _placed_props: Array[Dictionary] = []
 var _colliders: StaticBody3D
 ## The content being generated, and the content attached.
@@ -153,6 +155,7 @@ func generate_content() -> Node3D:
 	_claims.clear()
 	_issued.clear()
 	_placed_props.clear()
+	_spans.clear()
 	_colliders = null
 	_building = Node3D.new()
 	_building.name = "Content"
@@ -356,11 +359,24 @@ func claim(xz: Vector2, radius: float) -> void:
 ## True if a prop of `radius` at a point keeps clear of claimed ground: the
 ## gap between centres is at least `spacing` times the two radii together.
 func is_clear(xz: Vector2, radius: float, spacing: float = 0.85) -> bool:
+	if _under_a_span(xz, radius):
+		return false
 	for key in _claim_buckets(xz, radius):
 		for entry: Vector3 in _claims.get(key, []):
 			if xz.distance_to(Vector2(entry.x, entry.y)) < (radius + entry.z) * spacing:
 				return false
 	return true
+
+
+## True under an asset that spans ground, such as a bridge.
+func _under_a_span(xz: Vector2, radius: float) -> bool:
+	for span: Array in _spans:
+		var inverse: Transform3D = span[0]
+		var half: Vector2 = span[1]
+		var local := inverse * Vector3(xz.x, 0.0, xz.y)
+		if absf(local.x) < half.x + radius and absf(local.z) < half.y + radius:
+			return true
+	return false
 
 
 ## A random point inside the owned sectors.
@@ -507,6 +523,8 @@ func scene_props() -> Array[Prop]:
 func _add_scene_props() -> void:
 	for prop in scene_props():
 		var where := prop.placement()
+		if prop.asset and PropLibrary.SPANS.has(PropLibrary.slug_of(prop.asset)):
+			_spans.append([where.affine_inverse(), PropLibrary.SPANS[PropLibrary.slug_of(prop.asset)]])
 		if Engine.is_editor_hint():
 			# The editor shows each prop by itself; only keep room for it.
 			claim(Vector2(where.origin.x, where.origin.z), PropLibrary.room(prop.kind, where, prop.asset))
@@ -522,6 +540,11 @@ func _merge_prop(kind: PropLibrary.Kind, variant: int, where: Transform3D, solid
 			var model := asset.instantiate() as Node3D
 			model.transform = where
 			add_content(model)
+			var slug := PropLibrary.slug_of(asset)
+			if PropLibrary.NIGHT_LIGHTS.has(slug):
+				var flame := NightLight.new()
+				flame.position = where * PropLibrary.NIGHT_LIGHTS[slug]
+				add_content(flame)
 			claim(xz, PropLibrary.room(kind, where, asset))
 		return
 	PropLibrary.add_to(merged(PropLibrary.group(kind), xz), kind, variant, where)

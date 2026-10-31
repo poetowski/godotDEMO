@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/world/props/prop.gd" id="1_prop"]
+[ext_resource type="PackedScene" path="res://assets/models/props/wooden_bridge/wooden_bridge.glb" id="2_model"]
+
+[node name="WoodenBridge" type="Node3D"]
+script = ExtResource("1_prop")
+kind = 4
+solid = true
+asset = ExtResource("2_model")
