@@ -118,6 +118,81 @@ class Model:
             self.cylinder(a, b, radius, radius, mat, segments=segments, caps=False)
             self.sphere(b, radius, mat, segments=segments, rings=4)
 
+    def rock(self, centre, radius, mat, rng, scale=(1, 1, 1), subdivisions=1, roughness=0.2):
+        """A lumpy stone: a jittered icosphere, its underside cut flat at Z = 0."""
+        matrix = Matrix.Translation(centre) @ Matrix.Diagonal((*scale, 1.0))
+        made = bmesh.ops.create_icosphere(self.bm, subdivisions=subdivisions, radius=radius, matrix=matrix)
+        for vert in made["verts"]:
+            out = (vert.co - Vector(centre)).normalized()
+            vert.co += out * radius * rng.uniform(-roughness, roughness)
+            vert.co.z = max(vert.co.z, 0.0)
+        self._paint(made["verts"], mat)
+
+    def ribbon(self, points, side_angle, widths, mat):
+        """A flat strip along points, as wide as `widths` says at each (0 makes a
+        point), its width lying along a horizontal direction: leaves, strands."""
+        side = Vector((math.cos(side_angle), math.sin(side_angle), 0.0))
+        rings = []
+        for point, width in zip(points, widths):
+            at = Vector(point)
+            if width > 0.0005:
+                rings.append((self.bm.verts.new(at - side * width / 2), self.bm.verts.new(at + side * width / 2)))
+            else:
+                rings.append((self.bm.verts.new(at),))
+        for lower, upper in zip(rings, rings[1:]):
+            self.bm.faces.new((lower[0], lower[-1], upper[-1], upper[0]) if len(upper) > 1 else (lower[0], lower[1], upper[0]))
+        self._paint([vert for ring in rings for vert in ring], mat)
+
+    def blade(self, base, angle, height, width, bend, mat, segments=3):
+        """A leaf of grass or reed rising from `base`, tapering to a point and
+        arching toward `angle` by `bend` of its height."""
+        direction = Vector((math.cos(angle), math.sin(angle), 0.0))
+        points = []
+        widths = []
+        for k in range(segments + 1):
+            t = k / segments
+            points.append(Vector(base) + direction * bend * height * t * t + Vector((0, 0, height * t * (1.0 - 0.35 * bend * t))))
+            widths.append(width * (1.0 - t ** 2.2) if k < segments else 0.0)
+        self.ribbon(points, angle + math.pi / 2, widths, mat)
+
+    def pad(self, centre, radius, mat, notch=0.0, segments=10):
+        """A round floating leaf, its rim a little raised, with a wedge cut out at
+        the angle `notch`."""
+        middle = self.bm.verts.new(centre)
+        rim = []
+        for k in range(segments + 1):
+            angle = notch + 0.3 + (math.tau - 0.6) * k / segments
+            rim.append(self.bm.verts.new((centre[0] + math.cos(angle) * radius, centre[1] + math.sin(angle) * radius, centre[2] + radius * 0.05)))
+        for a, b in zip(rim, rim[1:]):
+            self.bm.faces.new((middle, a, b))
+        self._paint([middle, *rim], mat)
+
+    def petal(self, centre, angle, length, width, lift, mat):
+        """One petal from `centre` out along `angle`, rising by `lift`."""
+        out = Vector((math.cos(angle), math.sin(angle), 0.0))
+        side = Vector((-out.y, out.x, 0.0)) * width / 2
+        foot = Vector(centre)
+        middle = foot + out * length * 0.55 + Vector((0, 0, lift * 0.45))
+        tip = foot + out * length + Vector((0, 0, lift))
+        verts = [self.bm.verts.new(foot), self.bm.verts.new(middle - side), self.bm.verts.new(tip), self.bm.verts.new(middle + side)]
+        self.bm.faces.new(verts)
+        self._paint(verts, mat)
+
+    def frond(self, base, angle, length, mat, leaflets=7):
+        """A fern's arching frond: a thin stem with leaflets getting smaller."""
+        direction = Vector((math.cos(angle), math.sin(angle), 0.0))
+        side = Vector((-direction.y, direction.x, 0.0))
+        for k in range(leaflets):
+            t = (k + 1.0) / (leaflets + 0.5)
+            at = Vector(base) + direction * length * 0.8 * t + Vector((0, 0, length * 2.1 * t * (1.0 - 0.72 * t)))
+            size = length * 0.3 * (1.05 - t)
+            for sign in (-1, 1):
+                tip = at + side * sign * size + direction * size * 0.3 - Vector((0, 0, size * 0.25))
+                verts = [self.bm.verts.new(at - direction * size * 0.16), self.bm.verts.new(tip), self.bm.verts.new(at + direction * size * 0.16)]
+                self.bm.faces.new(verts)
+                self._paint(verts, mat)
+        self.blade(base, angle, length * 0.72, length * 0.05, 0.9, mat, segments=3)
+
     def finish(self, flat=True):
         mesh = bpy.data.meshes.new(self.name)
         self.bm.normal_update()

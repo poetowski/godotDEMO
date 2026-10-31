@@ -220,6 +220,8 @@ func _collect() -> void:
 			continue
 		design.bake()
 		_designs.append(design)
+		if design.decorates_land:
+			continue
 		for cell in design.cells():
 			if _owners.has(cell):
 				push_error("Sector %s is claimed by both %s and %s" % [SectorMap.name_of(cell), _owners[cell].name, design.name])

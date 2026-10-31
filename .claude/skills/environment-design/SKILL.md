@@ -78,6 +78,14 @@ sectors.
    and up). Aim for about 100 ms of build time per sector; measure with a
    scratch script if unsure.
 
+9. **Land the author sculpted stays theirs.** To decorate sectors with
+   hand-sculpted ground or poured water (`data/world/sculpt/`, `data/world/water/`),
+   set `decorates_land = true` on the design: it adds content only, and
+   `_ground`, `_water_level` and `_flow` aren't used. `height_at`, `water_level_at`
+   and `flow_at` still answer, from the land. Cover a wide area with several designs
+   of about 5 x 5 sectors sharing a script, since a design streams as one unit.
+   `src/world/field/sectors/r1_waterside/` is a finished example.
+
 ## Workflow
 
 1. **Resolve the sectors.** Write down each sector's bounds: a sector at column
@@ -170,6 +178,7 @@ null beyond `reach_metres`. A wide last point makes a pond. `points` and
 
 - **Shapes:** `rock_shape(rng)` with `rock_color(rng)`, `add_bush(batch, rng, transform)`, `lumpy_sphere(rng, r, lumpiness)`.
 - **MultiMesh meshes:** `grass_tuft(rng, blades)` and `lily_pad(rng, with_flower)`.
+- **Assets in masses:** `PropLibrary.mass_mesh(slug, sway, bob)` is an `/asset-design` asset's mesh for `add_multimesh` (pass `null` as the material). `PropLibrary.asset_scene(slug)` is its scene, for `place_prop(PropLibrary.Kind.ASSET, 0, where, solid, scene)`.
 - **Materials:** `grass_material()` (sways), `floating_material()` (bobs on water), `water_material()` (made automatically from your water hooks), and `MeshKit.lowpoly_material()` for merged props.
 
 **`FieldTerrain`** builds the ground meshes and collision from the samples.

@@ -127,6 +127,9 @@ every stroke.
   don't depend on sculpts, and baked content counts as stale then.
 - GDScript classes have a built-in `reload()`: never name a static function
   that.
+- A design with `decorates_land` adds content without owning ground, for sectors
+  that keep the hand-sculpted land and poured water. Split wide areas into blocks
+  of about 5 x 5 sectors: a design streams as one unit.
 - Water in carved ground is data in `data/world/water/` (`RegionWater`,
   `WaterField`): it never changes the ground, and it refills itself when the
   land changes. Rivers' levels must not rise downstream, and must stand above
@@ -141,7 +144,7 @@ numbers north (-Z). Use `SectorMap` for all sector maths and names, and
 sector gets content, record what was decided for it in
 `docs/DESIGN_DECISIONS.md`, under its name.
 
-There are no sector designs right now; the demo's are at git tag `demo-final`.
+The demo's sector designs are at git tag `demo-final`.
 Sector content is built with the `/environment-design <sectors> <brief>`
 skill (`.claude/skills/environment-design/`). Each design is a `SectorDesign`
 in `src/world/field/sectors/<slug>/`, registered under the field's `Sectors`

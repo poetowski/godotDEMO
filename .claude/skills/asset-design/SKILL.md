@@ -10,6 +10,9 @@ Make one object from a brief: a Blender Python script builds it, it's
 exported as `assets/models/props/<slug>/<slug>.glb` with its own collision,
 and a prop scene lets anyone place it in the world. The alchemist's column
 (`tools/blender/assets/alchemist_column.py` at git tag `demo-final`) is a finished example.
+Assets that belong together share a family: `tools/blender/riverside.py` holds R1's
+waterside palette and shapes, and each asset's script only names which to build.
+New assets for a region use its family, and its `docs/world/regions/<region>/art.md`.
 
 The design skills at their scales:
 
@@ -40,7 +43,8 @@ in the brief are rules. If the description is missing, ask for it.
 3. **Real size, standing on its origin.** Blender units are metres; Z is up
    and the object's base sits at Z = 0, centred on X and Y, its front facing
    -Y. Meet the brief's size within 10 %.
-4. **Its own collision.** Add one or a few simple shapes with
+4. **Its own collision, if it's solid.** Things worth bumping into (not small
+   plants and pebbles) add one or a few simple shapes with
    `kit.collision_box` or `kit.collision_cylinder` (the `-convcolonly`
    suffix: Godot makes them convex collision shapes and never draws them).
    Cover what the player should bump into, not every detail.
@@ -90,6 +94,9 @@ in the brief are rules. If the description is missing, ask for it.
 | `.box(centre, size, mat, rotation_z)` | planks, blocks |
 | `.lathe(profile, mat, segments, centre)` | anything round turned from (radius, height) points: flasks, vases, bowls, columns |
 | `.tube(points, radius, mat)` | a pipe along a polyline |
+| `.rock(centre, radius, mat, rng, scale, subdivisions)` | a lumpy stone, or a mound of leaves or moss |
+| `.blade(base, angle, height, width, bend, mat)`, `.ribbon(points, side_angle, widths, mat)` | a leaf, a hanging strand |
+| `.pad(centre, radius, mat, notch)`, `.petal(centre, angle, length, width, lift, mat)`, `.frond(base, angle, length, mat)` | a floating leaf, a petal, a fern's frond |
 | `kit.collision_box(name, centre, size)`, `kit.collision_cylinder(name, bottom, top, radius)` | collision |
 | `kit.export(slug)`, `kit.report(slug, path)` | the `.glb`, and its size |
 

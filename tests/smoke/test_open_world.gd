@@ -31,7 +31,8 @@ func test_the_world_is_r1_alone_with_classic_sectors() -> void:
 
 
 func test_there_is_nothing_in_it_yet() -> void:
-	assert_eq(_terrain.designs().size(), 0)
+	for design in _terrain.designs():
+		assert_true(design.decorates_land, "%s only decorates the land" % design.name)
 	assert_eq((_world.get_node("Residents") as Node).get_child_count(), 0)
 
 

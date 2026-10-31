@@ -26,8 +26,9 @@ static func build(content: Node3D) -> ArrayMesh:
 		if instance == null or instance.mesh == null or _left_out(instance):
 			continue
 		var where := _relative_transform(instance, content)
-		for surface in instance.mesh.get_surface_count():
-			merged.append_from(instance.mesh, surface, where)
+		var coloured := _with_colours(instance.mesh)
+		for surface in coloured.get_surface_count():
+			merged.append_from(coloured, surface, where)
 			any = true
 	if not any:
 		return null
@@ -43,6 +44,24 @@ static func triangle_count(mesh: Mesh) -> int:
 		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
 		count += indices.size() / 3 if not indices.is_empty() else (arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array).size() / 3
 	return count
+
+
+## A mesh whose colour comes from its materials, as a model's does, with that
+## colour in its vertices, which is all a far model keeps.
+static func _with_colours(mesh: Mesh) -> Mesh:
+	var coloured := ArrayMesh.new()
+	for surface in mesh.get_surface_count():
+		var arrays := mesh.surface_get_arrays(surface)
+		var material := mesh.surface_get_material(surface) as BaseMaterial3D
+		if arrays[Mesh.ARRAY_COLOR] == null:
+			var colors := PackedColorArray()
+			colors.resize((arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array).size())
+			colors.fill(material.albedo_color if material else Color.WHITE)
+			arrays[Mesh.ARRAY_COLOR] = colors
+		for attribute: int in [Mesh.ARRAY_TANGENT, Mesh.ARRAY_TEX_UV, Mesh.ARRAY_TEX_UV2]:
+			arrays[attribute] = null
+		coloured.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return coloured
 
 
 static func _left_out(instance: MeshInstance3D) -> bool:

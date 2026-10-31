@@ -65,7 +65,7 @@ static func _with_props(text: String, design_name: String, placed: Array[Diction
 	for entry in placed:
 		var model := entry.get("asset") as PackedScene
 		if model and not asset_ids.has(model.resource_path):
-			asset_ids[model.resource_path] = "%d_asset" % (60 + asset_ids.size())
+			asset_ids[model.resource_path] = _asset_id(text, model.resource_path, asset_ids.size())
 	for entry in placed:
 		var kind: int = entry["kind"]
 		counts[kind] = int(counts.get(kind, 0)) + 1
@@ -84,12 +84,26 @@ static func _with_props(text: String, design_name: String, placed: Array[Diction
 	if not text.contains('id="%s"' % PROP_ID):
 		resources.append('[ext_resource type="Script" path="%s" id="%s"]' % [PROP_SCRIPT, PROP_ID])
 	for path: String in asset_ids:
-		resources.append('[ext_resource type="PackedScene" path="%s" id="%s"]' % [path, asset_ids[path]])
+		if not text.contains('path="%s"' % path):
+			resources.append('[ext_resource type="PackedScene" path="%s" id="%s"]' % [path, asset_ids[path]])
 	if not resources.is_empty():
 		var last := text.rfind("[ext_resource ")
 		var line_end := text.find("\n", last)
 		text = text.substr(0, line_end + 1) + "\n".join(resources) + "\n" + text.substr(line_end + 1)
 	return text
+
+
+## The id an asset has in the scene already, or a new one nothing else uses, so
+## freezing a second design can't clash with the first.
+static func _asset_id(text: String, path: String, taken: int) -> String:
+	var at := text.find('path="%s"' % path)
+	if at >= 0:
+		var id_at := text.find(' id="', at) + 5
+		return text.substr(id_at, text.find('"', id_at) - id_at)
+	var number := 60 + taken
+	while text.contains('id="%d_asset"' % number):
+		number += 1
+	return "%d_asset" % number
 
 
 func _fail(message: String) -> void:

@@ -11,6 +11,7 @@ extends RefCounted
 
 enum Kind { BUSH, ROCK, ROUND_TREE, PINE, ASSET }
 
+const MASS_SHADER := preload("res://src/world/props/mass_prop.gdshader")
 ## The merged mesh each kind joins in a sector, named <group><sector>
 ## (assets join none).
 const GROUPS: Array[String] = ["Bushes", "Rocks", "Trees", "Trees", ""]
@@ -24,7 +25,40 @@ static var _parts: Dictionary[Vector2i, Array] = {}
 static var _meshes: Dictionary[Vector2i, ArrayMesh] = {}
 static var _materials: Dictionary[String, Material] = {}
 static var _asset_rooms: Dictionary[String, float] = {}
+static var _mass_meshes: Dictionary[String, ArrayMesh] = {}
 static var _mutex := Mutex.new()
+
+
+## The scene of an asset (assets/models/props/), by its slug.
+static func asset_scene(slug: String) -> PackedScene:
+	return load("res://assets/models/props/%s/%s.glb" % [slug, slug]) as PackedScene
+
+
+## An asset's mesh for scattering in masses (a MultiMesh), with its materials'
+## colours in a shader that tints each copy, sways it by `sway` and bobs it by
+## `bob` metres.
+static func mass_mesh(slug: String, sway: float = 0.0, bob: float = 0.0) -> ArrayMesh:
+	var key := "%s/%f/%f" % [slug, sway, bob]
+	if _mass_meshes.has(key):
+		return _mass_meshes[key]
+	var model := asset_scene(slug).instantiate() as Node3D
+	var source: Mesh = null
+	for child in model.find_children("*", "MeshInstance3D", true, false):
+		source = (child as MeshInstance3D).mesh
+		break
+	model.free()
+	var built := source.duplicate() as ArrayMesh
+	for surface in built.get_surface_count():
+		var from := source.surface_get_material(surface) as BaseMaterial3D
+		var material := ShaderMaterial.new()
+		material.shader = MASS_SHADER
+		material.set_shader_parameter("albedo", from.albedo_color if from else Color.WHITE)
+		material.set_shader_parameter("roughness", from.roughness if from else 0.9)
+		material.set_shader_parameter("sway", sway)
+		material.set_shader_parameter("bob", bob)
+		built.surface_set_material(surface, material)
+	_mass_meshes[key] = built
+	return built
 
 
 ## Adds a prop to `batch`, placed by `where`.

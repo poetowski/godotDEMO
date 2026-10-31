@@ -24,6 +24,22 @@ the other way round: it follows if the ground is sculpted again.
 - **Open:** R1's edges are low walls for now: along the east shore of the lake
   and the inflow, and where the outflow ends at A1.
 
+## The waterside
+
+Decorated by the blocks `R1Waterside<sector>` under `Sectors` in `field.tscn`, each
+5 x 5 sectors or less, covering every sector with water or within about 7 m of it.
+They change neither the land nor the water.
+
+- **Masses** (lilies, reeds, cattails, sedge, ferns, flowers, small stones) are
+  worked out from the land and water when content is built, so they follow if
+  either changes. **Lilies** keep to still water up to about 3 m deep; **reeds and
+  cattails** to the waterline, in beds; **stones** gather where the rivers run
+  shallow.
+- **Props** (51: boulders, driftwood, stumps, willow shrubs, young willows) are nodes
+  under each block's `Props`, to move or delete by hand. They stay put if the land
+  is sculpted again. Add more from `src/world/props/assets/`.
+- The deep middle of the lake is left open.
+
 ## High ground
 
 ## By sector

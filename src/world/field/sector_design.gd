@@ -53,6 +53,9 @@ const CLAIM_BUCKET := 2.0
 ## its `Props` node, editable by hand (npm run props -- <Design> freezes the
 ## ones its code places). Its code then stops placing them.
 @export var props_frozen: bool = false
+## Adds content only: its sectors keep the open ground and the water poured into
+## the land (WaterField), and its hooks for ground and water aren't used.
+@export var decorates_land: bool = false
 
 ## Seeded with `design_seed` before `_populate`; use it for every random choice.
 var rng := RandomNumberGenerator.new()
@@ -128,6 +131,8 @@ func bake() -> void:
 		return
 	_ground_known = true
 	_read_sectors()
+	if decorates_land:
+		return
 	var ground: SectorGround = null if Engine.is_editor_hint() else BakedSectors.load_ground(name)
 	if ground:
 		_heights = ground.heights
@@ -152,8 +157,9 @@ func generate_content() -> Node3D:
 	_building = Node3D.new()
 	_building.name = "Content"
 	rng.seed = design_seed
-	_build_ground()
-	_build_water()
+	if not decorates_land:
+		_build_ground()
+		_build_water()
 	_add_scene_props()
 	_populate()
 	_commit_props()
@@ -270,7 +276,7 @@ func edge_weight(xz: Vector2) -> float:
 ## world's own shape outside the design.
 func height_at(xz: Vector2) -> float:
 	bake()
-	if not owns(xz):
+	if decorates_land or not owns(xz):
 		return WorldShape.height(xz)
 	return _interpolate(_heights, xz, 0.0)
 
@@ -278,6 +284,8 @@ func height_at(xz: Vector2) -> float:
 ## Height of the water surface at a point, or NO_WATER.
 func water_level_at(xz: Vector2) -> float:
 	bake()
+	if decorates_land:
+		return Waters.level_at(xz)
 	return _interpolate(_water, xz, NO_WATER)
 
 
@@ -285,6 +293,8 @@ func water_level_at(xz: Vector2) -> float:
 ## z.
 func flow_at(xz: Vector2) -> Vector2:
 	bake()
+	if decorates_land:
+		return WaterField.flow_at(xz)
 	var cell := SectorMap.unbounded_cell_at(xz)
 	if not _flows.has(cell):
 		return Vector2.ZERO
@@ -371,7 +381,7 @@ func add_content(node: Node) -> void:
 ## after the land under them was sculpted. Only for the editor, where the
 ## content is built live. Props and water stay as they are.
 func reshape_ground(area: Rect2i) -> void:
-	if not _sampled or _content == null:
+	if decorates_land or not _sampled or _content == null:
 		return
 	var body := part("GroundBody")
 	for cell in _cells:
@@ -560,6 +570,8 @@ func _sample() -> void:
 	if not _set_up:
 		_set_up = true
 		_setup()
+	if decorates_land:
+		return
 	for cell in _cells:
 		var heights := PackedFloat32Array()
 		var water := PackedFloat32Array()
