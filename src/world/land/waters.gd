@@ -1,11 +1,14 @@
+@tool
 class_name Waters
 extends Node3D
 ## Draws the water of every region design: its waterfalls
 ## (LandformSet.waterfalls), a sheet of streaming water draped over the
 ## ground from the top to the bottom, a pool where it lands, and spray; and
 ## its lakes (LandformSet.lakes), a still surface following each lake's
-## wavering shore. Built once when the world starts, from WorldShape's
-## heights, so they show from any distance like the land.
+## wavering shore; and the water poured into the land as it lies (WaterField),
+## with its flowing rivers. Built once when the world starts, from WorldShape's
+## heights, so they show from any distance like the land, and again in the
+## editor when the land is sculpted.
 
 const WATER := Color(0.55, 0.75, 0.85)
 ## Metres between the sheet's rows down the slope.
@@ -13,13 +16,18 @@ const STEP := 0.75
 ## How far the sheet stands off the ground: up and toward the fall's front.
 const LIFT := 0.9
 const OUT := 1.2
+## The look of water poured into the land.
+const POURED_RIPPLE_SIZE := 2.2
+const POURED_RIPPLE_STRENGTH := 0.022
 
 var _sheet_material: ShaderMaterial
 var _pool_material: StandardMaterial3D
 var _lake_material: StandardMaterial3D
+var _poured: MeshInstance3D
 
 
 func _ready() -> void:
+	add_to_group(&"waters")
 	_sheet_material = ShaderMaterial.new()
 	_sheet_material.shader = preload("res://src/world/land/waterfall.gdshader")
 	_pool_material = StandardMaterial3D.new()
@@ -34,11 +42,21 @@ func _ready() -> void:
 			_build(landform_set.waterfalls[k], "%s_%d" % [landform_set.id, k])
 		for k in landform_set.lakes.size():
 			_build_lake(landform_set.lakes[k], "%s_%d" % [landform_set.id, k])
+	_show_poured_water()
+
+
+## Pours the water again over the land as it is now.
+func refresh() -> void:
+	WaterField.rebuild()
+	_show_poured_water()
 
 
 ## The surface of a lake or a waterfall's pool at a world x and z, or
 ## NO_WATER.
 static func level_at(xz: Vector2) -> float:
+	var poured := WaterField.level_at(xz)
+	if poured != SectorDesign.NO_WATER:
+		return poured
 	var lake := Landforms.lake_level(xz)
 	if lake != SectorDesign.NO_WATER:
 		return lake
@@ -58,6 +76,20 @@ func count() -> int:
 ## Lakes drawn.
 func lake_count() -> int:
 	return find_children("Lake_*", "", false, false).size()
+
+
+func _show_poured_water() -> void:
+	if _poured == null:
+		_poured = MeshInstance3D.new()
+		_poured.name = "PouredWater"
+		var material := NatureKit.water_material()
+		# Wide water: bigger, calmer ripples than the shader's small streams.
+		material.set_shader_parameter("ripple_size", POURED_RIPPLE_SIZE)
+		material.set_shader_parameter("ripple_strength", POURED_RIPPLE_STRENGTH)
+		_poured.material_override = material
+		_poured.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(_poured)
+	_poured.mesh = WaterField.mesh()
 
 
 func _build_lake(lake: Lake, key: String) -> void:

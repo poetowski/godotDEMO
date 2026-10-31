@@ -5,8 +5,8 @@
 - **Name:**
 - **Sectors:** A1-T20 (200 x 200 m), the whole world for now
 - **Neighbours:** none yet
-- **Status:** the author is hand-carving the ground for a river and a lake; no
-  water yet
+- **Status:** the lake and its two rivers are carved by hand and filled with
+  water
 
 ## In one paragraph
 
@@ -21,7 +21,11 @@ Newest last.
   noise bumps. **Placeholder:** the bumps' size, about 1.8 m.
 - 2026-10-31: A river and a lake will run through R1. The author first carves a
   natural lowered terrain for them by hand; water is added later, to fit it.
+- 2026-10-31: The water is in. The lake lies in the south-east. One river flows
+  into it from the north, down the eastern sectors; another flows out of it to
+  the west. See `terrain.md`. **Placeholder:** the water levels and flow speed.
 
 ## Open questions
 
-- Where the river and the lake run, and their names.
+- The lake's and the rivers' names.
+- Where the rivers come from and go to, past R1's edges.

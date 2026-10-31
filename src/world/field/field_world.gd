@@ -17,3 +17,4 @@ static func configure(regions: int = REGIONS) -> void:
 	RegionMap.configure(regions, regions)
 	WorldShape.configure(HILL_HEIGHT, HILL_FREQUENCY, 3)
 	WorldShape.border = BORDER
+	WaterField.load_all()

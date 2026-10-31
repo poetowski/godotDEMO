@@ -127,6 +127,10 @@ every stroke.
   don't depend on sculpts, and baked content counts as stale then.
 - GDScript classes have a built-in `reload()`: never name a static function
   that.
+- Water in carved ground is data in `data/world/water/` (`RegionWater`,
+  `WaterField`): it never changes the ground, and it refills itself when the
+  land changes. Rivers' levels must not rise downstream, and must stand above
+  their beds.
 
 ## Sectors
 
@@ -280,6 +284,8 @@ folder, like `src/world/field/`.
 
 ## Godot gotchas
 
+- A runtime error in a `--script` tool's `_initialize` leaves Godot running
+  forever. Run throwaway tools under `timeout`.
 - Lambdas kept in a long-lived Dictionary or Array (a command table, say)
   leak at exit ("ObjectDB instances were leaked"); register methods instead.
 

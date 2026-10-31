@@ -166,6 +166,8 @@ func finish_reshaping(area: Rect2i) -> void:
 	if _chunks:
 		_chunks.rebuild(area)
 	_reshape_designs(area)
+	for node in get_tree().get_nodes_in_group(&"waters"):
+		node.call(&"refresh")
 	for node in get_tree().get_nodes_in_group(&"sector_grids"):
 		node.call(&"refresh")
 

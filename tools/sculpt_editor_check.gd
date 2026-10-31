@@ -34,7 +34,15 @@ func _steps() -> void:
 	EditorInterface.get_selection().add_node(terrain)
 	await tree.create_timer(1.0).timeout
 	var camera := EditorInterface.get_editor_viewport_3d(0).get_camera_3d()
-	var spot := Vector2(130.0, -70.0)
+	# Wherever the saved view looks, so the strokes land on screen.
+	var middle := camera.get_viewport().get_visible_rect().size * 0.5
+	var looked_at := terrain.ground_hit(camera.project_ray_origin(middle), camera.project_ray_normal(middle))
+	_expect(looked_at != Vector3.INF, "the view looks at the ground")
+	if looked_at == Vector3.INF:
+		_finish()
+		return
+	var spot := Vector2(clampf(looked_at.x, 20.0, 180.0), clampf(looked_at.z, -180.0, -20.0))
+	var tile := Vector2i(floori(spot.x / TerrainSculpt.TILE), floori(-spot.y / TerrainSculpt.TILE))
 	await tree.create_timer(5.0).timeout
 	_shot("sculpt_1_before")
 	var brush: SculptBrush = _plugin.get(&"brush")
@@ -45,7 +53,7 @@ func _steps() -> void:
 	await _drag(camera, spot, spot, 1.0)
 	var raised := WorldShape.height(spot)
 	_expect(raised > before + 2.0, "a stroke raised the ground (%.2f -> %.2f)" % [before, raised])
-	_expect(FileAccess.file_exists(TerrainSculpt.tile_path(Vector2i(1, 0))), "the stroke was saved")
+	_expect(FileAccess.file_exists(TerrainSculpt.tile_path(tile)), "the stroke was saved")
 	await tree.create_timer(1.5).timeout
 	var chunks := terrain.chunks()
 	_expect(chunks != null and is_equal_approx(chunks.step_at(spot), 1.0), "the ground under the brush is 1 m tiles")
@@ -53,8 +61,8 @@ func _steps() -> void:
 	# A trench, screenshotted while it's being dug, so the live update shows.
 	brush.tool = SculptBrush.Tool.LOWER
 	brush.radius = 4.0
-	var from := spot + Vector2(-18.0, 20.0)
-	var to := from + Vector2(30.0, 0.0)
+	var from := spot + Vector2(-12.0, 16.0)
+	var to := from + Vector2(24.0, 0.0)
 	await _drag(camera, from, to, 2.0, true)
 	_shot("sculpt_3_digging")
 	_button(camera, to, false)
@@ -70,7 +78,7 @@ func _steps() -> void:
 		count += 1
 	_expect(count == 2, "both strokes are in the undo history")
 	_expect(absf(WorldShape.height(spot) - before) < 0.001, "undo put the ground back")
-	_expect(not FileAccess.file_exists(TerrainSculpt.tile_path(Vector2i(1, 0))), "undo removed the emptied tile")
+	_expect(not FileAccess.file_exists(TerrainSculpt.tile_path(tile)), "undo removed the emptied tile")
 	await tree.create_timer(2.0).timeout
 	_shot("sculpt_5_undone")
 	_finish()
