@@ -1,10 +1,12 @@
 extends RefCounted
 ## Runs inside the real editor (`npm run sculpt-check`): selects the terrain,
 ## drags the brush with made-up mouse events, undoes, screenshots the editor
-## into .shots/ and quits with 0 if the ground did what the brush said. Saves
-## to user://, leaving the project's sculpted ground alone.
+## into .shots/ and quits with 0 if the ground did what the brush said, then the
+## same for the Paint tab. Saves to user://, leaving the project's sculpted and
+## painted ground alone.
 
 const FOLDER := "user://sculpt_check"
+const PAINT_FOLDER := "user://paint_check"
 
 var _plugin: EditorPlugin
 var _failures: Array[String] = []
@@ -14,6 +16,8 @@ func run(plugin: EditorPlugin) -> void:
 	_plugin = plugin
 	TerrainSculpt.folder = FOLDER
 	TerrainSculpt.start_empty()
+	TerrainPaint.folder = PAINT_FOLDER
+	TerrainPaint.start_empty()
 	_steps.call_deferred()
 
 
@@ -81,7 +85,32 @@ func _steps() -> void:
 	_expect(not FileAccess.file_exists(TerrainSculpt.tile_path(tile)), "undo removed the emptied tile")
 	await tree.create_timer(2.0).timeout
 	_shot("sculpt_5_undone")
+	await _check_painting(camera, spot, tile, history)
 	_finish()
+
+
+func _check_painting(camera: Camera3D, spot: Vector2, tile: Vector2i, history: UndoRedo) -> void:
+	var tree := _plugin.get_tree()
+	var height := WorldShape.height(spot)
+	var sample := Vector2i(roundi(spot.x), roundi(-spot.y))
+	_plugin.call(&"set_mode", 1)
+	await tree.process_frame
+	var tabs := _plugin.get(&"_tabs") as TabContainer
+	_expect(tabs.visible and tabs.current_tab == 1, "the Paint tab opens beside the view")
+	var brush: PaintBrush = _plugin.get(&"paint_brush")
+	brush.surface = 6
+	brush.radius = 5.0
+	await _drag(camera, spot + Vector2(-10.0, 0.0), spot + Vector2(10.0, 0.0), 1.5)
+	_expect(TerrainPaint.share(sample.x, sample.y, 6) > 0.9, "a stroke laid cobbles")
+	_expect(FileAccess.file_exists(TerrainPaint.tile_path(tile)), "the stroke was saved")
+	_expect(WorldShape.height(spot) == height, "painting left the land alone")
+	await tree.create_timer(1.0).timeout
+	_shot("paint_1_painted")
+	history.undo()
+	_expect(TerrainPaint.is_empty(), "undo took the paint away")
+	_expect(not FileAccess.file_exists(TerrainPaint.tile_path(tile)), "undo removed the emptied tile")
+	_plugin.call(&"set_mode", 0)
+	_expect(tabs.current_tab == 0, "back to the Sculpt tab")
 
 
 ## Presses at `from` and moves to `to` over `seconds`; releases unless `hold`.
@@ -128,6 +157,9 @@ func _finish() -> void:
 	DirAccess.make_dir_recursive_absolute(FOLDER)
 	for file in DirAccess.get_files_at(FOLDER):
 		DirAccess.remove_absolute(FOLDER.path_join(file))
+	DirAccess.make_dir_recursive_absolute(PAINT_FOLDER)
+	for file in DirAccess.get_files_at(PAINT_FOLDER):
+		DirAccess.remove_absolute(PAINT_FOLDER.path_join(file))
 	print("sculpt-check: %s" % ("passed" if _failures.is_empty() else "%d failed" % _failures.size()))
 	# With the terrain selected, the inspector logs an error while quitting.
 	EditorInterface.get_selection().clear()

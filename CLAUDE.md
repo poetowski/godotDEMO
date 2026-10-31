@@ -5,6 +5,12 @@ working title and the game's design is not decided yet.
 
 ## Who decides what
 
+- **We never use third-party assets.** Everything in the game (models,
+  animations, textures, materials, sounds, music, fonts) is made in this project,
+  by our own scripts, or by the author. No downloads, asset stores, marketplaces,
+  free packs or AI-generated assets from outside services, whatever their license.
+  Third-party code for development (`addons/`) is a separate matter and is not a
+  game asset.
 - Game content is the author's call: names, story, characters, mechanics,
   numbers, controls, art direction. Propose, then wait for a yes before
   building it.
@@ -39,7 +45,7 @@ working title and the game's design is not decided yet.
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor -- [scene]` | Opens the editor, on the given scene if one is named. The MCP tools need it. |
-| `npm run sculpt-check` | Drives the sculpting plugin inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png`. Leaves the project's sculpted ground alone. Close the editor first. |
+| `npm run sculpt-check` | Drives the Sculpt and Paint tabs inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png` and `paint_*.png`. Leaves the project's sculpted and painted ground alone. Close the editor first. |
 | `npm run game -- --regions=5` | The world at 5 x 5 regions instead of R1 alone, for testing. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
@@ -79,7 +85,7 @@ LTS lives in `%LOCALAPPDATA%\Programs\Blender\5.2.3\`, pinned the same way
 Its add-on (`blender_mcp.py`, in Blender's user add-ons, enabled) listens on
 `localhost:9876` while Blender is open: run `npm run blender` first. Its
 asset services (Poly Haven, Sketchfab, Hyper3D and the like) stay off; we
-don't use downloaded assets. Use it to look at and try things in a live
+never use third-party assets. Use it to look at and try things in a live
 scene; anything worth keeping goes into a script in `tools/blender/`.
 
 ## MCP: the `godot` server
@@ -134,6 +140,23 @@ every stroke.
   `WaterField`): it never changes the ground, and it refills itself when the
   land changes. Rivers' levels must not rise downstream, and must stand above
   their beds.
+
+## Painting the ground by hand
+
+The Paint tab, the Sculpt tab's sister, in the same plugin: press Paint in the 3D
+view's toolbar and drag. It lives in `src/world/land/` (`TerrainPaint`,
+`PaintBrush`) and `data/world/paint/`, one `.res` per 100 m tile, saved after
+every stroke.
+
+- The tiles in `data/world/paint/` are the author's work: commit them, and never
+  overwrite or delete them.
+- Painting changes no heights or meshes. `grass_grid.gdshader` draws the surfaces
+  from two textures (global shader parameters, in `project.godot`).
+- A new surface needs a name and swatch in `TerrainPaint` and a block in the shader.
+  All eight places in the two textures are in use; a ninth surface needs a third.
+- Tests start with `TerrainPaint.start_empty()` (`tests/pre_run.gd`).
+- `TerrainPaint.paving_at` says where paving lies. R1's waterside plants keep off it
+  the next time content is baked.
 
 ## Sectors
 
@@ -254,14 +277,14 @@ src/player/      the player character and HeroBody, the animated body
 src/npc/         NPCs (villagers with daily programs)
 src/items/       carrying and picking up items
 src/ui/          HUD and menus
-data/            game data as Resources (.tres); world/sculpt/ holds the hand-sculpted ground
+data/            game data as Resources (.tres); world/sculpt/ and world/paint/ hold the hand-sculpted and hand-painted ground
 assets/          imported art and audio: models/ textures/ materials/ audio/ fonts/; models/ holds .glb built by tools/blender/
 tests/unit/      logic tests
 tests/smoke/     scene loading and wiring tests
 tests/fixtures/  frozen inputs, such as saves in every old format, and a design and items only tests use
 tools/           dev.mjs (the npm commands), check_project.gd
 docs/            DESIGN_DECISIONS.md (the author's record), ARCHITECTURE.md, world/ (art, lore and notes per region)
-addons/          vendored third-party code, read addons/README.md before touching it; terrain_sculpt/ is ours
+addons/          vendored third-party code, read addons/README.md before touching it; terrain_sculpt/ (sculpting and painting) is ours
 ```
 
 Organise by feature: a scene, its scripts and its local resources live in one

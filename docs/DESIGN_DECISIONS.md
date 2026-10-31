@@ -15,6 +15,8 @@ Add an entry per decision, newest last:
 
 ## 2026-10-31: Real development starts: the demo is cleared
 
+Rule, from the author (2026-10-31): we never use third-party assets.
+
 Request: remove the placeholder world, the assets generated through skills and
 the assets used in demo placeholders, and start with an empty world: one
 region, R1, of the classic 20 x 20 sectors, with Perlin noise so the terrain

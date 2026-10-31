@@ -213,6 +213,8 @@ func _any_stone() -> String:
 
 
 func _try_mass(xz: Vector2) -> void:
+	if TerrainPaint.paving_at(xz) > 0.3:
+		return
 	var shore := _shore_at(xz)
 	var ground := height_at(xz)
 	var level := water_level_at(xz)

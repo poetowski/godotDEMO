@@ -33,8 +33,8 @@ in the brief are rules. If the description is missing, ask for it.
 1. **Built by a script, in Blender.** One Python script per asset,
    `tools/blender/assets/<slug>.py`, using `tools/blender/kit.py`. It's the
    source: the `.glb` is its output, rebuilt with `npm run models -- <slug>`.
-   No downloaded models or textures; never Blender MCP's asset services
-   (Poly Haven, Sketchfab, generators).
+   We never use third-party assets: no downloaded models or textures, and
+   never Blender MCP's asset services (Poly Haven, Sketchfab, generators).
 2. **The project's look.** Low-poly, flat-shaded, colour from materials
    (picked in sRGB with `kit.material`), no textures. Glass is
    `alpha < 1`; things that glow use `emission`. Keep it under about 10,000

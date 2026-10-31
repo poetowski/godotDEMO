@@ -6,5 +6,6 @@ extends GutHookScript
 
 func run() -> void:
 	TerrainSculpt.start_empty()
+	TerrainPaint.start_empty()
 	WaterField.use_only([] as Array[RegionWater])
 	ItemCatalog.folder = "res://tests/fixtures/items"

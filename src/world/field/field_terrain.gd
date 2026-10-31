@@ -54,6 +54,7 @@ static func ground_material() -> ShaderMaterial:
 	if _material == null:
 		_material = ShaderMaterial.new()
 		_material.shader = GRASS_SHADER
+		TerrainPaint.load_all()
 	return _material
 
 

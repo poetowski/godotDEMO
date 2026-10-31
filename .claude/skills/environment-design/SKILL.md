@@ -50,7 +50,7 @@ sectors.
    details) are placeholders, recorded as such. Don't add big things the brief
    didn't ask for, such as buildings, creatures or items; propose them instead.
 5. **Generated in code.** Low-poly, built from the kit below, and the same
-   every run, decided by `design_seed`. No downloaded assets.
+   every run, decided by `design_seed`. We never use third-party assets.
 6. **Built for streaming.** The world loads a design's content only while
    the player is near, from a baked copy. Add every node with `add_content`
    or the add_* helpers, never `add_child`. Anything the player can change
