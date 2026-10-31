@@ -3,8 +3,8 @@
 ## At a glance
 
 - **Name:**
-- **Sectors:** A1-T20 (200 x 200 m), the whole world for now
-- **Neighbours:** none yet
+- **Sectors:** A1-T20 (200 x 200 m), in the middle of the starting zone
+- **Neighbours:** R2 north, R4 east, R6 south, R8 west
 - **Status:** the lake and its two rivers are carved by hand, filled with water
   and decorated along their banks
 
@@ -33,6 +33,9 @@ Newest last.
   a lake and decorate them. be creative, but also make sure assets you generate for
   our R1 are consistent in design." See `art.md` and `terrain.md`. **Placeholder:**
   the assets' looks, the layout and every count.
+
+- 2026-10-31: R1 is the middle of the starting zone of nine regions. R2 to R9 lie
+  around it, clockwise. See `docs/world/README.md`.
 
 ## Open questions
 

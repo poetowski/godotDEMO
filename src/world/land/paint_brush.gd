@@ -27,7 +27,7 @@ func weight(distance: float) -> float:
 func area_at(xz: Vector2) -> Rect2i:
 	var low := Vector2i(floori(xz.x - radius), floori(-xz.y - radius))
 	var high := Vector2i(ceili(xz.x + radius), ceili(-xz.y + radius))
-	var world := Rect2i(Vector2i.ZERO, Vector2i(SectorMap.extent()))
+	var world := Rect2i(SectorMap.bounds())
 	return Rect2i(low, high - low + Vector2i.ONE).intersection(world)
 
 

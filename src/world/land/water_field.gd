@@ -71,10 +71,10 @@ static func rebuild() -> void:
 	if _plans.is_empty():
 		_grid = null
 		return
-	var extent := SectorMap.extent()
+	# Water lies in R1 alone for now, so the grid covers only R1.
 	var grid := Grid.new()
-	grid.columns = int(extent.x) + 1
-	grid.rows = int(extent.y) + 1
+	grid.columns = int(RegionMap.SIZE) + 1
+	grid.rows = int(RegionMap.SIZE) + 1
 	var count := grid.columns * grid.rows
 	grid.levels.resize(count)
 	grid.levels.fill(-INF)

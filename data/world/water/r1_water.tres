@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="RegionWater" format=3]
+[gd_resource type="Resource" script_class="RegionWater" format=3 uid="uid://dxin080lox0cq"]
 
-[ext_resource type="Script" path="res://src/world/land/water_course.gd" id="1_i611k"]
-[ext_resource type="Script" path="res://src/world/land/region_water.gd" id="2_xn6gt"]
+[ext_resource type="Script" uid="uid://d2pucarqvwkk1" path="res://src/world/land/water_course.gd" id="1_i611k"]
+[ext_resource type="Script" uid="uid://difwh3sgdkpp2" path="res://src/world/land/region_water.gd" id="2_xn6gt"]
 
 [sub_resource type="Resource" id="Resource_i611k"]
 script = ExtResource("1_i611k")

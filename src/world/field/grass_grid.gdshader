@@ -13,6 +13,10 @@ uniform vec3 grass_dark : source_color = vec3(0.27, 0.46, 0.18);
 uniform vec3 line_color : source_color = vec3(0.55, 0.9, 1.0);
 uniform float line_energy = 1.8;
 uniform float line_width = 0.14;
+// Region borders: wider, and never thinner than a pixel or two at any distance.
+uniform vec3 region_line_color : source_color = vec3(1.0, 0.72, 0.28);
+uniform float region_line_width = 0.5;
+uniform float region_sectors = 20.0;
 // World x and z of A1's south-west corner; the grid runs east and north from it.
 uniform vec2 grid_origin = vec2(0.0, 0.0);
 uniform float sector_size = 10.0;
@@ -21,6 +25,8 @@ uniform vec2 grid_sectors = vec2(20.0, 20.0);
 global uniform sampler2D terrain_paint_first : filter_linear, repeat_disable;
 global uniform sampler2D terrain_paint_second : filter_linear, repeat_disable;
 global uniform vec2 terrain_paint_size;
+// World x and north of the paint textures' first texel.
+uniform vec2 paint_origin = vec2(0.0, 0.0);
 
 // Placeholder: every painted surface's colours.
 const vec3 DIRT = vec3(0.45, 0.33, 0.21);
@@ -120,7 +126,7 @@ void fragment() {
 	// A little wander, so painted edges aren't the round blobs of a 1 m grid.
 	vec2 wander = vec2(value_noise(p * 1.3), value_noise(p * 1.3 + 41.0)) - 0.5;
 	wander += (vec2(value_noise(p * 4.1 + 9.0), value_noise(p * 4.1 + 77.0)) - 0.5) * 0.35;
-	vec2 paint_uv = (vec2(p.x, -p.y) + wander * 0.9 + 0.5) / terrain_paint_size;
+	vec2 paint_uv = (vec2(p.x, -p.y) - paint_origin + wander * 0.9 + 0.5) / terrain_paint_size;
 	vec4 first = texture(terrain_paint_first, paint_uv);
 	vec4 second = texture(terrain_paint_second, paint_uv);
 	vec2 inside_world = step(vec2(0.0), paint_uv) * step(paint_uv, vec2(1.0));
@@ -197,7 +203,12 @@ void fragment() {
 	float inside_y = step(-line_width, grid.y) * step(grid.y, extent.y + line_width);
 	float line = max(on_line.x, on_line.y) * inside_x * inside_y * grassiness * (1.0 - painted);
 
-	ALBEDO = mix(ground, line_color * 0.5, line);
-	EMISSION = line_color * line_energy * line;
+	vec2 to_region = abs(grid - sector_size * region_sectors * round(grid / (sector_size * region_sectors)));
+	vec2 region_half = max(vec2(region_line_width * 0.5), per_pixel);
+	vec2 on_region = clamp((region_half + per_pixel * 0.5 - to_region) / per_pixel, 0.0, 1.0);
+	float region_line = max(on_region.x, on_region.y) * inside_x * inside_y;
+
+	ALBEDO = mix(mix(ground, line_color * 0.5, line), region_line_color * 0.5, region_line);
+	EMISSION = mix(line_color * line_energy * line, region_line_color * line_energy, region_line);
 	ROUGHNESS = roughness;
 }

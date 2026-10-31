@@ -22,6 +22,9 @@ static var border := 15.0
 static var home := Rect2()
 ## Metres beyond `home` over which the hills rise to their full height.
 static var home_blend := 300.0
+## Ground whose outline the hills ease flat around, on both sides, like the
+## world's border (x east, y north); empty for none.
+static var rim := Rect2()
 ## Metres of small bumps on top of everything (beyond `home`).
 static var detail := 0.5
 static var _noise: FastNoiseLite
@@ -32,6 +35,7 @@ static func configure(hill_height: float, hill_frequency: float = 0.02, hill_see
 	amplitude = hill_height
 	border = 15.0
 	home = Rect2()
+	rim = Rect2()
 	frequency = hill_frequency
 	_noise = FastNoiseLite.new()
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN
@@ -60,8 +64,10 @@ static func base_height(xz: Vector2) -> float:
 	if _noise == null:
 		return 0.0
 	var grid := Vector2(xz.x - SectorMap.ORIGIN.x, SectorMap.ORIGIN.z - xz.y)
-	var extent := SectorMap.extent()
-	var inside := minf(minf(grid.x, grid.y), minf(extent.x - grid.x, extent.y - grid.y))
+	var inside := _inside(grid, SectorMap.bounds())
+	if rim.has_area():
+		var within := _inside(grid, rim)
+		inside = minf(inside, within if within >= 0.0 else _gap(grid, rim))
 	var rise := 1.0
 	if home.has_area():
 		var outside := Vector2(maxf(home.position.x - grid.x, grid.x - home.end.x), maxf(home.position.y - grid.y, grid.y - home.end.y))
@@ -70,6 +76,16 @@ static func base_height(xz: Vector2) -> float:
 	# Flat worlds (no hills) get no detail either.
 	var hills := 0.0 if amplitude == 0.0 else amplitude * (_noise.get_noise_2d(xz.x, xz.y) + 0.35) + detail * _detail_noise.get_noise_2d(xz.x, xz.y)
 	return Landforms.shape_lakes(xz, hills * edge * rise + Landforms.height(xz) * edge)
+
+
+## Metres inside a rectangle's nearest side; negative outside it.
+static func _inside(point: Vector2, area: Rect2) -> float:
+	return minf(minf(point.x - area.position.x, point.y - area.position.y), minf(area.end.x - point.x, area.end.y - point.y))
+
+
+## Metres from a point outside a rectangle to the rectangle.
+static func _gap(point: Vector2, area: Rect2) -> float:
+	return Vector2(maxf(maxf(area.position.x - point.x, point.x - area.end.x), 0.0), maxf(maxf(area.position.y - point.y, point.y - area.end.y), 0.0)).length()
 
 
 ## True inside the flat home area.

@@ -52,7 +52,7 @@ func _run() -> void:
 	var heading := deg_to_rad(float(_options["heading"]))
 	var direction := Vector2(sin(heading), -cos(heading))
 	var at := Vector2(player.global_position.x, player.global_position.z)
-	var extent := SectorMap.extent()
+	var bounds := SectorMap.bounds()
 	var frames := PackedFloat32Array()
 	var gpu := PackedFloat32Array()
 	var calls := PackedInt32Array()
@@ -72,7 +72,7 @@ func _run() -> void:
 	while elapsed < seconds:
 		var step := direction * speed * delta
 		var ahead := at + step
-		if ahead.x < 20.0 or ahead.x > extent.x - 20.0 or -ahead.y < 20.0 or -ahead.y > extent.y - 20.0:
+		if not bounds.grow(-20.0).has_point(Vector2(ahead.x, -ahead.y)):
 			direction = -direction
 			step = -step
 		at += step
@@ -106,7 +106,7 @@ func _run() -> void:
 		"scene": _options["scene"],
 		"without": _options["without"],
 		"regions": "%dx%d" % [RegionMap.columns, RegionMap.rows],
-		"world_km": snappedf(extent.x / 1000.0, 0.1),
+		"world_km": snappedf(bounds.size.x / 1000.0, 0.1),
 		"load_ms": load_ms,
 		"seconds": snappedf(elapsed, 0.1),
 		"travelled_m": roundi(travelled),

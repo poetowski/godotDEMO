@@ -22,12 +22,12 @@ func after_all() -> void:
 	WorldShape.configure(0.0)
 
 
-func test_the_world_is_r1_alone_with_classic_sectors() -> void:
-	assert_eq(RegionMap.count(), 1)
+func test_the_world_is_the_starting_zone_with_classic_sectors() -> void:
+	assert_eq(RegionMap.count(), 9)
 	assert_eq(SectorMap.COLUMNS, 20)
 	assert_eq(SectorMap.ROWS, 20)
-	assert_eq(SectorMap.extent(), Vector2(200.0, 200.0))
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "A1", "the start")
+	assert_eq(SectorMap.extent(), Vector2(600.0, 600.0))
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "R1:A1", "the start")
 
 
 func test_there_is_nothing_in_it_yet() -> void:
@@ -66,4 +66,4 @@ func test_the_hero_stands_on_the_ground_and_it_is_detailed_underfoot() -> void:
 	assert_true(_player.is_on_floor())
 	var xz := Vector2(_player.global_position.x, _player.global_position.z)
 	assert_eq(_terrain.chunks().step_at(xz), 1.0, "every metre underfoot")
-	assert_lte(_terrain.chunks().tile_count(), 4, "the region's 100 m chunks")
+	assert_lte(_terrain.chunks().tile_count(), 36, "the 100 m chunks of the nine regions")

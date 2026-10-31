@@ -46,7 +46,7 @@ working title and the game's design is not decided yet.
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor -- [scene]` | Opens the editor, on the given scene if one is named. The MCP tools need it. |
 | `npm run sculpt-check` | Drives the Sculpt and Paint tabs inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png` and `paint_*.png`. Leaves the project's sculpted and painted ground alone. Close the editor first. |
-| `npm run game -- --regions=5` | The world at 5 x 5 regions instead of R1 alone, for testing. |
+| `npm run game -- --regions=5` | A test world of 5 x 5 regions instead of the starting zone. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
@@ -207,10 +207,16 @@ heights, water and flow stay known everywhere. So:
   Blender (`tools/blender/assets/`) to place as a prop. Shape the regions
   first.
 
-- The world is regions of 20 x 20 sectors (200 m) named R1, R2... from the
-  south-west, east along each row, then north. Right now it is R1 alone
-  (`FieldWorld`). In a world of several regions every sector name carries its
-  region (`R45:J10`); a name without one means R1, so `A1`...`T20` still work.
+- The world is regions of 20 x 20 sectors (200 m): the starting zone, with R1 in
+  the middle and R2 to R9 clockwise around it from the north (`FieldWorld`,
+  `RegionMap.STARTING_ZONE`). R1's A1 stays at world (0, 0), so its neighbours have
+  negative coordinates: use `SectorMap.bounds()`, never assume the world starts at
+  zero. Sector names carry their region (`R4:J10`); a name without one means R1.
+- Region borders and names are gold, drawn by the ground shader and `SectorGrid`:
+  always in the game; in the editor the names show only when zoomed out, past
+  `label_visible_distance`.
+- The hills ease flat around R1's rim (`WorldShape.rim`), which keeps its land as
+  carved. `WaterField`'s grid covers R1 only; water elsewhere must widen it.
 - Never loop over the whole world's sectors: at 2 km it would be 40,000. Work per
   region (SectorGrid, the streaming map) or per streamed chunk.
 - Anything slow that a region change triggers runs on a worker thread

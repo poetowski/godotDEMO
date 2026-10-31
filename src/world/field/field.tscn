@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://jo415rct7ss2"]
 
-[ext_resource type="Script" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
 [ext_resource type="Script" uid="uid://cdh8uy537nvtg" path="res://src/world/field/field.gd" id="1_field"]
 [ext_resource type="Script" uid="uid://dpx2dohi1qp0t" path="res://src/world/field/field_terrain.gd" id="2_terrain"]
 [ext_resource type="Script" uid="uid://cfww1o6ahv4pu" path="res://src/world/field/sector_grid.gd" id="3_grid"]
@@ -10,15 +9,16 @@
 [ext_resource type="Script" uid="uid://bqdr7fjfva5fs" path="res://src/world/time/world_clock.gd" id="30_clock"]
 [ext_resource type="Script" uid="uid://dkg2a72bikbhi" path="res://src/world/time/day_night.gd" id="31_daynight"]
 [ext_resource type="Script" uid="uid://dfa0umxvg70br" path="res://src/audio/ambience.gd" id="41_ambience"]
+[ext_resource type="Script" uid="uid://bn0y7agiu3gm" path="res://src/world/props/prop.gd" id="50_prop"]
+[ext_resource type="PackedScene" uid="uid://ckgcgxnhkm4tt" path="res://assets/models/props/mossy_boulder_b/mossy_boulder_b.glb" id="60_asset"]
+[ext_resource type="PackedScene" uid="uid://bj8t120yth4ia" path="res://assets/models/props/willow_shrub/willow_shrub.glb" id="61_asset"]
+[ext_resource type="PackedScene" uid="uid://csoeab333nesq" path="res://assets/models/props/driftwood_log/driftwood_log.glb" id="62_asset"]
+[ext_resource type="PackedScene" uid="uid://c2yfj24vw4oip" path="res://assets/models/props/mossy_stump/mossy_stump.glb" id="63_asset"]
+[ext_resource type="PackedScene" uid="uid://dim4q2uny2i1q" path="res://assets/models/props/young_willow/young_willow.glb" id="64_asset"]
+[ext_resource type="PackedScene" uid="uid://ct5u8kxtb4lt5" path="res://assets/models/props/driftwood_branch/driftwood_branch.glb" id="65_asset"]
 [ext_resource type="Script" uid="uid://dccimpkv36jk3" path="res://src/world/land/waters.gd" id="65_waters"]
-[ext_resource type="Script" path="res://src/world/props/prop.gd" id="50_prop"]
-[ext_resource type="PackedScene" path="res://assets/models/props/mossy_boulder_b/mossy_boulder_b.glb" id="60_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/willow_shrub/willow_shrub.glb" id="61_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/driftwood_log/driftwood_log.glb" id="62_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/mossy_stump/mossy_stump.glb" id="63_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/young_willow/young_willow.glb" id="64_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/driftwood_branch/driftwood_branch.glb" id="65_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/mossy_boulder_a/mossy_boulder_a.glb" id="66_asset"]
+[ext_resource type="PackedScene" uid="uid://c8qqnxfs7bwf3" path="res://assets/models/props/mossy_boulder_a/mossy_boulder_a.glb" id="66_asset"]
+[ext_resource type="Script" uid="uid://6ov4j0b8nfbk" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -51,7 +51,7 @@ script = ExtResource("1_field")
 environment = SubResource("Environment_main")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1987575667]
-transform = Transform3D(0.906308, -0.260188, 0.333027, 0, 0.788011, 0.615661, -0.422618, -0.557979, 0.714182, 0.0, 30.0, 0.0)
+transform = Transform3D(0.906308, -0.260188, 0.333027, 0, 0.788011, 0.615661, -0.422618, -0.557979, 0.714182, 0, 30, 0)
 light_color = Color(1, 0.95, 0.86, 1)
 light_energy = 1.3
 shadow_enabled = true
@@ -75,512 +75,448 @@ world_environment = NodePath("../WorldEnvironment")
 [node name="Sectors" type="Node3D" parent="." unique_id=1128904256]
 editor_description = "One SectorDesign per designed area; each shapes only the sectors it owns."
 
-[node name="R1WatersideA1" type="Node3D" parent="Sectors"]
+[node name="R1WatersideA1" type="Node3D" parent="Sectors" unique_id=2138818137]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from A1."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("A1", "A2", "B1", "B2", "C1", "C2", "C3", "D1", "D2", "D3", "E1", "E2", "E3")
 design_id = "r1_waterside_a1"
 design_seed = 107
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideA1"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideA1" unique_id=234067054]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1521285693]
 transform = Transform3D(-0.95467013, 0, 0.58527297, 0, 1.1197944, 0, -0.58527297, 0, -0.95467013, 15.189196, -1.8666434, -8.609751)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1865973036]
 transform = Transform3D(-0.1874595, 0, -0.8769474, 0, 0.8967596, 0, 0.8769474, 0, -0.1874595, 17.898678, 0.6796192, -14.615499)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=914098985]
 transform = Transform3D(-1.0164196, 0, -0.08633255, 0, 1.0200795, 0, 0.08633255, 0, -1.0164196, 19.779272, 0.8216156, -15.93967)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1271524944]
 transform = Transform3D(-1.0149752, 0, 0.02688512, 0, 1.0153313, 0, -0.02688512, 0, -1.0149752, 26.703793, -2.4907289, -10.661186)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1439014045]
 transform = Transform3D(-0.78647333, 0, -0.40727648, 0, 0.88567173, 0, 0.40727648, 0, -0.78647333, 27.467981, 0.37392777, -18.333351)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=121976646]
 transform = Transform3D(0.6406032, 0, -1.0107843, 0, 1.1966859, 0, 1.0107843, 0, 0.6406032, 31.737244, -0.3497604, -13.757567)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=2044091132]
 transform = Transform3D(1.06834, 0, 0.0537639, 0, 1.0696919, 0, -0.0537639, 0, 1.06834, 36.478355, -0.7452807, -18.94736)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1842717138]
 transform = Transform3D(0.5982141, 0, 0.6078838, 0, 0.8528674, 0, -0.6078838, 0, 0.5982141, 38.73962, 0.7214068, -23.526373)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1386655153]
 transform = Transform3D(1.0196267, 0, 0.27228284, 0, 1.0553561, 0, -0.27228284, 0, 1.0196267, 47.363365, -1.2965473, -5.3042974)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=519085821]
 transform = Transform3D(-1.0200013, 0, 0.4099071, 0, 1.0992845, 0, -0.4099071, 0, -1.0200013, 42.832054, -0.7399844, -3.2770326)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset11" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset11" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=297082280]
 transform = Transform3D(0.21301854, 0, -0.9964908, 0, 1.0190048, 0, 0.9964908, 0, 0.21301854, 40.787003, -1.1902902, -19.481737)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("65_asset")
 
-[node name="Asset12" type="Node3D" parent="Sectors/R1WatersideA1/Props"]
+[node name="Asset12" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=787969882]
 transform = Transform3D(0.91595584, 0, 0.2582119, 0, 0.9516557, 0, -0.2582119, 0, 0.91595584, 42.17665, 0.74265414, -22.338634)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="R1WatersideF1" type="Node3D" parent="Sectors"]
+[node name="R1WatersideF1" type="Node3D" parent="Sectors" unique_id=990530520]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from F1."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("F1", "F2", "F3", "F4", "G1", "G2", "G3", "G4", "H1", "H2", "H3", "H4", "H5", "I1", "I2", "I3", "I4", "I5", "J2", "J3", "J4", "J5")
 design_id = "r1_waterside_f1"
 design_seed = 114
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideF1"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideF1" unique_id=144840895]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=1760286194]
 transform = Transform3D(0.18751182, 0, 0.93843126, 0, 0.95698166, 0, -0.93843126, 0, 0.18751182, 51.090816, 0.7625944, -25.97925)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=1223607334]
 transform = Transform3D(0.1254553, 0, -0.9057745, 0, 0.9144214, 0, 0.9057745, 0, 0.1254553, 65.44949, -2.0926778, -9.8839)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=609461525]
 transform = Transform3D(-0.7185645, 0, 0.6016635, 0, 0.9371947, 0, -0.6016635, 0, -0.7185645, 65.59856, -0.4488081, -28.941826)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=1332624127]
 transform = Transform3D(0.9412957, 0, 0.43321443, 0, 1.0362009, 0, -0.43321443, 0, 0.9412957, 71.63051, -1.3583698, -12.826001)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=834587584]
 transform = Transform3D(-0.6702224, 0, 0.7725564, 0, 1.0227617, 0, -0.7725564, 0, -0.6702224, 70.606064, 0.20012026, -35.046093)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=674945291]
 transform = Transform3D(-1.1488857, 0, -0.18235275, 0, 1.1632674, 0, 0.18235275, 0, -1.1488857, 78.50042, 0.34528017, -42.770977)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=82534283]
 transform = Transform3D(0.45363367, 0, 0.7280402, 0, 0.85780305, 0, -0.7280402, 0, 0.45363367, 81.8454, -0.9557852, -15.761536)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=547529647]
 transform = Transform3D(0.45633113, 0, 0.8219815, 0, 0.94015515, 0, -0.8219815, 0, 0.45633113, 89.53036, 0.28022406, -11.404768)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=655942834]
 transform = Transform3D(0.88035643, 0, -0.102147475, 0, 0.88626266, 0, 0.102147475, 0, 0.88035643, 89.63442, -1.5745025, -38.231678)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=374106843]
 transform = Transform3D(0.92249906, 0, -0.02106284, 0, 0.92273945, 0, 0.02106284, 0, 0.92249906, 86.49385, -0.010901757, -44.172165)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset11" type="Node3D" parent="Sectors/R1WatersideF1/Props"]
+[node name="Asset11" type="Node3D" parent="Sectors/R1WatersideF1/Props" unique_id=125587267]
 transform = Transform3D(0.16645128, 0, -0.89546955, 0, 0.9108083, 0, 0.89546955, 0, 0.16645128, 99.40573, -0.30126217, -44.563198)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="R1WatersideF6" type="Node3D" parent="Sectors"]
+[node name="R1WatersideF6" type="Node3D" parent="Sectors" unique_id=2063458225]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from F6."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("J6")
 design_id = "r1_waterside_f6"
 design_seed = 121
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideF6"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideF6" unique_id=995024466]
 
-[node name="R1WatersideK1" type="Node3D" parent="Sectors"]
+[node name="R1WatersideK1" type="Node3D" parent="Sectors" unique_id=1320887731]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from K1."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("K2", "K3", "K4", "K5", "L2", "L3", "L4", "L5", "M2", "M3", "M4", "M5", "N1", "N2", "N3", "N4", "N5", "O1", "O2", "O3", "O4", "O5")
 design_id = "r1_waterside_k1"
 design_seed = 128
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideK1"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideK1" unique_id=877829703]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=1429981778]
 transform = Transform3D(0.6634877, 0, 0.69041437, 0, 0.95754266, 0, -0.69041437, 0, 0.6634877, 110.459984, -1.6646264, -43.576336)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=1678155829]
 transform = Transform3D(-1.023577, 0, -0.19076814, 0, 1.0412023, 0, 0.19076814, 0, -1.023577, 123.365326, -0.47212273, -17.794859)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=579080982]
 transform = Transform3D(0.7985395, 0, -0.5537472, 0, 0.9717517, 0, 0.5537472, 0, 0.7985395, 129.59224, -1.1683935, -36.109)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=504698578]
 transform = Transform3D(0.3461911, 0, 0.9353051, 0, 0.9973184, 0, -0.9353051, 0, 0.3461911, 126.11468, -1.0147524, -38.356194)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=24673199]
 transform = Transform3D(0.21431631, 0, -0.94187236, 0, 0.96594775, 0, 0.94187236, 0, 0.21431631, 139.46814, -0.25574154, -11.109927)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=1950624472]
 transform = Transform3D(-0.76617205, 0, 0.8149025, 0, 1.1185194, 0, -0.8149025, 0, -0.76617205, 131.55836, -0.89335126, -18.592728)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=938487093]
 transform = Transform3D(0.40620372, 0, 0.93370324, 0, 1.0182353, 0, -0.93370324, 0, 0.40620372, 130.2909, -1.546613, -34.68288)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset8" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=1479966079]
 transform = Transform3D(-0.13081554, 0, -0.90043885, 0, 0.9098916, 0, 0.90043885, 0, -0.13081554, 130.869, 0.4117895, -43.91668)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset9" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=1116475856]
 transform = Transform3D(-0.025202004, 0, 0.9775076, 0, 0.9778324, 0, -0.9775076, 0, -0.025202004, 146.39462, -1.1532943, -5.65284)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideK1/Props"]
+[node name="Asset10" type="Node3D" parent="Sectors/R1WatersideK1/Props" unique_id=385259643]
 transform = Transform3D(0.24288034, 0, 1.0795629, 0, 1.1065472, 0, -1.0795629, 0, 0.24288034, 147.47035, -1.3768641, -11.388681)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="R1WatersideK6" type="Node3D" parent="Sectors"]
+[node name="R1WatersideK6" type="Node3D" parent="Sectors" unique_id=1893124013]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from K6."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("K6", "L6", "M6")
 design_id = "r1_waterside_k6"
 design_seed = 135
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideK6"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideK6" unique_id=1855461853]
 
-[node name="R1WatersideP1" type="Node3D" parent="Sectors"]
+[node name="R1WatersideP1" type="Node3D" parent="Sectors" unique_id=1345575517]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from P1."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("P1", "P2", "P3", "P4", "P5", "Q1", "Q2", "Q3", "Q4", "Q5", "R1", "R2", "R3", "R4", "R5", "S1", "S2", "S3", "S4", "S5", "T1", "T2", "T3", "T4", "T5")
 design_id = "r1_waterside_p1"
 design_seed = 142
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideP1"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideP1" unique_id=1396504527]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP1/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=1754473227]
 transform = Transform3D(0.79468536, 0, 0.4196904, 0, 0.8987017, 0, -0.4196904, 0, 0.79468536, 150.81505, -1.4505832, -3.3199074)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP1/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=819743411]
 transform = Transform3D(-0.65447783, 0, 0.6494846, 0, 0.9220474, 0, -0.6494846, 0, -0.65447783, 168.13332, -1.4126008, -3.2)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP1/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=520252027]
 transform = Transform3D(0.73848814, 0, -0.9361463, 0, 1.1923652, 0, 0.9361463, 0, 0.73848814, 170.4317, -1.1066201, -3.2)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP1/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=897086591]
 transform = Transform3D(-0.5846771, 0, 0.9815732, 0, 1.1425118, 0, -0.9815732, 0, -0.5846771, 178.18434, -1.4288217, -3.2)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="R1WatersideP6" type="Node3D" parent="Sectors"]
+[node name="R1WatersideP6" type="Node3D" parent="Sectors" unique_id=1227840222]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from P6."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("P6", "Q6", "R6", "R7", "R8", "R9", "R10", "S6", "S7", "S8", "S9", "S10", "T6", "T7", "T8", "T9", "T10")
 design_id = "r1_waterside_p6"
 design_seed = 149
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideP6"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideP6" unique_id=736113101]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=1760829138]
 transform = Transform3D(-0.99318117, 0, -0.067817055, 0, 0.9954938, 0, 0.067817055, 0, -0.99318117, 168.83188, 0.31749058, -58.225094)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=1745667699]
 transform = Transform3D(-1.180001, 0, 0.05325825, 0, 1.1812023, 0, -0.05325825, 0, -1.180001, 169.93481, 0.032372206, -56.962746)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=377086534]
 transform = Transform3D(-0.69416654, 0, -0.56937665, 0, 0.89780676, 0, 0.56937665, 0, -0.69416654, 178.32927, -1.7091169, -56.576996)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=629738022]
 transform = Transform3D(-0.7610824, 0, -0.7837143, 0, 1.0924535, 0, 0.7837143, 0, -0.7610824, 177.21698, -0.2360956, -67.6007)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=1453483234]
 transform = Transform3D(0.8375995, 0, 0.24016932, 0, 0.87135196, 0, -0.24016932, 0, 0.8375995, 184.82478, -1.1178032, -80.020676)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=524214735]
 transform = Transform3D(-0.82949334, 0, -0.76533186, 0, 1.128624, 0, 0.76533186, 0, -0.82949334, 182.29752, -0.92356396, -97.773384)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideP6/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideP6/Props" unique_id=799971475]
 transform = Transform3D(-0.8738942, 0, 0.102310054, 0, 0.8798627, 0, -0.102310054, 0, -0.8738942, 183.20035, -1.2087098, -98.31547)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="R1WatersideP11" type="Node3D" parent="Sectors"]
+[node name="R1WatersideP11" type="Node3D" parent="Sectors" unique_id=1478233166]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from P11."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("R11", "R12", "S11", "S12", "S13", "S14", "S15", "T11", "T12", "T13", "T14", "T15")
 design_id = "r1_waterside_p11"
 design_seed = 156
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideP11"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideP11" unique_id=1904855608]
 
-[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=503462993]
 transform = Transform3D(0.7762182, 0, 0.35550267, 0, 0.8537546, 0, -0.35550267, 0, 0.7762182, 178.66502, 0.3155604, -107.23396)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=927922639]
 transform = Transform3D(-0.021475725, 0, 1.1426003, 0, 1.1428021, 0, -1.1426003, 0, -0.021475725, 186.07047, -1.7101325, -108.3847)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=1906372221]
 transform = Transform3D(-0.13168485, 0, 0.9262041, 0, 0.9355185, 0, -0.9262041, 0, -0.13168485, 181.82884, 0.6926599, -122.29633)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=2023405348]
 transform = Transform3D(-0.92036587, 0, 0.7023753, 0, 1.1577584, 0, -0.7023753, 0, -0.92036587, 186.0026, 1.3556826, -136.45659)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=785301125]
 transform = Transform3D(0.9126633, 0, -0.7540003, 0, 1.1838373, 0, 0.7540003, 0, 0.9126633, 196.9, -0.59973955, -107.01163)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=2070015056]
 transform = Transform3D(-0.23535766, 0, -1.0012021, 0, 1.0284935, 0, 1.0012021, 0, -0.23535766, 191.0307, 0.43418673, -135.82085)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideP11/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=1287111250]
 transform = Transform3D(1.1280968, 0, -0.37347877, 0, 1.1883135, 0, 0.37347877, 0, 1.1280968, 190.39856, -0.10571468, -132.86159)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="R1WatersideP16" type="Node3D" parent="Sectors"]
+[node name="R1WatersideP16" type="Node3D" parent="Sectors" unique_id=1234108531]
 editor_description = "R1's waterside, decorated: plants, stones and driftwood along the lake and rivers. The block of sectors from P16."
 script = ExtResource("70_waterside")
 sectors = PackedStringArray("T16")
 design_id = "r1_waterside_p16"
 design_seed = 163
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/R1WatersideP16"]
+[node name="Props" type="Node3D" parent="Sectors/R1WatersideP16" unique_id=36788662]
 
 [node name="Terrain" type="StaticBody3D" parent="." unique_id=2031718324 node_paths=PackedStringArray("designs_root", "focus")]
 script = ExtResource("2_terrain")
@@ -612,6 +548,6 @@ day_night = NodePath("../DayNight")
 clock = NodePath("../Clock")
 
 [node name="Player" parent="." unique_id=1016686104 instance=ExtResource("5_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 0.0, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -2.5)
 
 [node name="Hud" parent="." unique_id=1948670461 instance=ExtResource("6_hud")]

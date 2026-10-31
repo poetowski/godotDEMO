@@ -34,6 +34,8 @@ static var _loaded := false
 static var _first := PackedByteArray()
 static var _second := PackedByteArray()
 static var _size := Vector2i.ZERO
+## The world's south-west corner, the textures' first sample.
+static var _origin := Vector2i.ZERO
 static var _textures: Array[ImageTexture] = []
 
 
@@ -101,7 +103,7 @@ static func paving_at(xz: Vector2) -> float:
 ## Lays a surface (or ERASE) over an area of samples. `amounts` holds
 ## area.size.x x area.size.y shares from 0 to 1, row by row from the south-west.
 static func lay(area: Rect2i, amounts: PackedFloat32Array, surface: int) -> void:
-	if _size != _world_size():
+	if _size != _world_size() or _origin != _world_origin():
 		_make_room()
 		for key: Vector2i in _tiles:
 			_copy_to_textures(key)
@@ -198,7 +200,7 @@ static func _store(key: Vector2i, grid: PackedByteArray) -> void:
 		_tiles[key] = grid
 	else:
 		_tiles.erase(key)
-	if _size == _world_size():
+	if _size == _world_size() and _origin == _world_origin():
 		_copy_to_textures(key)
 
 
@@ -206,9 +208,14 @@ static func _world_size() -> Vector2i:
 	return Vector2i(SectorMap.extent())
 
 
+static func _world_origin() -> Vector2i:
+	return Vector2i(SectorMap.bounds().position)
+
+
 ## Clean textures the size of the world.
 static func _make_room() -> void:
 	_size = _world_size()
+	_origin = _world_origin()
 	_first = PackedByteArray()
 	_first.resize(_size.x * _size.y * 4)
 	_second = _first.duplicate()
@@ -219,13 +226,13 @@ static func _make_room() -> void:
 ## holding nothing clears its part.
 static func _copy_to_textures(key: Vector2i, area: Rect2i = Rect2i()) -> void:
 	var whole := Rect2i(key * TILE, Vector2i.ONE * TILE)
-	var part := whole.intersection(Rect2i(Vector2i.ZERO, _size))
+	var part := whole.intersection(Rect2i(_origin, _size))
 	if area.has_area():
 		part = part.intersection(area)
 	var grid: PackedByteArray = _tiles.get(key, PackedByteArray())
 	for j in range(part.position.y, part.end.y):
 		for i in range(part.position.x, part.end.x):
-			var to := (j * _size.x + i) * 4
+			var to := ((j - _origin.y) * _size.x + i - _origin.x) * 4
 			var from := _index(i - whole.position.x, j - whole.position.y)
 			for k in 4:
 				_first[to + k] = grid[from + k] if not grid.is_empty() else 0
@@ -248,6 +255,7 @@ static func _push() -> void:
 
 static func _show_nothing() -> void:
 	_size = Vector2i.ZERO
+	_origin = Vector2i.ZERO
 	_first = PackedByteArray()
 	_second = PackedByteArray()
 	var black := Image.create_empty(1, 1, false, Image.FORMAT_RGBA8)
@@ -259,3 +267,4 @@ static func _set_globals(size: Vector2) -> void:
 	RenderingServer.global_shader_parameter_set(&"terrain_paint_first", _textures[0])
 	RenderingServer.global_shader_parameter_set(&"terrain_paint_second", _textures[1])
 	RenderingServer.global_shader_parameter_set(&"terrain_paint_size", size)
+	FieldTerrain.ground_material().set_shader_parameter(&"paint_origin", Vector2(_origin))

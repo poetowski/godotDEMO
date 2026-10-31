@@ -11,6 +11,10 @@ extends Node3D
 ## rebuilt when the focus walks into another. The main field is one region.
 ## The first region is built at once; later ones are worked out on a worker
 ## thread (the ground sampling is the slow part) and swapped in when ready.
+##
+## Every region's borders and name show at once, in gold (`_build_region_marks`):
+## always in the game; in the editor the names wait until the view is too far out
+## for the sectors' names.
 
 const CURTAIN_SHADER := preload("res://src/world/field/light_curtain.gdshader")
 ## Metres between the points where a curtain meets a design's ground.
@@ -19,6 +23,15 @@ const CURTAIN_STEP := 0.5
 const HILL_STEP := 2.0
 ## Half the size of a painted name, in metres east and north.
 const LABEL_HALF_SIZE := Vector2(1.1, 0.9)
+const REGION_COLOR := Color(1.0, 0.72, 0.28)
+const REGION_CURTAIN_HEIGHT := 10.0
+## A region's big name in its middle, and how far its small names stand inside
+## each border, to read on crossing it.
+const REGION_NAME_PIXEL := 0.4
+const REGION_NEAR_NAME_PIXEL := 0.07
+const REGION_NEAR_NAME_INSET := 14.0
+## Worlds bigger than this are stress tests; they get no region marks.
+const MOST_REGIONS_MARKED := 25
 
 ## The ground the grid stands on; flat at height 0 when unset.
 @export var terrain: FieldTerrain
@@ -39,11 +52,13 @@ var _labels: Array[Label3D] = []
 var _pending := RegionMap.NONE
 var _task := -1
 var _result: Dictionary = {}
+var _region_marks: Node3D
 
 
 func _ready() -> void:
 	add_to_group(&"sector_grids")
 	_show_region(_focus_region())
+	_build_region_marks()
 
 
 func _process(_delta: float) -> void:
@@ -73,6 +88,7 @@ func region() -> Vector2i:
 ## Stands the grid on the ground again, once the ground changed.
 func refresh() -> void:
 	_region = RegionMap.NONE
+	_build_region_marks()
 
 
 func _focus_region() -> Vector2i:
@@ -146,11 +162,82 @@ func _build_curtains(vertices: PackedVector3Array, colors: PackedColorArray) -> 
 	_curtains = curtains
 
 
+## Gold curtains on every region border and each region's name.
+func _build_region_marks() -> void:
+	if _region_marks:
+		_region_marks.free()
+	_region_marks = null
+	if RegionMap.count() <= 1 or RegionMap.count() > MOST_REGIONS_MARKED:
+		return
+	_region_marks = Node3D.new()
+	_region_marks.name = "RegionMarks"
+	add_child(_region_marks)
+	var vertices := PackedVector3Array()
+	var colors := PackedColorArray()
+	var bounds := SectorMap.bounds()
+	for i in RegionMap.columns + 1:
+		var x := bounds.position.x + i * RegionMap.SIZE
+		_add_curtain(vertices, colors, Vector3(x, 0.0, -bounds.position.y), Vector3(x, 0.0, -bounds.end.y), REGION_CURTAIN_HEIGHT)
+	for j in RegionMap.rows + 1:
+		var z := -bounds.position.y - j * RegionMap.SIZE
+		_add_curtain(vertices, colors, Vector3(bounds.position.x, 0.0, z), Vector3(bounds.end.x, 0.0, z), REGION_CURTAIN_HEIGHT)
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_COLOR] = colors
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var material := ShaderMaterial.new()
+	material.shader = CURTAIN_SHADER
+	material.set_shader_parameter(&"color", REGION_COLOR)
+	material.set_shader_parameter(&"intensity", 0.4)
+	material.set_shader_parameter(&"far_fade_start", 500.0)
+	material.set_shader_parameter(&"far_fade_end", 1600.0)
+	var curtains := MeshInstance3D.new()
+	curtains.name = "RegionCurtains"
+	curtains.mesh = mesh
+	curtains.material_override = material
+	curtains.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_region_marks.add_child(curtains)
+	for j in RegionMap.rows:
+		for i in RegionMap.columns:
+			_add_region_names(RegionMap.south_west + Vector2i(i, j))
+
+
+func _add_region_names(shown: Vector2i) -> void:
+	var centre := RegionMap.center_of(shown)
+	var region_name := RegionMap.name_of(shown)
+	_add_region_name(region_name, centre, REGION_NAME_PIXEL, true)
+	var reach := RegionMap.SIZE * 0.5 - REGION_NEAR_NAME_INSET
+	for side: Vector3 in [Vector3.LEFT, Vector3.RIGHT, Vector3.FORWARD, Vector3.BACK]:
+		_add_region_name(region_name, centre + side * reach, REGION_NEAR_NAME_PIXEL, false)
+
+
+func _add_region_name(region_name: String, place: Vector3, pixel: float, over_everything: bool) -> void:
+	var label := Label3D.new()
+	label.name = "%s_%d_%d" % [region_name, roundi(place.x), roundi(place.z)]
+	label.text = region_name
+	label.font_size = 96
+	label.pixel_size = pixel
+	label.outline_size = 0
+	label.modulate = Color(REGION_COLOR, 0.55 if over_everything else 0.8)
+	label.double_sided = true
+	label.no_depth_test = over_everything
+	label.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if Engine.is_editor_hint():
+		label.visibility_range_begin = label_visible_distance
+		label.visibility_range_begin_margin = 10.0
+		label.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	label.rotation = Vector3(-PI / 2.0, 0.0, 0.0)
+	label.position = place + Vector3.UP * (_surface(Vector2(place.x, place.z)) + 0.6)
+	_region_marks.add_child(label)
+
+
 ## A curtain standing on the ground along the line from `a` to `b`, opaque at
 ## the ground and transparent at the top: a strip of quads that bends with
 ## shaped ground and stays one quad where the ground is flat. Only the
 ## sector-long spans beside a design are sampled.
-func _add_curtain(vertices: PackedVector3Array, colors: PackedColorArray, a: Vector3, b: Vector3) -> void:
+func _add_curtain(vertices: PackedVector3Array, colors: PackedColorArray, a: Vector3, b: Vector3, height: float = -1.0) -> void:
 	var spans := roundi(a.distance_to(b) / SectorMap.SIZE)
 	var across := (b - a).normalized().cross(Vector3.UP) * 0.01
 	var feet: Array[Vector3] = [a]
@@ -167,7 +254,7 @@ func _add_curtain(vertices: PackedVector3Array, colors: PackedColorArray, a: Vec
 			var point := from.lerp(to, float(k) / pieces)
 			point.y = _surface(Vector2(point.x, point.z))
 			_add_foot(feet, point)
-	var up := Vector3.UP * curtain_height
+	var up := Vector3.UP * (height if height > 0.0 else curtain_height)
 	var ground := Color(1.0, 1.0, 1.0, 1.0)
 	var sky := Color(1.0, 1.0, 1.0, 0.0)
 	for k in feet.size() - 1:

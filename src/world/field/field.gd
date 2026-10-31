@@ -25,7 +25,7 @@ func _init() -> void:
 	WorldState.reset()
 	QuestLog.reset()
 	# `--regions=20` after `--` makes 4 km, for testing.
-	var regions := FieldWorld.REGIONS
+	var regions := 0
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--regions="):
 			regions = clampi(arg.trim_prefix("--regions=").to_int(), 1, 50)

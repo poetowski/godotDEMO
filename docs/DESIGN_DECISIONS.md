@@ -17,6 +17,9 @@ Add an entry per decision, newest last:
 
 Rule, from the author (2026-10-31): we never use third-party assets.
 
+Request (2026-10-31): nine regions around and including R1 make the starting zone,
+named R2 to R9 in clockwise order. **Placeholder:** the clock starts at north.
+
 Request: remove the placeholder world, the assets generated through skills and
 the assets used in demo placeholders, and start with an empty world: one
 region, R1, of the classic 20 x 20 sectors, with Perlin noise so the terrain

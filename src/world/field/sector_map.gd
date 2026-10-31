@@ -3,12 +3,11 @@ class_name SectorMap
 extends RefCounted
 ## The world's sector grid: square sectors named by column letter and row
 ## number within their region (RegionMap). A1 is the south-west corner sector
-## of a region; R1's A1 is the world's south-west corner. Letters grow to
-## the east (+X) and numbers to the north (-Z), the way the player faces at
-## the start.
+## of a region. Letters grow to the east (+X) and numbers to the north (-Z),
+## the way the player faces at the start.
 ##
 ## Cells are world cell coordinates: (0, 0) is R1's A1, and they run across
-## every region. In a one-region world names are plain ("C4"); with several
+## every region, negative to the west and south of R1. In a one-region world names are plain ("C4"); with several
 ## regions they carry the region ("R45:C4"). A name without a region means R1.
 
 const SIZE := 10.0
@@ -18,7 +17,7 @@ const ROWS := 20
 ## The south-west corner of R1's A1.
 const ORIGIN := Vector3.ZERO
 const LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const NONE := Vector2i(-1, -1)
+const NONE := RegionMap.NONE
 ## Where a player starting in a sector stands, from its centre: to the south,
 ## so the sector's painted name lies just ahead.
 const START_OFFSET := Vector3(0.0, 0.0, 2.5)
@@ -83,7 +82,7 @@ static func cell_named(sector_name: String) -> Vector2i:
 
 ## True for a cell inside the world (every region).
 static func is_valid(cell: Vector2i) -> bool:
-	return cell.x >= 0 and cell.x < RegionMap.columns * COLUMNS and cell.y >= 0 and cell.y < RegionMap.rows * ROWS
+	return RegionMap.is_valid(RegionMap.of_cell(cell))
 
 
 ## The sector's centre on the ground.
@@ -94,6 +93,11 @@ static func center_of(cell: Vector2i) -> Vector3:
 ## The world's size in metres: x to the east, y to the north.
 static func extent() -> Vector2:
 	return Vector2(RegionMap.columns * COLUMNS, RegionMap.rows * ROWS) * SIZE
+
+
+## The world in metres: x to the east, y to the north, from R1's A1.
+static func bounds() -> Rect2:
+	return Rect2(Vector2(RegionMap.south_west) * RegionMap.SIZE, extent())
 
 
 ## The sector's south-west corner on the ground.

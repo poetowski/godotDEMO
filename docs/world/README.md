@@ -19,6 +19,18 @@ docs/world/
       notes.md        anything else: ideas, questions, references
 ```
 
+## The starting zone
+
+Nine regions, each 200 x 200 m, with R1 in the middle. The numbers run clockwise.
+
+```
+R9  R2  R3      north
+R8  R1  R4
+R7  R6  R5
+```
+
+**Placeholder:** starting the clock at north, with R2.
+
 ## Rules
 
 - **Where a thing goes.** True everywhere: `art.md` or `lore.md` here. True of one

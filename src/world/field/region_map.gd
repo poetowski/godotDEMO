@@ -1,26 +1,45 @@
 @tool
 class_name RegionMap
 extends RefCounted
-## The world's regions: squares of 20 x 20 sectors (200 m), numbered R1, R2,
-## R3... from the south-west corner, east along the southern row, then on
-## along the next row north, the way sectors grow. A world is `columns`
-## regions east by `rows` north; the main field is one region (R1). A sector
-## anywhere is named with its region, such as "R45:J10" (SectorMap).
+## The world's regions: squares of 20 x 20 sectors (200 m). The game's world is
+## the starting zone: R1 in the middle, at region (0, 0), and R2 to R9 clockwise
+## around it from the north, so the regions around it have negative coordinates.
+## A test world (`configure`) is `columns` east by `rows` north, numbered from the
+## south-west, east along each row and then north. A sector anywhere is named
+## with its region, such as "R4:J10" (SectorMap).
 
 ## Sectors along each side of a region.
 const SECTORS := 20
 ## Metres along each side of a region: SECTORS sectors of SectorMap.SIZE.
 const SIZE := 200.0
-const NONE := Vector2i(-1, -1)
+const NONE := Vector2i(-1048576, -1048576)
+## Where R1 to R9 lie.
+const STARTING_ZONE: Array[Vector2i] = [
+	Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 0), Vector2i(1, -1),
+	Vector2i(0, -1), Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(-1, 1),
+]
 
 ## Regions east and north in the current world. Set by the world's root.
 static var columns := 1
 static var rows := 1
+## The world's south-west region.
+static var south_west := Vector2i.ZERO
+## Where each region lies by its number, or empty when numbered by rows.
+static var _layout: Array[Vector2i] = []
 
 
 static func configure(east: int, north: int) -> void:
 	columns = maxi(1, east)
 	rows = maxi(1, north)
+	south_west = Vector2i.ZERO
+	_layout = []
+
+
+static func configure_starting_zone() -> void:
+	columns = 3
+	rows = 3
+	south_west = Vector2i(-1, -1)
+	_layout = STARTING_ZONE
 
 
 static func count() -> int:
@@ -28,7 +47,8 @@ static func count() -> int:
 
 
 static func is_valid(region: Vector2i) -> bool:
-	return region.x >= 0 and region.x < columns and region.y >= 0 and region.y < rows
+	var local := region - south_west
+	return local.x >= 0 and local.x < columns and local.y >= 0 and local.y < rows
 
 
 ## The region holding a sector cell (world cell coordinates).
@@ -46,6 +66,8 @@ static func at(point: Vector3) -> Vector2i:
 static func name_of(region: Vector2i) -> String:
 	if not is_valid(region):
 		return ""
+	if not _layout.is_empty():
+		return "R%d" % (_layout.find(region) + 1)
 	return "R%d" % (region.y * columns + region.x + 1)
 
 
@@ -57,6 +79,8 @@ static func named(region_name: String) -> Vector2i:
 	var index := text.substr(1).to_int() - 1
 	if index < 0 or index >= count():
 		return NONE
+	if not _layout.is_empty():
+		return _layout[index]
 	return Vector2i(index % columns, index / columns)
 
 

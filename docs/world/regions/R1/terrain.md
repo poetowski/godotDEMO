@@ -22,7 +22,8 @@ the other way round: it follows if the ground is sculpted again.
 - **Sectors with water:** A1, B1, C1-2, D1-2, E1-2, F1-3, G1-3, H2-3, I2-4, J3-5,
   K3-5, L3-5, M3-5, N2-4, O2-5, P1-5, Q1-5, R1-6, S1-13, T1-15.
 - **Open:** R1's edges are low walls for now: along the east shore of the lake
-  and the inflow, and where the outflow ends at A1.
+  and the inflow, and where the outflow ends at A1. The land of R4 and R8 lies
+  beyond them, without water.
 
 ## The waterside
 

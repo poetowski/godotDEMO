@@ -43,8 +43,8 @@ func test_unknown_commands_say_so() -> void:
 
 
 func test_goto_moves_the_hero_to_a_sector() -> void:
-	assert_eq(_console.execute("goto c2"), "In C2.")
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "C2")
+	assert_eq(_console.execute("goto c2"), "In R1:C2.")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "R1:C2")
 	assert_string_contains(_console.execute("where"), "C2 at")
 	assert_string_contains(_console.execute("goto Z99"), "No sector named")
 	_console.execute("goto A1")

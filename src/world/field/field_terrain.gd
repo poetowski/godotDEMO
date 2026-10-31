@@ -269,10 +269,11 @@ func _build_border() -> void:
 
 
 func _add_border(faces: PackedVector3Array) -> void:
-	var west := SectorMap.ORIGIN.x
-	var south := SectorMap.ORIGIN.z
-	var east := west + SectorMap.extent().x
-	var north := south - SectorMap.extent().y
+	var bounds := SectorMap.bounds()
+	var west := bounds.position.x
+	var south := -bounds.position.y
+	var east := bounds.end.x
+	var north := -bounds.end.y
 	_add_quad(faces, west - margin, south + margin, east + margin, south)
 	_add_quad(faces, west - margin, north, east + margin, north - margin)
 	_add_quad(faces, west - margin, south, west, north)
