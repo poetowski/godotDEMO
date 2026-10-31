@@ -6,7 +6,8 @@ render_mode blend_mix, cull_front, depth_test_disabled, depth_draw_never, shadow
 // how much fog it passes. How thick the fog is depends on how far inside the polygon
 // a point lies (`distance_map`, metres): thin for the first sectors, then thickening,
 // and its top rises the same way, so it starts low at the rim and banks up behind.
-// It's also thick near the world's edge, wherever the line runs, to hide the edge.
+// It's also thick near the world's edge, wherever the line runs, to hide the edge,
+// and below `mist_from`, so what lies down in the ravine can't be seen.
 // Lit from above, so it darkens with the night.
 
 uniform sampler2D depth_texture : hint_depth_texture, filter_linear_mipmap, repeat_disable;
@@ -27,6 +28,11 @@ uniform float top_far = 32.0;
 uniform float top_rise = 90.0;
 uniform float top_soft = 14.0;
 uniform float drift = 0.004;
+// The height at which the ravine's mist starts and where it's as thick as it gets,
+// and how thick that is.
+uniform float mist_from = -9.0;
+uniform float mist_full = -22.0;
+uniform float mist_thick = 0.5;
 // The world's west, north, east and south, in world x and z, and how many metres
 // inside them the fog is already at its thickest.
 uniform vec4 world_edges = vec4(0.0, 0.0, 1.0, 1.0);
@@ -70,7 +76,8 @@ void fragment() {
 		float billow = texture(billows, at.xz * 0.0045 + vec2(TIME * drift, at.y * 0.006)).r;
 		float under = clamp((top + (billow - 0.5) * 16.0 - at.y) / top_soft, 0.0, 1.0);
 		float density = mix(thin, thick, max(smoothstep(thin_until, thick_from, inside), edge));
-		fog += density * under * (0.55 + 0.9 * billow) * step_size;
+		float ravine = smoothstep(mist_from + (billow - 0.5) * 8.0, mist_full, at.y) * smoothstep(0.0, 6.0, inside);
+		fog += max(density * under * (0.55 + 0.9 * billow), mist_thick * ravine) * step_size;
 		if (fog > 5.0) {
 			break;
 		}

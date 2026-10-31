@@ -48,6 +48,7 @@ func _ready() -> void:
 	_hud.save_requested.connect(save_to)
 	_hud.load_requested.connect(load_from)
 	_hud.track(_player)
+	_player.died.connect(_on_player_died)
 	_wake_residents()
 
 
@@ -74,6 +75,12 @@ func _process(_delta: float) -> void:
 		_hud.show_sector(SectorMap.name_of(cell))
 	_hud.show_clock(_clock.text())
 	_keep_to_the_limit()
+
+
+func _on_player_died() -> void:
+	teleport(_spawn)
+	_player.revive()
+	_hud.notify(tr("You died"))
 
 
 ## The warning, and the way back to the spawn point. Only where there are regions
@@ -117,6 +124,7 @@ func teleport(cell: Vector2i) -> void:
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.velocity = Vector3.ZERO
 	_player.face(0.0)
+	_player.revive()
 	_terrain.prepare_around_focus()
 	_streamer.load_around_now()
 
@@ -185,6 +193,7 @@ func apply(data: Dictionary) -> void:
 	_player.global_position = Vector3(at[0], at[1], at[2])
 	_player.velocity = Vector3.ZERO
 	_player.face(float(player.get("yaw", 0.0)))
+	_player.revive()
 	_terrain.prepare_around_focus()
 	_streamer.unload_all()
 	_streamer.load_around_now()

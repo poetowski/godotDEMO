@@ -27,6 +27,15 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "i remodeled terrain again. remove details and props from the
+bottom of waterfall, add mist which prevents player to see meters below into
+ravine. also implement character view on buttton 'c' like vie have for inventory and
+quests. this character popup comes from top of screen. contains Hero Level, and then
+we will add additional info. you can add HP now. 100/100. also, implement fall
+damage, so if player fall for more than 10m, he dies. when player dies, he respawn
+at the spawn point." **Placeholder:** level 1; water catches a fall; the message "You
+died"; neither level nor HP is saved yet.
+
 Request (2026-10-31): "highlight "I should not be here" border line and also
 incorporate this mechanics in md files, we will use it to define world border or
 zones border." The mechanic is in `docs/world/README.md`, under Borders.

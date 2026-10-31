@@ -78,3 +78,42 @@ func test_the_border_is_drawn_where_it_applies() -> void:
 	assert_almost_eq(box.position.x, ZoneBorder.WEST_RETURN_X, 0.01)
 	assert_almost_eq(box.end.x, ZoneBorder.WEST_WARN_X, 0.01)
 
+
+func _drop_from(metres: float) -> Player:
+	var player: Player = _world.call("player")
+	player.global_position = Vector3(35.0, WorldShape.height(Vector2(35.0, -45.0)) + metres, -45.0)
+	player.velocity = Vector3.ZERO
+	return player
+
+
+func test_a_short_fall_does_nothing() -> void:
+	var player := _drop_from(6.0)
+	watch_signals(player)
+	await wait_seconds(1.6)
+	assert_signal_not_emitted(player, "died")
+	assert_eq(player.hp, player.max_hp)
+
+
+func test_a_long_fall_kills_and_respawns() -> void:
+	var player := _drop_from(14.0)
+	watch_signals(player)
+	await wait_seconds(2.4)
+	assert_signal_emitted(player, "died")
+	assert_eq(player.hp, player.max_hp, "alive again")
+	assert_eq(SectorMap.cell_at(player.global_position), Vector2i.ZERO, "at the spawn point")
+
+
+func test_c_opens_the_character_panel() -> void:
+	var hud := _world.get_node("Hud") as Hud
+	var panel := hud.character_panel()
+	assert_true(InputMap.has_action("character"))
+	panel.open()
+	panel.finish_slide()
+	assert_true(panel.is_open())
+	assert_string_contains(panel.text(), "Hero Level: 1")
+	assert_string_contains(panel.text(), "HP: 100/100")
+	var player: Player = _world.call("player")
+	assert_false(player.input_enabled, "the hero stands still meanwhile")
+	panel.close()
+	assert_true(player.input_enabled)
+

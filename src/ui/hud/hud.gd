@@ -18,6 +18,7 @@ var _sector: Label
 var _clock: Label
 var _inventory: InventoryPanel
 var _quests: QuestPanel
+var _character: CharacterPanel
 var _talk: Talk
 var _choices: ChoiceMenu
 var _menu: GameMenu
@@ -47,7 +48,7 @@ func _ready() -> void:
 	_prompt.offset_top = -230.0
 	_prompt.offset_bottom = -170.0
 	_controls = _label(24, Color(1.0, 1.0, 1.0, 0.85))
-	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load")
+	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    C character    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load")
 	_controls.anchor_top = 1.0
 	_controls.anchor_bottom = 1.0
 	_controls.anchor_right = 1.0
@@ -68,6 +69,11 @@ func _ready() -> void:
 	add_child(_quests)
 	_quests.opened.connect(_on_inventory_opened)
 	_quests.closed.connect(_on_inventory_closed)
+	_character = CharacterPanel.new()
+	_character.name = "Character"
+	add_child(_character)
+	_character.opened.connect(_on_inventory_opened)
+	_character.closed.connect(_on_inventory_closed)
 	_choices = ChoiceMenu.new()
 	_choices.name = "Choices"
 	add_child(_choices)
@@ -93,6 +99,7 @@ func track(player: Player) -> void:
 	player.talk_requested.connect(_on_talk_requested)
 	_inventory.bind(player.inventory)
 	_quests.bind(player.inventory)
+	_character.bind(player)
 
 
 func inventory_panel() -> InventoryPanel:
@@ -101,6 +108,10 @@ func inventory_panel() -> InventoryPanel:
 
 func quest_panel() -> QuestPanel:
 	return _quests
+
+
+func character_panel() -> CharacterPanel:
+	return _character
 
 
 func choice_menu() -> ChoiceMenu:
@@ -127,6 +138,7 @@ func close_menus() -> void:
 	_menu.close()
 	_inventory.close()
 	_quests.close()
+	_character.close()
 	if _choices.is_open():
 		_choices.pick(-1)
 
@@ -149,7 +161,7 @@ func sector_text() -> String:
 func _process(delta: float) -> void:
 	_toast_left -= delta
 	_toast.visible = _toast_left > 0.0
-	var panel_open := _inventory.is_open() or _quests.is_open()
+	var panel_open := _inventory.is_open() or _quests.is_open() or _character.is_open()
 	_mouse_hint.visible = Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not panel_open and not _choices.is_open()
 	_controls.visible = not panel_open and not _choices.is_open()
 	_prompt.visible = not panel_open and not _choices.is_open()
@@ -164,26 +176,35 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("quick_load"):
 		load_requested.emit(SaveGame.QUICK)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("ui_cancel") and not _inventory.is_open() and not _quests.is_open():
+	elif event.is_action_pressed("ui_cancel") and not _inventory.is_open() and not _quests.is_open() and not _character.is_open():
 		_menu.open()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("inventory"):
 		_quests.close()
+		_character.close()
 		_inventory.toggle()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("quests"):
 		_inventory.close()
+		_character.close()
 		_quests.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("character"):
+		_inventory.close()
+		_quests.close()
+		_character.toggle()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel"):
 		_inventory.close()
 		_quests.close()
+		_character.close()
 		get_viewport().set_input_as_handled()
 
 
 func _on_choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable, body: String = "") -> void:
 	_inventory.close()
 	_quests.close()
+	_character.close()
 	_on_chosen = on_chosen
 	_choices.ask(title, labels, body)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -246,6 +267,7 @@ func _end_talk() -> void:
 func _on_menu_opened() -> void:
 	_inventory.close()
 	_quests.close()
+	_character.close()
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 

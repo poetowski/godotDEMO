@@ -8,6 +8,8 @@ extends CharacterBody3D
 ## The mouse is captured on the first click in the window and released with
 ## Esc; a gamepad's right stick looks around without capturing anything.
 
+## Hit points ran out.
+signal died
 signal prompt_changed(text: String)
 signal sword_equipped
 signal swung
@@ -47,6 +49,15 @@ const SWING_STRIKE := 0.3
 @export_group("Sword")
 @export var swing_duration: float = 0.5
 
+## Metres of falling onto hard ground that kill the hero.
+const FALL_LIMIT := 10.0
+## Metres dropped in one physics step that can only be a teleport.
+const TELEPORT_DROP := 2.0
+
+## Placeholder: the level and the hit points, as the author asked for so far.
+var level: int = 1
+var max_hp: int = 100
+var hp: int = 100
 var has_sword: bool = false
 ## True while in water at least `swim_depth` deep.
 var is_swimming: bool = false
@@ -57,6 +68,9 @@ var inventory := Inventory.new()
 ## and ignores movement, look and action input.
 var input_enabled: bool = true
 
+## The highest the hero has been since last standing or swimming.
+var _fall_top := INF
+var _last_height := INF
 var _offered: Interactable
 var _gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
 var _yaw: float = 0.0
@@ -144,11 +158,38 @@ func _physics_process(delta: float) -> void:
 	velocity.x = horizontal.x
 	velocity.z = horizontal.y
 	move_and_slide()
+	_check_fall()
 
 	if direction.length_squared() > 0.01:
 		var facing := atan2(-direction.x, -direction.z)
 		_model.rotation.y = lerp_angle(_model.rotation.y, facing, 1.0 - exp(-turn_speed * delta))
 	_animate(delta)
+
+
+## Counts a fall from its highest point. Water catches the hero; hard ground kills
+## them past FALL_LIMIT. A sudden big drop is a teleport, not a fall.
+func _check_fall() -> void:
+	var height := global_position.y
+	if _last_height - height > TELEPORT_DROP:
+		_fall_top = height
+	_last_height = height
+	if is_swimming or is_on_floor():
+		var fallen := _fall_top - height
+		_fall_top = height
+		if fallen > FALL_LIMIT and not is_swimming:
+			hp = 0
+			died.emit()
+	elif is_inf(_fall_top):
+		_fall_top = height
+	else:
+		_fall_top = maxf(_fall_top, height)
+
+
+## Back to full health, with no fall under way, as after respawning.
+func revive() -> void:
+	hp = max_hp
+	_fall_top = global_position.y
+	_last_height = global_position.y
 
 
 ## Points the camera (and the hero) at a world position, e.g. when spawning.

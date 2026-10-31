@@ -9,7 +9,7 @@ extends "res://src/world/field/sectors/r1_waterside/r1_waterside.gd"
 
 ## Where the fall runs (x east, y north), as in data/world/water/r1_water.tres.
 const FALL_TOP := Vector2(-64.0, -10.0)
-const FALL_BOTTOM := Vector2(-112.0, 3.0)
+const FALL_BOTTOM := Vector2(-95.0, -8.0)
 ## Metres either side of the fall that its spray keeps wet.
 const SPRAY := 14.0
 ## Metres along the fall between bedrock outcrops, on each side.
@@ -19,6 +19,8 @@ const OUTCROP_NEAR := 7.5
 const OUTCROP_FAR := 14.0
 ## Flow in metres a second above which water counts as rapids.
 const RAPIDS := 0.65
+## Nothing grows below this: it's lost in the ravine's mist.
+const LOWEST_GROWTH := -14.0
 ## Ground lower than this is below the rim.
 const RIM_LEVEL := -2.5
 const SNAG_TRIES := 40
@@ -36,7 +38,7 @@ func _from_fall(xz: Vector2) -> float:
 
 ## Plants grow bigger here, in the spray, so they keep further from a block's edge.
 func _try_mass(xz: Vector2) -> void:
-	if fits(xz, 1.1):
+	if fits(xz, 1.1) and height_at(xz) > LOWEST_GROWTH:
 		super(xz)
 
 

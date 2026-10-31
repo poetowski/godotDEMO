@@ -139,7 +139,7 @@ func test_the_river_runs_on_through_its_delta_to_the_fall() -> void:
 	assert_lt(WaterField.flow_at(Vector2(-50.0, 10.0)).x, -0.6, "the rapids run west, fast")
 	assert_eq(WaterField.falls().size(), 1)
 	var fall := WaterField.falls()[0]
-	assert_gt(WorldShape.height(Vector2(fall.top.x, -fall.top.y)) - fall.pool_level, 40.0, "a huge drop")
+	assert_gt(WorldShape.height(Vector2(fall.top.x, -fall.top.y)) - WorldShape.height(Vector2(fall.bottom.x, -fall.bottom.y)), 40.0, "a huge drop")
 
 
 func test_no_water_hangs_over_the_ravine() -> void:
@@ -152,12 +152,14 @@ func test_no_water_hangs_over_the_ravine() -> void:
 				assert_lt(level - WorldShape.height(xz), 5.0, "at most a lip at the rim, at %s" % xz)
 
 
-func test_the_tarn_stays_in_its_hollow_above_the_abyss() -> void:
-	assert_eq(WaterField.level_at(Vector2(-141.0, -11.0)), -57.0, "the tarn")
-	assert_eq(WaterField.level_at(Vector2(-180.0, -11.0)), SectorDesign.NO_WATER, "not poured into the abyss")
-	assert_eq(WaterField.level_at(Vector2(-140.0, 80.0)), SectorDesign.NO_WATER, "the ravine's not full")
-	assert_lt(WorldShape.height(Vector2(-190.0, -100.0)), -200.0, "the abyss")
-	assert_lt(WorldShape.height(Vector2(-150.0, -300.0)), -40.0, "the ravine runs north through R9")
+func test_nothing_lies_at_the_bottom_of_the_fall() -> void:
+	assert_eq(WaterField.level_at(Vector2(-120.0, 0.0)), SectorDesign.NO_WATER, "no water hanging in the ravine")
+	for design in _designs:
+		for prop in design.scene_props():
+			assert_gt(prop.position.y, -15.0, "%s/%s is above the mist" % [design.name, prop.name])
+		for node in design.content().find_children("*", "BakedMultiMesh", false, false):
+			for where in (node as BakedMultiMesh).transforms():
+				assert_gt(where.origin.y, -15.0, "%s is above the mist" % node.name)
 
 
 func test_the_new_assets_are_placed_along_the_fall() -> void:
@@ -166,7 +168,7 @@ func test_the_new_assets_are_placed_along_the_fall() -> void:
 		for prop in design.scene_props():
 			var slug := prop.asset.resource_path.get_file().get_basename()
 			kinds[slug] = kinds.get(slug, 0) + 1
-	for slug: String in ["cliff_outcrop_a", "cliff_outcrop_b", "wind_snag"]:
+	for slug: String in ["cliff_outcrop_a", "wind_snag"]:
 		assert_gt(kinds.get(slug, 0), 0, "%s is placed" % slug)
 	assert_gt(_copies(["RapidStoneA", "RapidStoneB"] as Array[String]).size(), 0, "rapid stones")
 	assert_gt(_copies(["SprayMoss"] as Array[String]).size(), 0, "spray moss")

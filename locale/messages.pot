@@ -14,8 +14,16 @@ msgstr[1] ""
 msgid "Back"
 msgstr ""
 
+#: src/ui/character/character_panel.gd
+msgid "C  close"
+msgstr ""
+
 #: src/save/save_game.gd
 msgid "Can't be loaded"
+msgstr ""
+
+#: src/ui/character/character_panel.gd
+msgid "Character"
 msgstr ""
 
 #: src/ui/inventory/inventory_panel.gd
@@ -60,6 +68,14 @@ msgstr ""
 
 #: src/ui/hud/hud.gd
 msgid "Goodbye."
+msgstr ""
+
+#: src/ui/character/character_panel.gd
+msgid "HP: %d/%d"
+msgstr ""
+
+#: src/ui/character/character_panel.gd
+msgid "Hero Level: %d"
 msgstr ""
 
 #: src/world/field/field.gd
@@ -143,7 +159,11 @@ msgid "Slot %s"
 msgstr ""
 
 #: src/ui/hud/hud.gd
-msgid "WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load"
+msgid "WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    C character    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load"
+msgstr ""
+
+#: src/world/field/field.gd
+msgid "You died"
 msgstr ""
 
 #: src/items/item_pickup.gd

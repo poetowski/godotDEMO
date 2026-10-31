@@ -149,6 +149,7 @@ every stroke.
   is column M of the western regions. `goto` past it bounces back too.
 - After sculpting, `npm run settle` sets props under designs back on the ground,
   changing only their height.
+- Nothing is placed in the ravine below the mist (`r8_falls.gd`, `LOWEST_GROWTH`).
 - `MistBarrier` is the fog over the western drop: a volume filling the polygon
   beyond the Marker3D points of `MistBarrier/FogLine`, thin at first and thickening
   with distance from them, with a wall inside. Drag the points to change it.

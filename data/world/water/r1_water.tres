@@ -35,10 +35,10 @@ half_width = 9
 [sub_resource type="Resource" id="Resource_fall"]
 script = ExtResource("3_fall")
 top = Vector2(-64, -10)
-bottom = Vector2(-112, 3)
+bottom = Vector2(-95, -8)
 width = 9.0
 pool_radius = 0.0
-pool_level = -57.0
+pool_depth = 0.5
 
 [resource]
 script = ExtResource("2_xn6gt")
