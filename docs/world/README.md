@@ -35,16 +35,19 @@ R7  R6  R5
 
 The world's edge, and the borders between zones, are drawn with one mechanic:
 
-- **Warning band:** when the player enters it, a message appears. In the west it is
-  sector M of R7, R8 and R9 (x -70 to -80), and the message is "I should not be
-  here...".
-- **Return line:** past the band's far side, the player is returned to the spawn point.
+- **Warning line:** when the player crosses it, a message appears. In the west it runs
+  a few metres inside the rim of the ravine, from R9's north edge round to R6's south
+  edge at about R6:M1, and the message is "I should not be here...". All the land on
+  the near side is free, in R6, R7 and R9 as much as anywhere. Drag the points under
+  `ZoneBorder/Line` in the editor to move it.
+- **Return line:** 8 m further on, the player is returned to the spawn point.
 - **Highlight:** both lines show as red curtains, in the editor and in the game, like
   sector and region borders.
 
 The author decides where each border runs and what it says. Say which sectors it
 covers, in the region's `terrain.md`. **Placeholder:** the red highlight showing in
-the game; it may go once the border is final.
+the game, which may go once the border is final; the points of the western line; and
+the 8 m.
 
 ## Rules
 

@@ -6,8 +6,8 @@ extends Node3D
 ## DayNight lighting the world by it), and the villagers living in it
 ## (`Residents`, none yet). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at
-## another time. Sector M of the regions to the west (R7, R8, R9) is the limit of
-## where the player may go: walking in gives a warning, and walking on past it
+## another time. `ZoneBorder` is the limit of where the player may go, a few metres
+## inside the rim of the western ravine: crossing it gives a warning, and walking on
 ## takes them back to the spawn point.
 
 ## The sector the player starts in unless `--sector=` names another.
@@ -22,6 +22,7 @@ var _warned := false
 @onready var _terrain: FieldTerrain = $Terrain
 @onready var _streamer: SectorStreamer = $Streamer
 @onready var _clock: WorldClock = $Clock
+@onready var _border: ZoneBorder = $ZoneBorder
 
 
 ## A new field is a new game.
@@ -88,11 +89,11 @@ func _on_player_died() -> void:
 func _keep_to_the_limit() -> void:
 	if not ZoneBorder.applies():
 		return
-	var x := _player.global_position.x
-	if x < ZoneBorder.WEST_RETURN_X:
+	var depth := _border.depth_at(Vector2(_player.global_position.x, _player.global_position.z))
+	if depth >= ZoneBorder.RETURN_METRES:
 		teleport(_spawn)
 		_warned = false
-	elif x < ZoneBorder.WEST_WARN_X:
+	elif depth > 0.0:
 		if not _warned:
 			_warned = true
 			_hud.notify(tr("I should not be here..."))

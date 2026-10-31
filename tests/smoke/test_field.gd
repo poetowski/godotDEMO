@@ -56,27 +56,36 @@ func test_sector_argument_picks_the_start() -> void:
 	assert_eq(FieldScript.requested_sector(PackedStringArray(), "J10"), "J10")
 
 
-func test_column_m_warns_and_going_on_returns_to_the_spawn_point() -> void:
+func test_past_the_line_warns_and_going_on_returns_to_the_spawn_point() -> void:
 	var player: Player = _world.call("player")
 	var hud := _world.get_node("Hud") as Hud
 	hud.notify("")
-	player.global_position = Vector3(-60.0, 5.0, -100.0)
+	player.global_position = Vector3(-55.0, 5.0, 5.0)
 	await wait_process_frames(2)
-	assert_eq(hud.toast_text(), "", "east of M, nothing")
-	player.global_position = Vector3(-75.0, 5.0, -100.0)
+	assert_eq(hud.toast_text(), "", "on the land, nothing")
+	player.global_position = Vector3(-66.0, 5.0, 5.0)
 	await wait_process_frames(2)
 	assert_eq(hud.toast_text(), "I should not be here...")
-	player.global_position = Vector3(-81.0, 5.0, -100.0)
+	player.global_position = Vector3(-76.0, 5.0, 5.0)
 	await wait_process_frames(2)
 	assert_eq(SectorMap.cell_at(player.global_position), Vector2i.ZERO, "back at the spawn point")
+
+
+func test_the_border_leaves_the_land_to_the_south_and_north_alone() -> void:
+	var border := _world.get_node("ZoneBorder") as ZoneBorder
+	for free: Vector2 in [Vector2(50.0, 100.0), Vector2(150.0, 180.0), Vector2(-40.0, 60.0), Vector2(-100.0, -300.0)]:
+		assert_eq(border.depth_at(free), 0.0, "free at %s" % free)
+	assert_gt(border.depth_at(Vector2(50.0, 160.0)), 0.0, "the ravine in R6 is past it")
 
 
 func test_the_border_is_drawn_where_it_applies() -> void:
 	assert_true(ZoneBorder.applies())
 	var lines := _world.get_node("SectorGrid/RegionMarks/BorderLines") as MeshInstance3D
 	var box := lines.mesh.get_aabb()
-	assert_almost_eq(box.position.x, ZoneBorder.WEST_RETURN_X, 0.01)
-	assert_almost_eq(box.end.x, ZoneBorder.WEST_WARN_X, 0.01)
+	var border := _world.get_node("ZoneBorder") as ZoneBorder
+	assert_gt(border.line().size(), 20)
+	assert_lt(box.position.x, -170.0, "out in the north-west")
+	assert_gt(box.end.x, 120.0, "round to the south")
 
 
 func _drop_from(metres: float) -> Player:

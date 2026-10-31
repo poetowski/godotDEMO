@@ -42,8 +42,9 @@ pool_depth = 0.5
 
 [resource]
 script = ExtResource("2_xn6gt")
-brief = "R1: the lake in the south-east, the river running south into it down the eastern sectors, and the river running west out of it, on through its delta at R8's and R7's edge and over the rim of the western ravine."
+brief = "The lake in R1's south-east, running on into R4 with its tips in R5 and R6, the river running south into it down the eastern sectors, and the river running west out of it, on through its delta at R8's and R7's edge and over the rim of the western ravine."
 lake_seed = Vector2(161, 24)
 lake_level = -1.4
+lake_reach = 75.0
 courses = Array[ExtResource("1_i611k")]([SubResource("Resource_i611k"), SubResource("Resource_xn6gt"), SubResource("Resource_delta"), SubResource("Resource_rapids")])
 falls = Array[ExtResource("3_fall")]([SubResource("Resource_fall")])

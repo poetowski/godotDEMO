@@ -24,6 +24,9 @@ const HEIGHTS := {
 	"cliff_outcrop_a": Vector2(3.0, 4.4),
 	"cliff_outcrop_b": Vector2(4.4, 6.0),
 	"wind_snag": Vector2(4.0, 5.0),
+	"lake_alder": Vector2(5.5, 7.5),
+	"fallen_alder": Vector2(0.6, 1.5),
+	"shore_slab": Vector2(0.15, 0.6),
 }
 
 

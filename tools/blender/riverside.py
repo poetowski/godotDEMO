@@ -447,11 +447,86 @@ def wind_snag():
     kit.collision_cylinder("WindSnag", (0, 0, 0), (0.3, 0, 2.7), 0.2)
 
 
+def _alder_crown(model, rng, p, top, wide):
+    """Rounded masses of leaves, darker below and lighter on top."""
+    for k in range(9):
+        spin = math.tau * k / 9 + rng.uniform(-0.25, 0.25)
+        out = wide * rng.uniform(0.35, 0.8)
+        z = top + rng.uniform(-1.5, 0.4)
+        tone = p["leaf_deep"] if z < top - 0.7 else (p["leaf_mid"] if rng.random() < 0.65 else p["leaf_light"])
+        model.rock((math.cos(spin) * out, math.sin(spin) * out, z), wide * rng.uniform(0.42, 0.58), tone, rng, scale=(1.0, 1.0, 0.78), roughness=0.14)
+    model.rock((0, 0, top + 0.7), wide * 0.62, p["leaf_mid"], rng, scale=(1.0, 1.0, 0.8), roughness=0.14)
+
+
+def lake_alder():
+    """A full-grown alder of the lake's shores, about 6.5 m tall."""
+    p = palette()
+    rng = random.Random(48)
+    model = kit.Model("LakeAlder")
+    trunk = [(0, 0, 0), (0.05, 0.03, 1.4), (-0.03, 0.08, 2.9), (0.04, 0.03, 4.3)]
+    radii = [0.26, 0.2, 0.15, 0.09]
+    for k in range(3):
+        model.cylinder(trunk[k], trunk[k + 1], radii[k], radii[k + 1], p["bark"], segments=8)
+    for k in range(6):
+        angle = math.tau * k / 6 + rng.uniform(-0.2, 0.2)
+        model.cylinder((0, 0, 0.14), (math.cos(angle) * 0.72, math.sin(angle) * 0.72, -0.02), 0.15, 0.03, p["bark"], segments=5)
+    for k in range(6):
+        angle = math.tau * k / 6 + rng.uniform(-0.3, 0.3)
+        base = trunk[1 + k % 3]
+        tip = (math.cos(angle) * 1.0, math.sin(angle) * 1.0, max(base[2] + 1.0, 3.9))
+        model.cylinder(base, tip, 0.07, 0.025, p["bark"], segments=5)
+    _alder_crown(model, rng, p, 5.1, 2.1)
+    model.finish()
+    kit.collision_cylinder("LakeAlder", (0, 0, 0), (0, 0, 3.0), 0.27)
+
+
+def fallen_alder():
+    """An alder fallen from the bank: its roots in the air, its crown in the lake."""
+    p = palette()
+    rng = random.Random(49)
+    model = kit.Model("FallenAlder")
+    points = [(-2.6, 0.0, 0.3), (-1.2, 0.05, 0.27), (0.4, -0.04, 0.2), (1.8, 0.05, 0.13), (3.0, 0.0, 0.08)]
+    radii = [0.27, 0.23, 0.18, 0.12, 0.05]
+    for k in range(4):
+        model.cylinder(points[k], points[k + 1], radii[k], radii[k + 1], p["wood_wet"], segments=8)
+    # The roots torn out of the bank.
+    for k in range(9):
+        angle = math.tau * k / 9 + rng.uniform(-0.2, 0.2)
+        tip = (-2.85, math.cos(angle) * rng.uniform(0.75, 1.1), 0.5 + math.sin(angle) * rng.uniform(0.3, 0.75))
+        model.cylinder((-2.6, 0, 0.32), (tip[0], tip[1], max(tip[2], 0.02)), 0.09, 0.015, p["bark"], segments=4)
+    model.rock((-2.72, 0, 0.42), 0.48, p["bark"], rng, scale=(0.35, 1.0, 0.9), subdivisions=1)
+    # What's left of the crown.
+    for start, tip in [
+        (points[2], (1.3, 0.95, 1.05)), (points[2], (1.15, -0.85, 0.85)), (points[3], (2.8, 0.7, 0.9)),
+        (points[3], (2.65, -0.65, 0.65)), (points[1], (-0.35, 0.75, 0.95)),
+    ]:
+        model.cylinder(start, tip, 0.05, 0.012, p["wood_drift"], segments=5)
+    model.rock((-0.7, 0.05, 0.47), 0.32, p["moss"], rng, scale=(1.8, 0.65, 0.35), subdivisions=1)
+    model.finish()
+    kit.collision_box("FallenAlder", (0.0, 0, 0.26), (5.4, 0.5, 0.52))
+
+
+def shore_slab():
+    """Flat rock shelving into the water at the lake's edge, about 3 m across."""
+    p = palette()
+    rng = random.Random(50)
+    model = kit.Model("ShoreSlab")
+    for x, y, z, wide, deep, tall, tone in [
+        (-0.3, 0.1, 0.08, 1.35, 1.0, 0.2, "stone_mid"), (0.65, -0.3, 0.07, 0.9, 0.75, 0.16, "stone_light"),
+        (-0.8, -0.55, 0.05, 0.7, 0.55, 0.12, "stone_dark"), (0.2, 0.65, 0.2, 0.75, 0.42, 0.12, "stone_light"),
+    ]:
+        model.rock((x, y, z), 1.0, p[tone], rng, scale=(wide, deep, tall), subdivisions=1, roughness=0.12)
+    model.rock((-0.65, 0.5, 0.24), 0.42, p["moss"], rng, scale=(1.25, 0.8, 0.22), subdivisions=1, roughness=0.14)
+    model.finish()
+    kit.collision_box("ShoreSlab", (0, 0, 0.1), (2.8, 2.0, 0.24))
+
+
 BUILDERS = {fn.__name__: fn for fn in (
     river_stone_a, river_stone_b, river_stone_c, pebbles_patch, mossy_boulder_a, mossy_boulder_b,
     lily_pads, lily_white, lily_pink, reeds_a, reeds_b, cattails, sedge_a, sedge_b, waterside_fern,
     blue_flag_iris, marsh_marigold, driftwood_log, driftwood_branch, mossy_stump, willow_shrub, young_willow,
     rapid_stone_a, rapid_stone_b, gravel_bar, spray_moss, cliff_outcrop_a, cliff_outcrop_b, wind_snag,
+    lake_alder, fallen_alder, shore_slab,
 )}
 
 

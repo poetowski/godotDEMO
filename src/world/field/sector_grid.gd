@@ -44,6 +44,8 @@ const MOST_REGIONS_MARKED := 25
 @export var name_designed_sectors: bool = false
 ## Whose region the grid shows; R1 when unset.
 @export var focus: Node3D
+## The player's limit, drawn in red.
+@export var border: ZoneBorder
 
 var _region := RegionMap.NONE
 var _curtains: MeshInstance3D
@@ -61,6 +63,8 @@ func _ready() -> void:
 	add_to_group(&"sector_grids")
 	_show_region(_focus_region())
 	_build_region_marks()
+	if border:
+		border.moved.connect(_build_region_marks)
 
 
 func _process(_delta: float) -> void:
@@ -201,7 +205,7 @@ func _build_region_marks() -> void:
 	curtains.material_override = material
 	curtains.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_region_marks.add_child(curtains)
-	if ZoneBorder.applies():
+	if border and ZoneBorder.applies():
 		_add_border_lines()
 	for j in RegionMap.rows:
 		for i in RegionMap.columns:
@@ -212,9 +216,9 @@ func _build_region_marks() -> void:
 func _add_border_lines() -> void:
 	var vertices := PackedVector3Array()
 	var colors := PackedColorArray()
-	var bounds := SectorMap.bounds()
-	for x: float in [ZoneBorder.WEST_WARN_X, ZoneBorder.WEST_RETURN_X]:
-		_add_curtain(vertices, colors, Vector3(x, 0.0, -bounds.position.y), Vector3(x, 0.0, -bounds.end.y), BORDER_CURTAIN_HEIGHT)
+	for line: PackedVector2Array in [border.line(), border.return_line()]:
+		for k in line.size() - 1:
+			_add_curtain(vertices, colors, Vector3(line[k].x, _surface(line[k]), line[k].y), Vector3(line[k + 1].x, 0.0, line[k + 1].y), BORDER_CURTAIN_HEIGHT)
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
@@ -272,7 +276,7 @@ func _add_region_name(region_name: String, place: Vector3, pixel: float, over_ev
 ## shaped ground and stays one quad where the ground is flat. Only the
 ## sector-long spans beside a design are sampled.
 func _add_curtain(vertices: PackedVector3Array, colors: PackedColorArray, a: Vector3, b: Vector3, height: float = -1.0) -> void:
-	var spans := roundi(a.distance_to(b) / SectorMap.SIZE)
+	var spans := maxi(roundi(a.distance_to(b) / SectorMap.SIZE), 1)
 	var across := (b - a).normalized().cross(Vector3.UP) * 0.01
 	var feet: Array[Vector3] = [a]
 	for s in spans:

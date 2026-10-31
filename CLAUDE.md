@@ -140,13 +140,15 @@ every stroke.
 - Water in carved ground is data in `data/world/water/` (`RegionWater`,
   `WaterField`): it never changes the ground, and it refills itself when the
   land changes. Rivers' levels must not rise downstream, and must stand above
-  their beds. A lake stops at `lake_reach`, or it would run on down its own river;
+  their beds. A lake stops at `lake_reach`, a square around `lake_seed`, or it would run on down
+  its own river: widen it when the author carves a lake further;
   rapids down a slope need `max_depth`, or their surface hangs in the air. Falls are
   `RegionWater.falls`.
 - Borders of the world and of zones use one mechanic (`ZoneBorder`; see "Borders" in
-  `docs/world/README.md`): `field.gd` warns in a band and returns the player to the
-  spawn point past it, and `SectorGrid` draws both lines in red. The only one so far
-  is column M of the western regions. `goto` past it bounces back too.
+  `docs/world/README.md`): `field.gd` warns past its line and returns the player to
+  the spawn point 8 m further on, and `SectorGrid` draws both lines in red. The only
+  one so far runs a few metres inside the rim of the western ravine, as draggable
+  points under `ZoneBorder/Line`. `goto` past it bounces back too.
 - After sculpting, `npm run settle` sets props under designs back on the ground,
   changing only their height.
 - Nothing is placed in the ravine below the mist (`r8_falls.gd`, `LOWEST_GROWTH`).

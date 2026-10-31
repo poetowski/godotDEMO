@@ -23,7 +23,7 @@ func before_all() -> void:
 	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_terrain = _world.call("terrain") as FieldTerrain
 	for design in _terrain.designs():
-		if design.design_id.begins_with("r1_waterside_") or design.design_id.begins_with("r8_river"):
+		if design.design_id.begins_with("r1_waterside_") or design.design_id.begins_with("r8_river") or design.design_id.begins_with("r4_lakeside"):
 			_designs.append(design)
 
 
@@ -131,6 +131,32 @@ func test_the_start_stays_clear_and_dry() -> void:
 	var start := SectorMap.start_of(SectorMap.cell_named("A1"))
 	var spot := _terrain.find_dry_spot(Vector2(start.x, start.z))
 	assert_true(_terrain.is_dry(spot))
+
+
+func test_the_lake_runs_on_into_r4_and_its_tips() -> void:
+	for at: Vector2 in [Vector2(215.0, -10.0), Vector2(225.0, 0.0), Vector2(210.0, 20.0), Vector2(190.0, 10.0)]:
+		assert_almost_eq(WaterField.level_at(at), -1.4, 0.001, "the lake at %s" % at)
+	assert_eq(WaterField.level_at(Vector2(260.0, -10.0)), SectorDesign.NO_WATER, "dry beyond its shore")
+
+
+func test_the_lake_has_its_alders_slabs_and_fallen_trees() -> void:
+	var kinds: Dictionary[String, int] = {}
+	for design in _designs:
+		if not design.design_id.begins_with("r4_lakeside"):
+			continue
+		for prop in design.scene_props():
+			var slug := prop.asset.resource_path.get_file().get_basename()
+			kinds[slug] = kinds.get(slug, 0) + 1
+	for slug: String in ["lake_alder", "fallen_alder", "shore_slab"]:
+		assert_gt(kinds.get(slug, 0), 0, "%s is placed" % slug)
+
+
+func test_the_border_runs_just_inside_the_ravine() -> void:
+	var line := (_world.get_node("ZoneBorder") as ZoneBorder).line()
+	for k in range(1, line.size() - 1):
+		var ground := WorldShape.height(line[k])
+		assert_lt(ground, -3.0, "point %d is below the rim" % k)
+		assert_gt(ground, -12.0, "point %d is only a few metres down" % k)
 
 
 func test_the_river_runs_on_through_its_delta_to_the_fall() -> void:

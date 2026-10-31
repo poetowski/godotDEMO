@@ -11,8 +11,8 @@ A lake and two rivers, carved by hand as natural lowered terrain and filled with
 water (`data/world/water/r1_water.tres`). The water fits the carved ground, not
 the other way round: it follows if the ground is sculpted again.
 
-- **Lake:** in the south-east, around P-R 2-4, its deepest point about 8.6 m down
-  near Q3. Flat surface at -1.4 m. Still.
+- **Lake:** in the south-east, around P-T 1-5, running on east into R4 (see
+  `R4/terrain.md`) with a tip south into R6. Flat surface at -1.4 m. Still.
 - **River in:** rises at T15 and flows south down the S and T columns into the
   lake. Surface from -0.95 m to -1.4 m. **Placeholder:** 0.55 m/s. Shallowest
   about 0.7 m, around T7.
@@ -23,7 +23,6 @@ the other way round: it follows if the ground is sculpted again.
   K3-5, L3-5, M3-5, N2-4, O2-5, P1-5, Q1-5, R1-6, S1-13, T1-15.
 - **River on:** the outflow crosses R1's edge at A1 and runs on to the western
   ravine; see `R8/terrain.md`.
-- **Open:** R1's edge is a low wall along the east shore of the lake and the inflow.
 
 ## The waterside
 

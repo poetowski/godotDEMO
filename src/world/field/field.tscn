@@ -23,6 +23,11 @@
 [ext_resource type="Script" uid="uid://6ov4j0b8nfbk" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
 [ext_resource type="Script" uid="uid://co6sxvfrart4c" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
 [ext_resource type="Script" uid="uid://dtfcbitpb00x5" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
+[ext_resource type="Script" path="res://src/world/field/zone_border.gd" id="73_border"]
+[ext_resource type="Script" path="res://src/world/field/sectors/r4_lakeside/r4_lakeside.gd" id="74_lakeside"]
+[ext_resource type="PackedScene" path="res://assets/models/props/fallen_alder/fallen_alder.glb" id="69_asset"]
+[ext_resource type="PackedScene" path="res://assets/models/props/shore_slab/shore_slab.glb" id="70_asset"]
+[ext_resource type="PackedScene" path="res://assets/models/props/lake_alder/lake_alder.glb" id="71_asset"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -143,7 +148,7 @@ kind = 4
 asset = ExtResource("61_asset")
 
 [node name="Asset9" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=1386655153]
-transform = Transform3D(1.0196267, 0, 0.27228284, 0, 1.0553561, 0, -0.27228284, 0, 1.0196267, 47.363365, -1.2965473, -5.3042974)
+transform = Transform3D(1.0196267, 0, 0.27228284, 0, 1.0553561, 0, -0.27228284, 0, 1.0196267, 47.363365, -2.9013, -5.3042974)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -368,27 +373,6 @@ decorates_land = true
 
 [node name="Asset1" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=1754473227]
 transform = Transform3D(0.79468536, 0, 0.4196904, 0, 0.8987017, 0, -0.4196904, 0, 0.79468536, 150.81505, -1.4505832, -3.3199074)
-script = ExtResource("50_prop")
-kind = 4
-solid = true
-asset = ExtResource("66_asset")
-
-[node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=819743411]
-transform = Transform3D(-0.65447783, 0, 0.6494846, 0, 0.9220474, 0, -0.6494846, 0, -0.65447783, 168.13332, -5.7508, -3.2)
-script = ExtResource("50_prop")
-kind = 4
-solid = true
-asset = ExtResource("60_asset")
-
-[node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=520252027]
-transform = Transform3D(0.73848814, 0, -0.9361463, 0, 1.1923652, 0, 0.9361463, 0, 0.73848814, 170.4317, -5.892, -3.2)
-script = ExtResource("50_prop")
-kind = 4
-solid = true
-asset = ExtResource("60_asset")
-
-[node name="Asset4" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=897086591]
-transform = Transform3D(-0.5846771, 0, 0.9815732, 0, 1.1425118, 0, -0.9815732, 0, -0.5846771, 178.18434, -4.48, -3.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -714,6 +698,575 @@ decorates_land = true
 
 [node name="Props" type="Node3D" parent="Sectors/RiverSouthF" unique_id=2128736395]
 
+[node name="R4LakesideA1" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R4:A1", "R4:A2", "R4:A3", "R4:A4", "R4:A5", "R4:B1", "R4:B2", "R4:B3", "R4:B4", "R4:B5", "R4:C1", "R4:C2", "R4:C3", "R4:C4", "R4:C5", "R4:D1", "R4:D2", "R4:D3", "R4:D4", "R4:D5", "R4:E1", "R4:E2", "R4:E3", "R4:E4", "R4:E5")
+design_id = "r4_lakeside_a1"
+design_seed = 311
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R4LakesideA1"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.15504147, 0, -1.0429368, 0, 1.054398, 0, 1.0429368, 0, -0.15504147, 206.82483, -1.8020996, -35.7872)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = false
+asset = ExtResource("65_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(0.7791454, 0, 0.56289047, 0, 0.96120405, 0, -0.56289047, 0, 0.7791454, 209.82368, -1.0415726, -34.889465)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("60_asset")
+
+[node name="Asset3" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(0.16153109, 0, -0.8586322, 0, 0.87369424, 0, 0.8586322, 0, 0.16153109, 219.52713, 0.24172343, -37.82347)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset4" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(0.1075863, 0, 1.0367702, 0, 1.0423374, 0, -1.0367702, 0, 0.1075863, 227.15257, 0.045965113, -26.055428)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset5" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(0.6243598, 0, 0.66527265, 0, 0.9123666, 0, -0.66527265, 0, 0.6243598, 229.30333, 0.05273859, -22.674133)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = false
+asset = ExtResource("61_asset")
+
+[node name="Asset6" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.6576188, 0, -0.7187097, 0, 0.9741695, 0, 0.7187097, 0, -0.6576188, 221.23157, -0.33217716, -32.03031)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset7" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.8396685, 0, 0.5360946, 0, 0.9962132, 0, -0.5360946, 0, -0.8396685, 230.62654, -0.90653086, -5.433762)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("60_asset")
+
+[node name="Asset8" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.12919739, 0, -1.0909729, 0, 1.0985963, 0, 1.0909729, 0, -0.12919739, 208.47238, -0.6864587, -37.992943)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("69_asset")
+
+[node name="Asset9" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-1.1218952, 0, -0.12828599, 0, 1.129206, 0, 0.12828599, 0, -1.1218952, 219.6564, -1.4827546, -25.076458)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="Asset10" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.52906483, 0, 0.808763, 0, 0.9664405, 0, -0.808763, 0, -0.52906483, 218.70284, 0.171515, -42.829605)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset11" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.51829314, 0, -1.0008705, 0, 1.1271067, 0, 1.0008705, 0, -0.51829314, 225.42552, -0.20613968, -28.63652)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset12" type="Node3D" parent="Sectors/R4LakesideA1/Props"]
+transform = Transform3D(-0.03749747, 0, -0.90309525, 0, 0.9038734, 0, 0.90309525, 0, -0.03749747, 237.37015, 0.38537887, -5.0950813)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="R4LakesideA6" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R4:A6", "R4:A7", "R4:A8", "R4:A9", "R4:A10", "R4:B6", "R4:B7", "R4:C6", "R4:C7")
+design_id = "r4_lakeside_a6"
+design_seed = 312
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R4LakesideA6"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(-0.3843444, 0, -0.81328547, 0, 0.8995298, 0, 0.81328547, 0, -0.3843444, 208.92795, -0.1254017, -52.65342)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("60_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(-0.063550234, 0, 1.179737, 0, 1.1814474, 0, -1.179737, 0, -0.063550234, 203.99033, 0.06507301, -67.09128)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("64_asset")
+
+[node name="Asset3" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(-0.21971385, 0, 1.1642923, 0, 1.1848421, 0, -1.1642923, 0, -0.21971385, 201.2675, -0.03775293, -78.49464)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = false
+asset = ExtResource("61_asset")
+
+[node name="Asset4" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(0.5194131, 0, 0.6795776, 0, 0.85534537, 0, -0.6795776, 0, 0.5194131, 204.34529, 0.21389174, -77.98388)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = false
+asset = ExtResource("61_asset")
+
+[node name="Asset5" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(-0.873225, 0, 0.61118776, 0, 1.065867, 0, -0.61118776, 0, -0.873225, 204.95033, 0.18760419, -85.690636)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset6" type="Node3D" parent="Sectors/R4LakesideA6/Props"]
+transform = Transform3D(-0.42542914, 0, -0.8905504, 0, 0.9869498, 0, 0.8905504, 0, -0.42542914, 217.7789, 0.4219629, -59.261997)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="R4LakesideA11" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R4:A11", "R4:A12", "R4:A13", "R4:A14", "R4:A15", "R4:A16")
+design_id = "r4_lakeside_a11"
+design_seed = 313
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R4LakesideA11"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R4LakesideA11/Props"]
+transform = Transform3D(-0.4024897, 0, -1.0777627, 0, 1.1504654, 0, 1.0777627, 0, -0.4024897, 203.51341, 0.07551703, -127.0651)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("64_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R4LakesideA11/Props"]
+transform = Transform3D(0.9483953, 0, -0.1505503, 0, 0.9602703, 0, 0.1505503, 0, 0.9483953, 204.22829, 0.10116399, -108.11618)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="R5Lakeside" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R5:A17", "R5:A18", "R5:A19", "R5:A20", "R5:B17", "R5:B18", "R5:B19", "R5:B20", "R5:C17", "R5:C18", "R5:C19", "R5:C20", "R5:D17", "R5:D18", "R5:D19", "R5:D20", "R5:E17", "R5:E18", "R5:E19", "R5:E20")
+design_id = "r4_lakeside_r5"
+design_seed = 314
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R5Lakeside"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(-1.1553391, 0, -0.29476336, 0, 1.192348, 0, 0.29476336, 0, -1.1553391, 214.22105, -0.73195314, 24.476194)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("66_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(-0.1784651, 0, 0.8361243, 0, 0.85495824, 0, -0.8361243, 0, -0.1784651, 210.84306, -0.8352939, 25.010118)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("62_asset")
+
+[node name="Asset3" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(-0.33529976, 0, 0.89465857, 0, 0.9554265, 0, -0.89465857, 0, -0.33529976, 224.44774, 1.1988709, 24.596447)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset4" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(0.8350883, 0, 0.49436343, 0, 0.9704471, 0, -0.49436343, 0, 0.8350883, 221.84976, 0.51550573, 13.885496)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("64_asset")
+
+[node name="Asset5" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(0.6782125, 0, -0.9417413, 0, 1.1605382, 0, 0.9417413, 0, 0.6782125, 209.1955, 1.2213793, 29.204033)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset6" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(1.0951327, 0, 0.3558008, 0, 1.1514816, 0, -0.3558008, 0, 1.0951327, 214.16986, -2.3979678, 21.925148)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="Asset7" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(1.0167013, 0, 0.25672764, 0, 1.0486137, 0, -0.25672764, 0, 1.0167013, 212.0875, -1.8536966, 23.38526)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="Asset8" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(0.8620301, 0, -0.5921643, 0, 1.0458272, 0, 0.5921643, 0, 0.8620301, 222.77414, 1.280849, 23.864437)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset9" type="Node3D" parent="Sectors/R5Lakeside/Props"]
+transform = Transform3D(-0.20957237, 0, -0.92626935, 0, 0.94968176, 0, 0.92626935, 0, -0.20957237, 230.0674, 1.324873, 13.040191)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="R6LakesideO" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R6:O18", "R6:O19", "R6:O20", "R6:P18", "R6:P19", "R6:P20", "R6:Q18", "R6:Q19", "R6:Q20")
+design_id = "r4_lakeside_r6o"
+design_seed = 315
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R6LakesideO"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(0.66994655, 0, 0.5626793, 0, 0.8748922, 0, -0.5626793, 0, 0.66994655, 166.37418, 1.1017367, 10.967865)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(0.49753824, 0, -0.83762115, 0, 0.9742451, 0, 0.83762115, 0, 0.49753824, 163.17793, 1.1348268, 10.637472)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("63_asset")
+
+[node name="Asset3" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(-0.84072024, 0, 0.29136756, 0, 0.8897784, 0, -0.29136756, 0, -0.84072024, 162.8312, -0.20926856, 7.2907724)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("60_asset")
+
+[node name="Asset4" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(0.9717956, 0, -0.34673357, 0, 1.0317998, 0, 0.34673357, 0, 0.9717956, 149.21657, 0.8985108, 8.904875)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset5" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(0.8734034, 0, -0.2216057, 0, 0.9010785, 0, 0.2216057, 0, 0.8734034, 161.18764, 1.1051954, 14.758181)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset6" type="Node3D" parent="Sectors/R6LakesideO/Props"]
+transform = Transform3D(-0.17207506, 0, -1.1278901, 0, 1.1409408, 0, 1.1278901, 0, -0.17207506, 166.35182, -2.1029913, 5.0236564)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="R6LakesideR" type="Node3D" parent="Sectors"]
+editor_description = "The lake's far shores, decorated: plants, stones, alders, slabs and driftwood."
+script = ExtResource("74_lakeside")
+sectors = PackedStringArray("R6:R17", "R6:R18", "R6:R19", "R6:R20", "R6:S17", "R6:S18", "R6:S19", "R6:S20", "R6:T17", "R6:T18", "R6:T19", "R6:T20")
+design_id = "r4_lakeside_r6r"
+design_seed = 316
+decorates_land = true
+props_frozen = true
+
+[node name="Props" type="Node3D" parent="Sectors/R6LakesideR"]
+
+[node name="Asset1" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(0.7874227, 0, -0.5208008, 0, 0.9440699, 0, 0.5208008, 0, 0.7874227, 176.6104, 0.34849313, 11.219987)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("64_asset")
+
+[node name="Asset2" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(-0.024108924, 0, 1.06251, 0, 1.0627835, 0, -1.06251, 0, -0.024108924, 173.28416, 0.30757067, 9.582189)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = false
+asset = ExtResource("61_asset")
+
+[node name="Asset3" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(0.13357647, 0, 1.1842905, 0, 1.1917998, 0, -1.1842905, 0, 0.13357647, 181.93848, -1.5717661, 8.92372)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("66_asset")
+
+[node name="Asset4" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(0.69617194, 0, 0.9594492, 0, 1.1854105, 0, -0.9594492, 0, 0.69617194, 180.91852, -0.9131995, 9.571041)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("66_asset")
+
+[node name="Asset5" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(0.68343925, 0, -0.64076585, 0, 0.9368405, 0, 0.64076585, 0, 0.68343925, 178.69418, 1.139461, 15.675028)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset6" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(-1.1643332, 0, -0.11429914, 0, 1.16993, 0, 0.11429914, 0, -1.1643332, 173.4221, -2.4002504, 4.9529037)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="Asset7" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(0.51295626, 0, 0.89871836, 0, 1.0348037, 0, -0.89871836, 0, 0.51295626, 187.92711, 0.9182279, 25.342327)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("71_asset")
+
+[node name="Asset8" type="Node3D" parent="Sectors/R6LakesideR/Props"]
+transform = Transform3D(1.1545607, 0, 0.21283583, 0, 1.1740143, 0, -0.21283583, 0, 1.1545607, 190.8786, -1.6191, 14.23299)
+script = ExtResource("50_prop")
+kind = 4
+variant = 0
+solid = true
+asset = ExtResource("70_asset")
+
+[node name="ZoneBorder" type="Node3D" parent="."]
+editor_description = "The player's limit, a few metres inside the ravine's rim. Drag the points under Line; the red lines follow."
+script = ExtResource("73_border")
+
+[node name="Line" type="Node3D" parent="ZoneBorder"]
+editor_description = "The warning line. The forbidden side is on its right, going from north to south and then east."
+
+[node name="P01" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -400)
+gizmo_extents = 4.0
+
+[node name="P02" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -168, 0, -380)
+gizmo_extents = 4.0
+
+[node name="P03" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -160, 0, -363)
+gizmo_extents = 4.0
+
+[node name="P04" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142, 0, -342)
+gizmo_extents = 4.0
+
+[node name="P05" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -129, 0, -321)
+gizmo_extents = 4.0
+
+[node name="P06" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135, 0, -299)
+gizmo_extents = 4.0
+
+[node name="P07" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -138, 0, -279)
+gizmo_extents = 4.0
+
+[node name="P08" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -139, 0, -261)
+gizmo_extents = 4.0
+
+[node name="P09" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -133, 0, -240)
+gizmo_extents = 4.0
+
+[node name="P10" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142, 0, -220)
+gizmo_extents = 4.0
+
+[node name="P11" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136, 0, -201)
+gizmo_extents = 4.0
+
+[node name="P12" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -131, 0, -181)
+gizmo_extents = 4.0
+
+[node name="P13" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -123, 0, -157)
+gizmo_extents = 4.0
+
+[node name="P14" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -114, 0, -153)
+gizmo_extents = 4.0
+
+[node name="P15" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -96, 0, -149)
+gizmo_extents = 4.0
+
+[node name="P16" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71, 0, -141)
+gizmo_extents = 4.0
+
+[node name="P17" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56, 0, -122)
+gizmo_extents = 4.0
+
+[node name="P18" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62, 0, -95)
+gizmo_extents = 4.0
+
+[node name="P19" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75, 0, -78)
+gizmo_extents = 4.0
+
+[node name="P20" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74, 0, -62)
+gizmo_extents = 4.0
+
+[node name="P21" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71, 0, -42)
+gizmo_extents = 4.0
+
+[node name="P22" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, -22)
+gizmo_extents = 4.0
+
+[node name="P23" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63, 0, 0)
+gizmo_extents = 4.0
+
+[node name="P24" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -66, 0, 20)
+gizmo_extents = 4.0
+
+[node name="P25" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 0, 39)
+gizmo_extents = 4.0
+
+[node name="P26" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, 0, 59)
+gizmo_extents = 4.0
+
+[node name="P27" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, 79)
+gizmo_extents = 4.0
+
+[node name="P28" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 90)
+gizmo_extents = 4.0
+
+[node name="P29" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0, 97)
+gizmo_extents = 4.0
+
+[node name="P30" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 99)
+gizmo_extents = 4.0
+
+[node name="P31" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 105)
+gizmo_extents = 4.0
+
+[node name="P32" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 0, 119)
+gizmo_extents = 4.0
+
+[node name="P33" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 0, 140)
+gizmo_extents = 4.0
+
+[node name="P34" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 0, 147)
+gizmo_extents = 4.0
+
+[node name="P35" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 81, 0, 150)
+gizmo_extents = 4.0
+
+[node name="P36" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 104, 0, 158)
+gizmo_extents = 4.0
+
+[node name="P37" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 0, 175)
+gizmo_extents = 4.0
+
+[node name="P38" type="Marker3D" parent="ZoneBorder/Line"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 121, 0, 200)
+gizmo_extents = 4.0
+
 [node name="MistBarrier" type="Node3D" parent="." unique_id=643534875]
 script = ExtResource("72_mist")
 
@@ -878,9 +1431,10 @@ designs_root = NodePath("../Sectors")
 chunked = true
 focus = NodePath("../Player")
 
-[node name="SectorGrid" type="Node3D" parent="." unique_id=1605784109 node_paths=PackedStringArray("terrain", "focus")]
+[node name="SectorGrid" type="Node3D" parent="." unique_id=1605784109 node_paths=PackedStringArray("terrain", "focus", "border")]
 script = ExtResource("3_grid")
 terrain = NodePath("../Terrain")
+border = NodePath("../ZoneBorder")
 focus = NodePath("../Player")
 
 [node name="Residents" type="Node3D" parent="." unique_id=1162946975]

@@ -27,6 +27,20 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "fix water in R4 i cannot see lake there but i am sure i put it
+there. i just changed terrain. please decorate properly. also, the "you should not be
+here line" should not block southern regions, rather it should follow few meters into
+crater ravine only. decorate surroundings of lake with our assets and if needed
+generate more. make sure location is correct in folder structure. update docs if
+needed." The author's lake runs from R1 into R4, R5 and R6; its `lake_reach` was cutting
+it off at x 201, so it's now 75 m. Decorated by `src/world/field/sectors/r4_lakeside/`,
+with three new assets in the riverside family: `lake_alder`, `fallen_alder`, `shore_slab`.
+Three props left deep under the new water were removed, and the rest settled. The border
+is now a line of draggable points, `ZoneBorder/Line`, where the ground is about 6 m below
+the land, so it also frees the land in R9 that the old straight line blocked.
+**Placeholder:** the layout, the three assets, the line's points, and returning the
+player 8 m past it.
+
 Request (2026-10-31): "i remodeled terrain again. remove details and props from the
 bottom of waterfall, add mist which prevents player to see meters below into
 ravine. also implement character view on buttton 'c' like vie have for inventory and

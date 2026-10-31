@@ -30,7 +30,8 @@ Low-poly and flat-shaded, colour from materials, no textures.
 
 Water lilies on still water; reeds and cattails at the waterline; sedge, ferns,
 blue flag iris and marsh marigold on the banks; willow shrubs and a few young
-weeping willows above them.
+weeping willows above them. On the lake's far shores (R4, R5, R6), full-grown alders
+standing back from the water, and alders fallen into it.
 
 ## Buildings and objects
 
