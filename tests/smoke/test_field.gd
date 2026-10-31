@@ -70,3 +70,11 @@ func test_column_m_warns_and_going_on_returns_to_the_spawn_point() -> void:
 	await wait_process_frames(2)
 	assert_eq(SectorMap.cell_at(player.global_position), Vector2i.ZERO, "back at the spawn point")
 
+
+func test_the_border_is_drawn_where_it_applies() -> void:
+	assert_true(ZoneBorder.applies())
+	var lines := _world.get_node("SectorGrid/RegionMarks/BorderLines") as MeshInstance3D
+	var box := lines.mesh.get_aabb()
+	assert_almost_eq(box.position.x, ZoneBorder.WEST_RETURN_X, 0.01)
+	assert_almost_eq(box.end.x, ZoneBorder.WEST_WARN_X, 0.01)
+

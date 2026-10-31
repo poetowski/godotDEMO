@@ -143,8 +143,10 @@ every stroke.
   their beds. A lake stops at `lake_reach`, or it would run on down its own river;
   rapids down a slope need `max_depth`, or their surface hangs in the air. Falls are
   `RegionWater.falls`.
-- The player can't go past column M of the western regions: `field.gd` warns in it,
-  and returns them to the spawn point past it. `goto` further west bounces back too.
+- Borders of the world and of zones use one mechanic (`ZoneBorder`; see "Borders" in
+  `docs/world/README.md`): `field.gd` warns in a band and returns the player to the
+  spawn point past it, and `SectorGrid` draws both lines in red. The only one so far
+  is column M of the western regions. `goto` past it bounces back too.
 - After sculpting, `npm run settle` sets props under designs back on the ground,
   changing only their height.
 - `MistBarrier` is the fog over the western drop: a volume filling the polygon

@@ -27,6 +27,10 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "highlight "I should not be here" border line and also
+incorporate this mechanics in md files, we will use it to define world border or
+zones border." The mechanic is in `docs/world/README.md`, under Borders.
+
 Request (2026-10-31): "make zoom out ingame limited to 10 meters away of player up
 to 1m close. do not allow bigger zoom outs", "also make zoom in and zoom out slower".
 **Placeholder:** 0.25 m per notch of the wheel, half what it was.

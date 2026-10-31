@@ -31,6 +31,21 @@ R7  R6  R5
 
 **Placeholder:** starting the clock at north, with R2.
 
+## Borders
+
+The world's edge, and the borders between zones, are drawn with one mechanic:
+
+- **Warning band:** when the player enters it, a message appears. In the west it is
+  sector M of R7, R8 and R9 (x -70 to -80), and the message is "I should not be
+  here...".
+- **Return line:** past the band's far side, the player is returned to the spawn point.
+- **Highlight:** both lines show as red curtains, in the editor and in the game, like
+  sector and region borders.
+
+The author decides where each border runs and what it says. Say which sectors it
+covers, in the region's `terrain.md`. **Placeholder:** the red highlight showing in
+the game; it may go once the border is final.
+
 ## Rules
 
 - **Where a thing goes.** True everywhere: `art.md` or `lore.md` here. True of one

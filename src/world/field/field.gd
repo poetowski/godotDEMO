@@ -10,10 +10,6 @@ extends Node3D
 ## where the player may go: walking in gives a warning, and walking on past it
 ## takes them back to the spawn point.
 
-## World x of column M's eastern and western edges in the western regions.
-const LIMIT_WARN_X := -70.0
-const LIMIT_RETURN_X := -80.0
-
 ## The sector the player starts in unless `--sector=` names another.
 var start_sector: String = "A1"
 
@@ -83,13 +79,13 @@ func _process(_delta: float) -> void:
 ## The warning, and the way back to the spawn point. Only where there are regions
 ## to the west of R1, not in test worlds.
 func _keep_to_the_limit() -> void:
-	if RegionMap.south_west.x >= 0:
+	if not ZoneBorder.applies():
 		return
 	var x := _player.global_position.x
-	if x < LIMIT_RETURN_X:
+	if x < ZoneBorder.WEST_RETURN_X:
 		teleport(_spawn)
 		_warned = false
-	elif x < LIMIT_WARN_X:
+	elif x < ZoneBorder.WEST_WARN_X:
 		if not _warned:
 			_warned = true
 			_hud.notify(tr("I should not be here..."))

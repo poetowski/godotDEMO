@@ -29,8 +29,8 @@ R6, as a natural barrier to movement. The ravine's floor lies about 55 m down.
   then thickening, with a wall inside it at about 6 sectors. To change where it
   starts, drag the points under `MistBarrier/FogLine` in the editor. **Placeholder:**
   the points, and how fast it thickens.
-- **The limit:** the player is warned in column M (x -80 to -70) and returned to the
-  spawn point past it, so the fall's foot and the tarn are seen from above only.
+- **The limit:** a border (see `docs/world/README.md`). The player is warned in column
+  M (x -80 to -70), shown by red lines, and returned to the spawn point past it, so the fall's foot and the tarn are seen from above only.
 - **Decoration:** the blocks `River*` in `field.tscn`. Their props can be moved by
   hand, and stay put if the land is sculpted again. New assets are in R1's family:
   rapid stones, gravel bars, spray moss, cliff outcrops and dead trees on the rim.
