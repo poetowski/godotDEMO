@@ -15,7 +15,7 @@ the other way round: it follows if the ground is sculpted again.
   near Q3. Flat surface at -1.4 m. Still.
 - **River in:** rises at T15 and flows south down the S and T columns into the
   lake. Surface from -0.95 m to -1.4 m. **Placeholder:** 0.55 m/s. Shallowest
-  about 0.7 m, around S7.
+  about 0.7 m, around T7.
 - **River out:** leaves the lake through N4 and flows west to the edge at A1.
   Surface from -1.4 m to -2.15 m. **Placeholder:** 0.55 m/s. Shallowest about
   0.5 m at the sill near N4, then 0.2 m at the very edge.
