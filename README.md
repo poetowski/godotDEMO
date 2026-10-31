@@ -84,3 +84,4 @@ saves a screenshot.
 `CLAUDE.md` covers working rules, conventions and gotchas.
 `docs/ARCHITECTURE.md` covers what exists and the open technical questions.
 `docs/DESIGN_DECISIONS.md` is the design record.
+`docs/world/` holds the art, lore and notes of the world and each region.

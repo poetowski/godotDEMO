@@ -209,8 +209,11 @@ const commands = {
     return true;
   },
 
-  editor() {
-    spawn(godotBinary({ gui: true }), ['--path', ROOT, '--editor'], { detached: true, stdio: 'ignore' }).unref();
+  // Opens the editor, on the given scene if one is named.
+  editor(argv) {
+    const { positional } = parseOptions(argv);
+    const scene = positional[0] ? [toResPath(positional[0])] : [];
+    spawn(godotBinary({ gui: true }), ['--path', ROOT, '--editor', ...scene], { detached: true, stdio: 'ignore' }).unref();
     console.log('[dev] editor starting');
     return true;
   },

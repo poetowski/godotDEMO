@@ -10,6 +10,10 @@ working title and the game's design is not decided yet.
   building it.
 - `docs/DESIGN_DECISIONS.md` is the author's record. Build what it says;
   anything else is a placeholder and is marked as one.
+- `docs/world/` holds the author's notes on the world and each region: art, lore,
+  terrain, flavor text. Before working on a place, read `docs/world/art.md`,
+  `lore.md` and that region's folder, and keep to them. Write there only what the
+  author said or approved (see `docs/world/README.md`).
 - Engineering (architecture, tooling, tests, performance) is yours to propose
   and build. Spell out the tradeoffs when a choice is hard to undo.
   `docs/ARCHITECTURE.md` lists what exists and the open technical questions.
@@ -34,7 +38,7 @@ working title and the game's design is not decided yet.
 | `npm run props -- <Design>` | Freezes the props a sector design's code places (`place_prop`) into `field.tscn` as `Prop` nodes to edit by hand, and marks the design `props_frozen`. Adds lines only. Close the editor first. |
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
-| `npm run editor` | Opens the editor, which the MCP tools need. |
+| `npm run editor -- [scene]` | Opens the editor, on the given scene if one is named. The MCP tools need it. |
 | `npm run sculpt-check` | Drives the sculpting plugin inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png`. Leaves the project's sculpted ground alone. Close the editor first. |
 | `npm run game -- --regions=5` | The world at 5 x 5 regions instead of R1 alone, for testing. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
@@ -249,7 +253,7 @@ tests/unit/      logic tests
 tests/smoke/     scene loading and wiring tests
 tests/fixtures/  frozen inputs, such as saves in every old format, and a design and items only tests use
 tools/           dev.mjs (the npm commands), check_project.gd
-docs/            DESIGN_DECISIONS.md (the author's record), ARCHITECTURE.md
+docs/            DESIGN_DECISIONS.md (the author's record), ARCHITECTURE.md, world/ (art, lore and notes per region)
 addons/          vendored third-party code, read addons/README.md before touching it; terrain_sculpt/ is ours
 ```
 
