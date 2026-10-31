@@ -143,3 +143,33 @@ func test_saved_water_runs_downhill_and_holds_together() -> void:
 			assert_lte(course.speed, NatureKit.WATER_MAX_FLOW)
 			for k in course.levels.size() - 1:
 				assert_lte(course.levels[k + 1], course.levels[k], "levels must not rise downstream")
+
+
+func test_a_shallow_course_stops_where_the_ground_falls_away() -> void:
+	var brush := SculptBrush.new()
+	brush.tool = SculptBrush.Tool.LOWER
+	brush.softness = 0.0
+	brush.radius = 6.0
+	brush.strength = 6.0
+	brush.apply(Vector2(60.0, -150.0), 1.0)
+	var course := WaterCourse.new()
+	course.points = PackedVector2Array([Vector2(40.0, 150.0), Vector2(60.0, 150.0)])
+	course.levels = PackedFloat32Array([-1.0, -1.0])
+	course.max_depth = 1.5
+	var plan := RegionWater.new()
+	plan.courses = [course] as Array[WaterCourse]
+	WaterField.use_only([plan] as Array[RegionWater])
+	assert_eq(WaterField.level_at(Vector2(60.0, -150.0)), SectorDesign.NO_WATER, "no surface hanging over a 6 m hole")
+	WaterField.use_only([] as Array[RegionWater])
+
+
+func test_a_lake_stops_at_its_reach() -> void:
+	var plan := RegionWater.new()
+	plan.lake_seed = Vector2(150.0, 50.0)
+	plan.lake_level = LAKE_LEVEL
+	plan.lake_reach = 5.0
+	WaterField.use_only([plan] as Array[RegionWater])
+	assert_ne(WaterField.level_at(LAKE), SectorDesign.NO_WATER, "in reach")
+	assert_eq(WaterField.level_at(LAKE + Vector2(9.0, 0.0)), SectorDesign.NO_WATER, "past its reach")
+	WaterField.use_only([] as Array[RegionWater])
+

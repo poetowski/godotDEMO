@@ -62,6 +62,10 @@ msgstr ""
 msgid "Goodbye."
 msgstr ""
 
+#: src/world/field/field.gd
+msgid "I should not be here..."
+msgstr ""
+
 #: src/ui/inventory/inventory_panel.gd
 msgid "Inventory"
 msgstr ""

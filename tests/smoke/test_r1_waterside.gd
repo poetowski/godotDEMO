@@ -23,7 +23,7 @@ func before_all() -> void:
 	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_terrain = _world.call("terrain") as FieldTerrain
 	for design in _terrain.designs():
-		if design.design_id.begins_with("r1_waterside_"):
+		if design.design_id.begins_with("r1_waterside_") or design.design_id.begins_with("r8_river"):
 			_designs.append(design)
 
 
@@ -131,3 +131,53 @@ func test_the_start_stays_clear_and_dry() -> void:
 	var start := SectorMap.start_of(SectorMap.cell_named("A1"))
 	var spot := _terrain.find_dry_spot(Vector2(start.x, start.z))
 	assert_true(_terrain.is_dry(spot))
+
+
+func test_the_river_runs_on_through_its_delta_to_the_fall() -> void:
+	for at: Vector2 in [Vector2(-5.0, -2.0), Vector2(-20.0, 1.0), Vector2(-35.0, 7.0), Vector2(-50.0, 10.0), Vector2(-60.0, 10.0)]:
+		assert_ne(WaterField.level_at(at), SectorDesign.NO_WATER, "water at %s" % at)
+	assert_lt(WaterField.flow_at(Vector2(-50.0, 10.0)).x, -0.6, "the rapids run west, fast")
+	assert_eq(WaterField.falls().size(), 1)
+	var fall := WaterField.falls()[0]
+	assert_gt(WorldShape.height(Vector2(fall.top.x, -fall.top.y)) - fall.pool_level, 40.0, "a huge drop")
+
+
+func test_no_water_hangs_over_the_ravine() -> void:
+	for x in range(-120, -64, 2):
+		for n in range(-40, 40, 2):
+			var xz := Vector2(x, -n)
+			var level := WaterField.level_at(xz)
+			if level != SectorDesign.NO_WATER:
+				assert_lt(level - WorldShape.height(xz), 5.0, "at most a lip at the rim, at %s" % xz)
+
+
+func test_the_tarn_stays_in_its_hollow_above_the_abyss() -> void:
+	assert_eq(WaterField.level_at(Vector2(-141.0, -11.0)), -57.0, "the tarn")
+	assert_eq(WaterField.level_at(Vector2(-180.0, -11.0)), SectorDesign.NO_WATER, "not poured into the abyss")
+	assert_eq(WaterField.level_at(Vector2(-140.0, 80.0)), SectorDesign.NO_WATER, "the ravine's not full")
+	assert_lt(WorldShape.height(Vector2(-190.0, -100.0)), -200.0, "the abyss")
+	assert_lt(WorldShape.height(Vector2(-150.0, -300.0)), -40.0, "the ravine runs north through R9")
+
+
+func test_the_new_assets_are_placed_along_the_fall() -> void:
+	var kinds: Dictionary[String, int] = {}
+	for design in _designs:
+		for prop in design.scene_props():
+			var slug := prop.asset.resource_path.get_file().get_basename()
+			kinds[slug] = kinds.get(slug, 0) + 1
+	for slug: String in ["cliff_outcrop_a", "cliff_outcrop_b", "wind_snag"]:
+		assert_gt(kinds.get(slug, 0), 0, "%s is placed" % slug)
+	assert_gt(_copies(["RapidStoneA", "RapidStoneB"] as Array[String]).size(), 0, "rapid stones")
+	assert_gt(_copies(["SprayMoss"] as Array[String]).size(), 0, "spray moss")
+
+
+func test_the_fog_has_a_wall_the_player_cannot_cross() -> void:
+	var barrier := _world.get_node("MistBarrier")
+	assert_not_null(barrier.get_node("Fog"))
+	var wall := barrier.get_node("Wall") as StaticBody3D
+	assert_gt(wall.get_child_count(), 20)
+	var north_end := MistBarrier.WEST_FROM
+	var south_end := MistBarrier.WEST_TO
+	assert_eq(north_end.y, SectorMap.bounds().end.y, "reaches the world's north edge")
+	assert_eq(south_end.y, SectorMap.bounds().position.y, "reaches the world's south edge")
+

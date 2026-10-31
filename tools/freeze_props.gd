@@ -65,7 +65,11 @@ static func _with_props(text: String, design_name: String, placed: Array[Diction
 	for entry in placed:
 		var model := entry.get("asset") as PackedScene
 		if model and not asset_ids.has(model.resource_path):
-			asset_ids[model.resource_path] = _asset_id(text, model.resource_path, asset_ids.size())
+			# Two new assets in one freeze mustn't get the same id.
+			var id := _asset_id(text, model.resource_path, asset_ids.size())
+			while id in asset_ids.values():
+				id = "%d_asset" % (id.to_int() + 1)
+			asset_ids[model.resource_path] = id
 	for entry in placed:
 		var kind: int = entry["kind"]
 		counts[kind] = int(counts.get(kind, 0)) + 1

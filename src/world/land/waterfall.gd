@@ -17,3 +17,6 @@ extends Resource
 @export var pool_radius: float = 8.0
 ## Metres the pool's surface lies above the ground at its middle.
 @export var pool_depth: float = 2.0
+## The pool's surface (absolute), for a fall into water poured elsewhere: then it
+## replaces `pool_depth`, and with `pool_radius` 0 no pool of its own is drawn.
+@export var pool_level: float = -INF

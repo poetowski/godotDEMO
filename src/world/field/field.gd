@@ -6,12 +6,20 @@ extends Node3D
 ## DayNight lighting the world by it), and the villagers living in it
 ## (`Residents`, none yet). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at
-## another time.
+## another time. Sector M of the regions to the west (R7, R8, R9) is the limit of
+## where the player may go: walking in gives a warning, and walking on past it
+## takes them back to the spawn point.
+
+## World x of column M's eastern and western edges in the western regions.
+const LIMIT_WARN_X := -70.0
+const LIMIT_RETURN_X := -80.0
 
 ## The sector the player starts in unless `--sector=` names another.
 var start_sector: String = "A1"
 
 var _sector := Vector2i(-2, -2)
+var _spawn := Vector2i.ZERO
+var _warned := false
 
 @onready var _player: Player = $Player
 @onready var _hud: Hud = $Hud
@@ -36,6 +44,7 @@ func _ready() -> void:
 	var start := SectorMap.cell_named(requested_sector(OS.get_cmdline_user_args(), start_sector))
 	if start == SectorMap.NONE:
 		start = Vector2i.ZERO
+	_spawn = start
 	teleport(start)
 	var hour := requested_hour(OS.get_cmdline_user_args())
 	if hour >= 0.0:
@@ -68,6 +77,24 @@ func _process(_delta: float) -> void:
 		_sector = cell
 		_hud.show_sector(SectorMap.name_of(cell))
 	_hud.show_clock(_clock.text())
+	_keep_to_the_limit()
+
+
+## The warning, and the way back to the spawn point. Only where there are regions
+## to the west of R1, not in test worlds.
+func _keep_to_the_limit() -> void:
+	if RegionMap.south_west.x >= 0:
+		return
+	var x := _player.global_position.x
+	if x < LIMIT_RETURN_X:
+		teleport(_spawn)
+		_warned = false
+	elif x < LIMIT_WARN_X:
+		if not _warned:
+			_warned = true
+			_hud.notify(tr("I should not be here..."))
+	else:
+		_warned = false
 
 
 func clock() -> WorldClock:

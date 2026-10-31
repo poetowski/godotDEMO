@@ -54,3 +54,19 @@ func test_sector_argument_picks_the_start() -> void:
 	assert_eq(FieldScript.requested_sector(PackedStringArray(["--sector=C4"])), "C4")
 	assert_eq(FieldScript.requested_sector(PackedStringArray()), "A1")
 	assert_eq(FieldScript.requested_sector(PackedStringArray(), "J10"), "J10")
+
+
+func test_column_m_warns_and_going_on_returns_to_the_spawn_point() -> void:
+	var player: Player = _world.call("player")
+	var hud := _world.get_node("Hud") as Hud
+	hud.notify("")
+	player.global_position = Vector3(-60.0, 5.0, -100.0)
+	await wait_process_frames(2)
+	assert_eq(hud.toast_text(), "", "east of M, nothing")
+	player.global_position = Vector3(-75.0, 5.0, -100.0)
+	await wait_process_frames(2)
+	assert_eq(hud.toast_text(), "I should not be here...")
+	player.global_position = Vector3(-81.0, 5.0, -100.0)
+	await wait_process_frames(2)
+	assert_eq(SectorMap.cell_at(player.global_position), Vector2i.ZERO, "back at the spawn point")
+

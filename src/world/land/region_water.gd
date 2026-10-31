@@ -12,4 +12,8 @@ extends Resource
 ## A lake_level of -INF means no lake.
 @export var lake_seed: Vector2 = Vector2.ZERO
 @export var lake_level: float = -INF
+## Metres around the lake's point that it can fill.
+@export var lake_reach: float = 40.0
 @export var courses: Array[WaterCourse] = []
+## Falls where a river leaves the ground it was carved in; drawn by Waters.
+@export var falls: Array[Waterfall] = []

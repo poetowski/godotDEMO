@@ -6,7 +6,8 @@ extends RefCounted
 ## from the land when the world is set up, and again when it's sculpted: a
 ## river's surface follows its course, within `CORRIDOR` metres of it, the lake
 ## is flat, and water fills what lies below them and connects to them. Read-only
-## once built, so worker threads may ask; a rebuild swaps the whole grid.
+## once built, so worker threads may ask; a rebuild swaps the whole grid. The grid
+## covers only the ground around the plans.
 
 ## Metres either side of a river's middle in which its level holds.
 const CORRIDOR := 25
@@ -21,6 +22,8 @@ const SIDES: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1),
 ## just past the shore, where the surface runs into the bank), whether water
 ## stands there, and its flow along world x and z.
 class Grid:
+	## The whole x and north of the first sample.
+	var origin := Vector2i.ZERO
 	var columns := 0
 	var rows := 0
 	var levels := PackedFloat32Array()
@@ -55,6 +58,14 @@ static func use_only(plans: Array[RegionWater]) -> void:
 	rebuild()
 
 
+## The falls of everything poured.
+static func falls() -> Array[Waterfall]:
+	var found: Array[Waterfall] = []
+	for plan in _plans:
+		found.append_array(plan.falls)
+	return found
+
+
 ## The water data, for tests.
 static func saved_plans() -> Array[RegionWater]:
 	var found: Array[RegionWater] = []
@@ -71,10 +82,11 @@ static func rebuild() -> void:
 	if _plans.is_empty():
 		_grid = null
 		return
-	# Water lies in R1 alone for now, so the grid covers only R1.
+	var area := _ground_covered()
 	var grid := Grid.new()
-	grid.columns = int(RegionMap.SIZE) + 1
-	grid.rows = int(RegionMap.SIZE) + 1
+	grid.origin = area.position
+	grid.columns = area.size.x + 1
+	grid.rows = area.size.y + 1
 	var count := grid.columns * grid.rows
 	grid.levels.resize(count)
 	grid.levels.fill(-INF)
@@ -94,8 +106,9 @@ static func level_at(xz: Vector2) -> float:
 	var grid := _grid
 	if grid == null:
 		return SectorDesign.NO_WATER
-	var north := -xz.y
-	var i := floori(xz.x)
+	var north := -xz.y - grid.origin.y
+	var east := xz.x - grid.origin.x
+	var i := floori(east)
 	var j := floori(north)
 	if i < 0 or j < 0 or i >= grid.columns - 1 or j >= grid.rows - 1:
 		return SectorDesign.NO_WATER
@@ -106,7 +119,7 @@ static func level_at(xz: Vector2) -> float:
 	var north_east := grid.levels[k + grid.columns + 1]
 	if is_inf(south_west) or is_inf(south_east) or is_inf(north_west) or is_inf(north_east):
 		return SectorDesign.NO_WATER
-	var fu := xz.x - i
+	var fu := east - i
 	var fv := north - j
 	if fu + fv <= 1.0:
 		return south_west + (south_east - south_west) * fu + (north_west - south_west) * fv
@@ -119,8 +132,8 @@ static func flow_at(xz: Vector2) -> Vector2:
 	var grid := _grid
 	if grid == null:
 		return Vector2.ZERO
-	var i := roundi(xz.x)
-	var j := roundi(-xz.y)
+	var i := roundi(xz.x) - grid.origin.x
+	var j := roundi(-xz.y) - grid.origin.y
 	if i < 0 or j < 0 or i >= grid.columns or j >= grid.rows:
 		return Vector2.ZERO
 	return grid.flows[j * grid.columns + i]
@@ -152,7 +165,7 @@ static func mesh() -> ArrayMesh:
 			for corner in square:
 				if numbers[corner] < 0:
 					numbers[corner] = vertices.size()
-					vertices.append(Vector3(corner % grid.columns, grid.levels[corner], -(corner / grid.columns)))
+					vertices.append(Vector3(corner % grid.columns + grid.origin.x, grid.levels[corner], -(corner / grid.columns + grid.origin.y)))
 					var flow := grid.flows[corner] / NatureKit.WATER_MAX_FLOW * 0.5 + Vector2(0.5, 0.5)
 					colors.append(Color(clampf(flow.x, 0.0, 1.0), clampf(flow.y, 0.0, 1.0), 0.0, 1.0))
 			# South-west, north-west, south-east; south-east, north-west, north-east.
@@ -184,13 +197,29 @@ static func wet_sectors() -> PackedStringArray:
 	for j in grid.rows:
 		for i in grid.columns:
 			if grid.wet[j * grid.columns + i] == 1:
-				seen[Vector2i(mini(i, grid.columns - 2), mini(j, grid.rows - 2)) / int(SectorMap.SIZE)] = true
+				var at := grid.origin + Vector2i(mini(i, grid.columns - 2), mini(j, grid.rows - 2))
+				seen[SectorMap.unbounded_cell_at(Vector2(at.x, -at.y - 0.5) + Vector2(0.5, 0.0))] = true
 	var cells: Array[Vector2i] = []
 	cells.assign(seen.keys())
 	cells.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.x < b.x or (a.x == b.x and a.y < b.y))
 	for cell in cells:
 		names.append(SectorMap.name_of(cell))
 	return names
+
+
+## The samples the plans can reach, inside the world: x and north.
+static func _ground_covered() -> Rect2i:
+	var covered := Rect2()
+	for plan in _plans:
+		var parts: Array[Rect2] = []
+		if not is_inf(plan.lake_level):
+			parts.append(Rect2(plan.lake_seed, Vector2.ZERO).grow(plan.lake_reach))
+		for course in plan.courses:
+			for point in course.points:
+				parts.append(Rect2(point, Vector2.ZERO).grow(CORRIDOR + 15.0))
+		for part in parts:
+			covered = covered.merge(part) if covered.has_area() else part
+	return Rect2i(covered.intersection(SectorMap.bounds()))
 
 
 ## Fills one plan's lake and rivers into the grid.
@@ -203,9 +232,11 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 	near_level.fill(-INF)
 	var near_flow := PackedVector2Array()
 	near_flow.resize(count)
+	var near_limit := PackedFloat32Array()
+	near_limit.resize(count)
 	var ring: Array[int] = []
 	for course in plan.courses:
-		_lay_course(grid, course, near_level, near_flow, ring)
+		_lay_course(grid, course, near_level, near_flow, near_limit, ring)
 	var sources: Array[int] = []
 	sources.assign(ring)
 	for step in CORRIDOR:
@@ -216,6 +247,7 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 				if other >= 0 and is_inf(near_level[other]):
 					near_level[other] = near_level[k]
 					near_flow[other] = near_flow[k]
+					near_limit[other] = near_limit[k]
 					next.append(other)
 		ring = next
 	# Water stands where the land lies below the level here, connected to a
@@ -227,9 +259,8 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 		seen[k] = 1
 		open.append(k)
 	if not is_inf(plan.lake_level):
-		var seed_sample := Vector2i(plan.lake_seed.round())
-		var seed_k := seed_sample.y * grid.columns + seed_sample.x
-		if seed_k >= 0 and seed_k < count:
+		var seed_k := _sample_at(grid, plan.lake_seed)
+		if seed_k >= 0:
 			seen[seed_k] = 1
 			open.append(seed_k)
 	while not open.is_empty():
@@ -239,10 +270,14 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 			continue
 		var i := k % grid.columns
 		var j := k / grid.columns
+		# Past its reach a lake stops, or it would run on down its own river.
+		if is_inf(near_level[k]) and maxf(absf(i + grid.origin.x - plan.lake_seed.x), absf(j + grid.origin.y - plan.lake_seed.y)) > plan.lake_reach:
+			continue
 		# The world's edge meets the flat land around it.
 		if i < 1 or j < 1 or i >= grid.columns - 1 or j >= grid.rows - 1:
 			continue
-		if WorldShape.height(Vector2(i, -j)) >= level:
+		var ground := WorldShape.height(Vector2(i + grid.origin.x, -(j + grid.origin.y)))
+		if ground >= level or (near_limit[k] > 0.0 and level - ground > near_limit[k]):
 			continue
 		grid.wet[k] = 1
 		grid.levels[k] = level
@@ -255,7 +290,7 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 
 
 ## Marks the samples under a river's middle with its level and flow.
-static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat32Array, near_flow: PackedVector2Array, sources: Array[int]) -> void:
+static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat32Array, near_flow: PackedVector2Array, near_limit: PackedFloat32Array, sources: Array[int]) -> void:
 	var total := 0.0
 	for s in course.points.size() - 1:
 		total += course.points[s].distance_to(course.points[s + 1])
@@ -283,13 +318,14 @@ static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat
 			near_level[k] = lerpf(course.levels[s], course.levels[s + 1], t)
 			# Flow is along world x and z; the course's y runs north, -z.
 			near_flow[k] = Vector2(along.x, -along.y) * speed
+			near_limit[k] = course.max_depth
 			sources.append(k)
 		travelled += length
 
 
 static func _sample_at(grid: Grid, point: Vector2) -> int:
-	var i := roundi(point.x)
-	var j := roundi(point.y)
+	var i := roundi(point.x) - grid.origin.x
+	var j := roundi(point.y) - grid.origin.y
 	if i < 0 or j < 0 or i >= grid.columns or j >= grid.rows:
 		return -1
 	return j * grid.columns + i

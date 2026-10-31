@@ -21,6 +21,9 @@ const HEIGHTS := {
 	"marsh_marigold": Vector2(0.25, 0.4),
 	"willow_shrub": Vector2(1.3, 1.9),
 	"young_willow": Vector2(3.7, 4.8),
+	"cliff_outcrop_a": Vector2(3.0, 4.4),
+	"cliff_outcrop_b": Vector2(4.4, 6.0),
+	"wind_snag": Vector2(4.0, 5.0),
 }
 
 

@@ -19,11 +19,11 @@ the other way round: it follows if the ground is sculpted again.
 - **River out:** leaves the lake through N4 and flows west to the edge at A1.
   Surface from -1.4 m to -2.15 m. **Placeholder:** 0.55 m/s. Shallowest about
   0.5 m at the sill near N4, then 0.2 m at the very edge.
-- **Sectors with water:** A1, B1, C1-2, D1-2, E1-2, F1-3, G1-3, H2-3, I2-4, J3-5,
+- **Sectors with water in R1:** A1, B1, C1-2, D1-2, E1-2, F1-3, G1-3, H2-3, I2-4, J3-5,
   K3-5, L3-5, M3-5, N2-4, O2-5, P1-5, Q1-5, R1-6, S1-13, T1-15.
-- **Open:** R1's edges are low walls for now: along the east shore of the lake
-  and the inflow, and where the outflow ends at A1. The land of R4 and R8 lies
-  beyond them, without water.
+- **River on:** the outflow crosses R1's edge at A1 and runs on to the western
+  ravine; see `R8/terrain.md`.
+- **Open:** R1's edge is a low wall along the east shore of the lake and the inflow.
 
 ## The waterside
 

@@ -15,3 +15,7 @@ extends Resource
 ## it leaves or joins a lake.
 @export var ease_in: float = 0.0
 @export var ease_out: float = 0.0
+## Metres of water at most under this river's surface; 0 for no limit. Rapids
+## running down a slope set it, so their sloping surface stops where the ground
+## falls away instead of hanging in the air.
+@export var max_depth: float = 0.0

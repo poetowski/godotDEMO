@@ -342,10 +342,116 @@ def young_willow():
     kit.collision_cylinder("YoungWillow", (0, 0, 0), (0, 0, 2.6), 0.17)
 
 
+def _wet_stone(name, seed, radius, tall):
+    """A dark water-worn stone breaking the surface, with foam around its waist."""
+    p = palette()
+    p["foam"] = kit.material("Foam", (0.90, 0.94, 0.95), roughness=0.6)
+    rng = random.Random(seed)
+    model = kit.Model(name)
+    model.rock((0, 0, radius * tall * 0.5), radius, p["stone_dark"], rng, scale=(1.0, rng.uniform(0.7, 0.9), tall), subdivisions=2, roughness=0.14)
+    for k in range(9):
+        angle = math.tau * k / 9 + rng.uniform(-0.15, 0.15)
+        at = radius * rng.uniform(0.95, 1.15)
+        size = radius * rng.uniform(0.16, 0.3)
+        model.rock((math.cos(angle) * at, math.sin(angle) * at * 0.82, 0.03), size, p["foam"], rng, scale=(1.3, 1.0, 0.22), subdivisions=0)
+    model.finish()
+
+
+def rapid_stone_a():
+    _wet_stone("RapidStoneA", 41, 0.62, 0.95)
+
+
+def rapid_stone_b():
+    _wet_stone("RapidStoneB", 42, 0.42, 0.7)
+
+
+def gravel_bar():
+    p = palette()
+    p["gravel"] = kit.material("Gravel", (0.56, 0.53, 0.46), roughness=1.0)
+    rng = random.Random(43)
+    model = kit.Model("GravelBar")
+    model.rock((0, 0, 0.05), 1.5, p["gravel"], rng, scale=(1.0, 0.68, 0.14), subdivisions=2, roughness=0.1)
+    for k in range(22):
+        angle = rng.uniform(0, math.tau)
+        at = rng.uniform(0.1, 1.0) ** 0.7
+        radius = rng.uniform(0.05, 0.15)
+        tone = p[rng.choice(["stone_light", "stone_mid", "stone_dark"])]
+        x, y = math.cos(angle) * at * 1.3, math.sin(angle) * at * 0.85
+        model.rock((x, y, 0.2 * (1.0 - at * at) + radius * 0.2), radius, tone, rng, scale=(1.0, 0.85, 0.65), subdivisions=0)
+    model.finish()
+
+
+def spray_moss():
+    p = palette()
+    rng = random.Random(44)
+    model = kit.Model("SprayMoss")
+    for k in range(4):
+        angle = math.tau * k / 4 + rng.uniform(-0.3, 0.3)
+        at = 0.32 if k else 0.0
+        model.rock((math.cos(angle) * at, math.sin(angle) * at, 0.05), rng.uniform(0.28, 0.42), p["moss" if k % 2 else "leaf_deep"], rng, scale=(1.1, 1.0, 0.42), subdivisions=1, roughness=0.18)
+    for k in range(5):
+        model.frond((rng.uniform(-0.3, 0.3), rng.uniform(-0.3, 0.3), 0.12), rng.uniform(0, math.tau), rng.uniform(0.35, 0.5), p["leaf_light"], leaflets=5)
+    model.finish()
+
+
+def _outcrop(name, seed, blocks):
+    """Jagged bedrock showing through the ground: overlapping angular blocks, each
+    (x, y, height of its middle, half width, half depth, half height)."""
+    p = palette()
+    rng = random.Random(seed)
+    model = kit.Model(name)
+    for k, (x, y, z, wide, deep, tall) in enumerate(blocks):
+        tone = p[("stone_dark", "stone_mid", "stone_dark", "stone_light")[k % 4]]
+        model.rock((x, y, z), 1.0, tone, rng, scale=(wide, deep, tall), subdivisions=1, roughness=0.28)
+        if k % 3 == 1:
+            model.rock((x - wide * 0.2, y + deep * 0.2, z + tall * 0.72), 1.0, p["moss"], rng, scale=(wide * 0.55, deep * 0.5, tall * 0.22), subdivisions=1, roughness=0.14)
+    model.finish()
+
+
+def cliff_outcrop_a():
+    _outcrop("CliffOutcropA", 45, [
+        (-1.5, 0.3, 0.9, 1.7, 1.4, 1.5), (0.7, -0.3, 1.5, 1.5, 1.2, 2.1), (2.2, 0.6, 0.7, 1.2, 1.1, 1.1),
+        (0.1, 1.2, 0.6, 1.5, 0.9, 0.9), (-0.5, -1.1, 0.4, 1.3, 0.8, 0.6),
+    ])
+    kit.collision_box("CliffOutcropA", (0.2, 0, 1.3), (5.2, 3.2, 2.6))
+
+
+def cliff_outcrop_b():
+    _outcrop("CliffOutcropB", 46, [
+        (0.2, 0.0, 2.2, 1.05, 0.85, 3.1), (-1.0, 0.3, 1.2, 1.0, 0.9, 1.9), (1.1, -0.4, 0.8, 0.9, 0.8, 1.2),
+        (-0.1, 0.9, 0.6, 1.0, 0.6, 0.8),
+    ])
+    kit.collision_cylinder("CliffOutcropB", (0, 0, 0), (0, 0, 4.6), 1.3)
+
+
+def wind_snag():
+    """A dead tree, bleached and bent away from the drop by the wind off it."""
+    p = palette()
+    rng = random.Random(47)
+    model = kit.Model("WindSnag")
+    trunk = [(0, 0, 0), (0.08, 0, 1.3), (0.34, 0.04, 2.6), (0.82, 0.02, 3.7), (1.45, -0.05, 4.5)]
+    radii = [0.24, 0.19, 0.14, 0.09, 0.04]
+    for k in range(4):
+        model.cylinder(trunk[k], trunk[k + 1], radii[k], radii[k + 1], p["wood_drift"], segments=7)
+    for k in range(5):
+        angle = math.tau * k / 5
+        model.cylinder((0, 0, 0.12), (math.cos(angle) * 0.62, math.sin(angle) * 0.62, -0.02), 0.13, 0.03, p["wood_wet"], segments=5)
+    for start, tip in [
+        (trunk[1], (0.95, 0.7, 2.0)), (trunk[2], (1.25, -0.65, 3.05)), (trunk[2], (-0.1, 0.72, 3.15)),
+        (trunk[3], (1.5, 0.55, 3.95)), (trunk[3], (1.25, -0.5, 4.35)),
+    ]:
+        elbow = ((start[0] + tip[0]) * 0.5 + rng.uniform(-0.1, 0.1), (start[1] + tip[1]) * 0.5, (start[2] + tip[2]) * 0.5 + 0.12)
+        model.cylinder(start, elbow, 0.055, 0.035, p["wood_drift"], segments=5)
+        model.cylinder(elbow, tip, 0.035, 0.008, p["wood_drift"], segments=4)
+    model.finish()
+    kit.collision_cylinder("WindSnag", (0, 0, 0), (0.3, 0, 2.7), 0.2)
+
+
 BUILDERS = {fn.__name__: fn for fn in (
     river_stone_a, river_stone_b, river_stone_c, pebbles_patch, mossy_boulder_a, mossy_boulder_b,
     lily_pads, lily_white, lily_pink, reeds_a, reeds_b, cattails, sedge_a, sedge_b, waterside_fern,
     blue_flag_iris, marsh_marigold, driftwood_log, driftwood_branch, mossy_stump, willow_shrub, young_willow,
+    rapid_stone_a, rapid_stone_b, gravel_bar, spray_moss, cliff_outcrop_a, cliff_outcrop_b, wind_snag,
 )}
 
 

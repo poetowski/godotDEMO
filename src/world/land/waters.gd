@@ -24,6 +24,7 @@ var _sheet_material: ShaderMaterial
 var _pool_material: StandardMaterial3D
 var _lake_material: StandardMaterial3D
 var _poured: MeshInstance3D
+var _poured_falls: Array[Node] = []
 
 
 func _ready() -> void:
@@ -90,6 +91,15 @@ func _show_poured_water() -> void:
 		_poured.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(_poured)
 	_poured.mesh = WaterField.mesh()
+	for node in _poured_falls:
+		node.free()
+	_poured_falls.clear()
+	var before := get_child_count()
+	var falls := WaterField.falls()
+	for k in falls.size():
+		_build(falls[k], "poured_%d" % k)
+	for k in range(before, get_child_count()):
+		_poured_falls.append(get_child(k))
 
 
 func _build_lake(lake: Lake, key: String) -> void:
@@ -128,25 +138,26 @@ func _shore_point(lake: Lake, angle: float) -> Vector3:
 func _build(fall: Waterfall, key: String) -> void:
 	var top := Vector2(fall.top.x, -fall.top.y)
 	var bottom := Vector2(fall.bottom.x, -fall.bottom.y)
-	var pool_level := WorldShape.height(bottom) + fall.pool_depth
+	var pool_level := WorldShape.height(bottom) + fall.pool_depth if is_inf(fall.pool_level) else fall.pool_level
 	var sheet := MeshInstance3D.new()
 	sheet.name = "Sheet_" + key
 	sheet.mesh = _sheet(top, bottom, fall.width, pool_level)
 	sheet.material_override = _sheet_material
 	sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(sheet)
-	var pool := MeshInstance3D.new()
-	pool.name = "Pool_" + key
-	var disc := CylinderMesh.new()
-	disc.top_radius = fall.pool_radius
-	disc.bottom_radius = fall.pool_radius
-	disc.height = 0.05
-	disc.radial_segments = 20
-	disc.rings = 1
-	pool.mesh = disc
-	pool.material_override = _pool_material
-	pool.position = Vector3(bottom.x, pool_level, bottom.y)
-	add_child(pool)
+	if fall.pool_radius > 0.0:
+		var pool := MeshInstance3D.new()
+		pool.name = "Pool_" + key
+		var disc := CylinderMesh.new()
+		disc.top_radius = fall.pool_radius
+		disc.bottom_radius = fall.pool_radius
+		disc.height = 0.05
+		disc.radial_segments = 20
+		disc.rings = 1
+		pool.mesh = disc
+		pool.material_override = _pool_material
+		pool.position = Vector3(bottom.x, pool_level, bottom.y)
+		add_child(pool)
 	add_child(_spray("Spray_" + key, Vector3(bottom.x, pool_level, bottom.y), fall.width))
 
 

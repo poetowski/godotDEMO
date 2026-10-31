@@ -32,6 +32,10 @@ const MASSES: Dictionary[String, Array] = {
 	"waterside_fern": [0.08, 0.0, 40.0],
 	"blue_flag_iris": [0.03, 0.0, 55.0],
 	"marsh_marigold": [0.12, 0.0, 45.0],
+	"rapid_stone_a": [0.0, 0.0, 90.0],
+	"rapid_stone_b": [0.0, 0.0, 90.0],
+	"gravel_bar": [0.0, 0.0, 90.0],
+	"spray_moss": [0.0, 0.0, 70.0],
 }
 ## Metres of room each mass takes.
 const ROOM: Dictionary[String, float] = {
@@ -50,6 +54,10 @@ const ROOM: Dictionary[String, float] = {
 	"waterside_fern": 0.3,
 	"blue_flag_iris": 0.2,
 	"marsh_marigold": 0.22,
+	"rapid_stone_a": 0.6,
+	"rapid_stone_b": 0.45,
+	"gravel_bar": 1.4,
+	"spray_moss": 0.6,
 }
 
 ## Places tried per sector for masses, and for props.
@@ -89,13 +97,18 @@ func _populate() -> void:
 		var corner := SectorMap.corner_of(cell)
 		for attempt in mass_tries:
 			var xz := Vector2(corner.x + rng.randf() * SectorMap.SIZE, corner.z - rng.randf() * SectorMap.SIZE)
-			if absf(_shore_at(xz)) < REACH:
+			if _grows_at(xz):
 				_try_mass(xz)
 	for slug: String in _copies:
 		var look: Array = MASSES[slug]
 		var transforms: Array[Transform3D] = []
 		transforms.assign(_copies[slug])
 		add_multimesh(slug.to_pascal_case(), PropLibrary.mass_mesh(slug, look[0], look[1]), null, transforms, _copy_tints[slug], look[2])
+
+
+## True where masses are tried.
+func _grows_at(xz: Vector2) -> bool:
+	return absf(_shore_at(xz)) < REACH
 
 
 ## Metres to the water's edge at a point, by the sample nearest it.

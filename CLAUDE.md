@@ -139,7 +139,14 @@ every stroke.
 - Water in carved ground is data in `data/world/water/` (`RegionWater`,
   `WaterField`): it never changes the ground, and it refills itself when the
   land changes. Rivers' levels must not rise downstream, and must stand above
-  their beds.
+  their beds. A lake stops at `lake_reach`, or it would run on down its own river;
+  rapids down a slope need `max_depth`, or their surface hangs in the air. Falls are
+  `RegionWater.falls`.
+- The player can't go past column M of the western regions: `field.gd` warns in it,
+  and returns them to the spawn point past it. `goto` further west bounces back too.
+- `MistBarrier` is the world's western edge: fog over the abyss with a wall inside.
+  `tools/carve_western_abyss.gd` carved the land under it, once, into the sculpt
+  tiles, at the author's request; it only ever lowers ground.
 
 ## Painting the ground by hand
 
@@ -216,7 +223,7 @@ heights, water and flow stay known everywhere. So:
   always in the game; in the editor the names show only when zoomed out, past
   `label_visible_distance`.
 - The hills ease flat around R1's rim (`WorldShape.rim`), which keeps its land as
-  carved. `WaterField`'s grid covers R1 only; water elsewhere must widen it.
+  carved. `WaterField`'s grid covers the ground around its plans, so it follows new water.
 - Never loop over the whole world's sectors: at 2 km it would be 40,000. Work per
   region (SectorGrid, the streaming map) or per streamed chunk.
 - Anything slow that a region change triggers runs on a worker thread

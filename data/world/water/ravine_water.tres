@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RegionWater" format=3]
+
+[ext_resource type="Script" path="res://src/world/land/region_water.gd" id="1_water"]
+
+[resource]
+script = ExtResource("1_water")
+brief = "The western ravine: the tarn the waterfall lands in, filling the hollow on its floor."
+lake_seed = Vector2(-141, 11)
+lake_level = -57.0
+lake_reach = 48.0

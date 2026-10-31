@@ -17,6 +17,22 @@ Add an entry per decision, newest last:
 
 Rule, from the author (2026-10-31): we never use third-party assets.
 
+Request (2026-10-31): "i extended river outflow from lake to other regions, and i
+created in west regions a natural barrier for a movement, which should be a hige
+drop in latitude. use decorative skill, extend river and make waterfall into ravine
+on west. decorate surrounding of river and its delta before waterfall. create new
+assets in blender if needed." And: "you can also extend ravin on western border and
+make it much deeper and put a fog over there is player cannot enter and does not
+properly see what is too much behind." **Placeholder:** water levels, the tarn, all
+the new assets and their layout, and the abyss's depth, the fog's line and look. See
+`docs/world/regions/R8/terrain.md`.
+
+Request (2026-10-31): "also create a hardcoded barrier on M sector of western
+regions, if player approach, he will get message "I should not be here..." and he
+will be teleported to spawn point if he approaches further to west". Column M of
+R7, R8 and R9: x -80 to -70. Entering it warns; past its west side (x -80) returns
+the player to the spawn point. In `field.gd`.
+
 Request (2026-10-31): nine regions around and including R1 make the starting zone,
 named R2 to R9 in clockwise order. **Placeholder:** the clock starts at north.
 
