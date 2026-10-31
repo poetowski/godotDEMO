@@ -196,7 +196,11 @@ func _where(_args: PackedStringArray) -> String:
 		return "No field world here."
 	var at := (field.call("player") as Player).global_position
 	var clock := field.call("clock") as WorldClock
-	return "%s at (%.1f, %.1f, %.1f), %s" % [SectorMap.name_of(SectorMap.cell_at(at)), at.x, at.y, at.z, clock.text()]
+	var place := LevelMap.at(field.call("terrain") as FieldTerrain, at)
+	var level := "%.1f m above the ground" % (at.y - place.ground)
+	if not place.place_name().is_empty():
+		level += ", %s" % place.place_name()
+	return "%s at (%.1f, %.1f, %.1f), %s, %s" % [SectorMap.name_of(SectorMap.cell_at(at)), at.x, at.y, at.z, level, clock.text()]
 
 
 func _goto(args: PackedStringArray) -> String:

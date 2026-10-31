@@ -147,7 +147,7 @@ func _report_props(world: Node) -> void:
 			elif off < -Settle.TOLERANCE:
 				buried.append("%s, %.2f m down" % [line, -off])
 			var level := WaterField.level_at(xz)
-			if PropLibrary.SPANS.has(slug):
+			if not prop.stands_on_ground():
 				continue
 			if level != SectorDesign.NO_WATER and level - WorldShape.height(xz) > DROWNED:
 				drowned.append("%s, %.2f m under" % [line, level - WorldShape.height(xz)])

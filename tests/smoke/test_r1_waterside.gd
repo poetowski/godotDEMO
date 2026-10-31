@@ -238,6 +238,8 @@ func test_moving_a_point_moves_the_fog() -> void:
 func test_no_prop_floats() -> void:
 	for design in _designs:
 		for prop in design.scene_props():
+			if not prop.stands_on_ground():
+				continue
 			var xz := Vector2(prop.position.x, prop.position.z)
 			assert_lt(prop.position.y - WorldShape.height(xz), 0.6, "%s/%s" % [design.name, prop.name])
 
@@ -286,4 +288,32 @@ func test_lanterns_stand_by_the_bridge_and_light_only_at_night() -> void:
 	assert_eq(NightLight.amount_at(23.0), 1.0, "midnight")
 	assert_eq(NightLight.amount_at(3.0), 1.0, "before dawn")
 	assert_eq(NightLight.amount_at(7.0), 0.0, "morning")
+
+
+func test_the_hero_crosses_the_bridge_on_foot() -> void:
+	var bridge := _bridge()
+	var player: Player = _world.call("player")
+	# In the model's own metres: its deck's top is about 6.4 up, near each end.
+	var south := bridge.transform * Vector3(0.0, 6.6, 9.5)
+	var north := bridge.transform * Vector3(0.0, 6.6, -9.5)
+	player.global_position = south
+	player.velocity = Vector3.ZERO
+	player.look_toward(north)
+	await wait_physics_frames(20)
+	var swam := 0
+	var highest := player.global_position.y
+	var frames := 0
+	Input.action_press(&"move_forward")
+	# Faster than this, at 4.5 m/s over 19 m, and it wouldn't be walking.
+	while player.global_position.z > north.z and frames < 300:
+		await wait_physics_frames(1)
+		frames += 1
+		swam += 1 if player.is_swimming else 0
+		highest = maxf(highest, player.global_position.y)
+	Input.action_release(&"move_forward")
+	assert_eq(swam, 0, "never swims up on the deck")
+	assert_gt(highest, 1.9, "goes over the arch")
+	assert_lt(frames, 300, "gets across at walking pace")
+	assert_gt(player.global_position.y, -1.0, "and comes off on the bank, not in the river")
+	assert_false(player.is_swimming)
 

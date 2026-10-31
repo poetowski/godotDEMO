@@ -27,11 +27,20 @@ extends Node3D
 		asset = value
 		_refresh()
 
+## It stands on something other than the land, such as a deck or an upper floor, so
+## `npm run settle` leaves its height alone.
+@export var keep_height: bool = false
+
 var _preview: MeshInstance3D
 
 
 func _ready() -> void:
 	_refresh()
+
+
+## False for what stands on something other than the land, by hand or by its kind.
+func stands_on_ground() -> bool:
+	return not keep_height and not (asset != null and PropLibrary.SPANS.has(PropLibrary.slug_of(asset)))
 
 
 ## Where it stands in its design, for merging.

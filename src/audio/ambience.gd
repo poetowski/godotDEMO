@@ -2,11 +2,14 @@ class_name Ambience
 extends Node
 ## The world's ambient sound: a soft wind always, birds calling now and then
 ## by day and crickets by night, fading between them with the light
-## (DayNight). One layer of sound for the whole world for now; places of
-## their own come later.
+## (DayNight). Indoors and underground the wind drops and the creatures fall
+## silent (`set_enclosed`, from the hero's place in LevelMap).
 
 const BIRD_VARIANTS := 5
 const CRICKET_VARIANTS := 3
+## Decibels the wind drops by when enclosed, and the seconds that takes.
+const ENCLOSED_DB := 20.0
+const ENCLOSING_SECONDS := 1.5
 
 @export var day_night: DayNight
 @export var clock: WorldClock
@@ -21,6 +24,9 @@ var _birds: Array[AudioStreamWAV] = []
 var _crickets: Array[AudioStreamWAV] = []
 var _rng := RandomNumberGenerator.new()
 var _until_call := 2.0
+var _enclosed := false
+## 0 in the open, 1 fully enclosed.
+var _shelter := 0.0
 
 
 func _ready() -> void:
@@ -43,10 +49,22 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_shelter = move_toward(_shelter, 1.0 if _enclosed else 0.0, delta / ENCLOSING_SECONDS)
+	_wind.volume_db = wind_db - ENCLOSED_DB * _shelter
 	_until_call -= delta
 	if _until_call <= 0.0:
 		_until_call = _rng.randf_range(call_gap.x, call_gap.y)
-		call_now()
+		if not _enclosed:
+			call_now()
+
+
+## Whether the listener is indoors or underground.
+func set_enclosed(enclosed: bool) -> void:
+	_enclosed = enclosed
+
+
+func is_enclosed() -> bool:
+	return _enclosed
 
 
 ## What calls at this hour: &"birds" by day, &"crickets" by night.

@@ -53,13 +53,15 @@ const SWING_STRIKE := 0.3
 const FALL_LIMIT := 10.0
 ## Metres dropped in one physics step that can only be a teleport.
 const TELEPORT_DROP := 2.0
+## Metres of falling with nothing to land on: lost, under the world.
+const LOST_FALL := 150.0
 
 ## Placeholder: the level and the hit points, as the author asked for so far.
 var level: int = 1
 var max_hp: int = 100
 var hp: int = 100
 var has_sword: bool = false
-## True while in water at least `swim_depth` deep.
+## True while in water at least `swim_depth` deep, not merely above it.
 var is_swimming: bool = false
 var is_swinging: bool = false
 ## What the hero carries.
@@ -183,6 +185,9 @@ func _check_fall() -> void:
 		_fall_top = height
 	else:
 		_fall_top = maxf(_fall_top, height)
+		if _fall_top - height > LOST_FALL and hp > 0:
+			hp = 0
+			died.emit()
 
 
 ## Back to full health, with no fall under way, as after respawning.
@@ -305,19 +310,21 @@ func _animate(delta: float) -> void:
 	_body.swim(is_swimming, ground_speed, delta)
 
 
-## Whether the hero swims here, from the water's depth under them (a little
-## shallower to stop than to start, so they don't flicker at the edge).
-## Returns the water's surface height, or -INF on dry land.
+## Whether the hero swims here: their feet are under the surface of the water at
+## their own height (LevelMap), and it's deep enough, a little shallower to stop than
+## to start, so they don't flicker at the edge. Standing, it's measured from what's
+## underfoot, which may be a floor above the bed. Returns the water's surface height,
+## or -INF where there's none.
 func _update_swimming() -> float:
 	var terrain := get_tree().get_first_node_in_group(&"terrains") as FieldTerrain if is_inside_tree() else null
 	if terrain == null:
 		is_swimming = false
 		return -INF
-	var xz := Vector2(global_position.x, global_position.z)
-	var level := terrain.water_level_at(xz)
-	var depth := level - terrain.height_at(xz)
-	is_swimming = depth >= (swim_depth - 0.15 if is_swimming else swim_depth)
-	return level
+	var place := LevelMap.at(terrain, global_position)
+	var bottom := global_position.y if is_on_floor() else place.bed
+	var deep_enough := place.water - bottom >= (swim_depth - 0.15 if is_swimming else swim_depth)
+	is_swimming = place.is_in_water() and deep_enough
+	return place.water
 
 
 func _flash_swoosh() -> void:

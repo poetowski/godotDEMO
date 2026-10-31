@@ -98,6 +98,7 @@ in the brief are rules. If the description is missing, ask for it.
 | `.blade(base, angle, height, width, bend, mat)`, `.ribbon(points, side_angle, widths, mat)` | a leaf, a hanging strand |
 | `.pad(centre, radius, mat, notch)`, `.petal(centre, angle, length, width, lift, mat)`, `.frond(base, angle, length, mat)` | a floating leaf, a petal, a fern's frond |
 | `kit.collision_box(name, centre, size)`, `kit.collision_cylinder(name, bottom, top, radius)` | collision |
+| `kit.collision_slab(name, a, b, width, height)` | a slab along a line, for ramps, decks and walls that slope or curve; overlap neighbours a little, or there's a seam |
 | `kit.export(slug)`, `kit.report(slug, path)` | the `.glb`, and its size |
 
 ## Gotchas

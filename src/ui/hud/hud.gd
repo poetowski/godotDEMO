@@ -144,8 +144,13 @@ func close_menus() -> void:
 
 
 ## Shows the sector the player stands in; an empty name means off the grid.
-func show_sector(sector_name: String) -> void:
-	_sector.text = tr("Off the grid") if sector_name.is_empty() else tr("Sector %s") % sector_name
+func show_sector(sector_name: String, place_name: String = "") -> void:
+	if sector_name.is_empty():
+		_sector.text = tr("Off the grid")
+	elif place_name.is_empty():
+		_sector.text = tr("Sector %s") % sector_name
+	else:
+		_sector.text = tr("Sector %s, %s") % [sector_name, tr(place_name)]
 
 
 ## Shows the time of day in the top right; worlds without a clock never

@@ -50,7 +50,7 @@ Claude session started in this project.
 
    | The report says | What to do |
    |---|---|
-   | floating, buried | `npm run settle` |
+   | floating, buried | `npm run settle`; if it stands on a floor or a deck, set its `keep_height` first |
    | drowned | Delete it if code placed it; a prop the author placed is theirs to decide |
    | stranded from the water | Move it back to the shore, or remove it |
    | lake cut off by `lake_reach` | Widen `lake_reach` in `data/world/water/`; check it doesn't run on down its river |

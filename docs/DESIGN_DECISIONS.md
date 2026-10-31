@@ -27,6 +27,16 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "we need to somehow implement also if something is meters below in
+cave system or in upper third or fifth level of tall building, those are just examplease.
+implement system so we are ready when this happen. because - problem now is when i walk on
+the bridge it thinks in the middle of the bridge that i am in the water beneath because i
+start to swim." The system is "Levels" in `docs/world/README.md`: questions about where
+someone is take their height too, a `LevelVolume` makes a place of its own, and a
+`GroundOpening` is a way down. No cave, tower or volume exists in the game yet. **Placeholder:**
+the wind dropping 20 dB in 1.5 s when enclosed, a fall of 150 m with nothing to land on
+counting as dying, and the place's name following the sector's on the HUD.
+
 Request (2026-10-31): "now generate new asset in blender. it is wooden curven bridge with
 small fences, some logs might be missing, few columns in the water. then put it to cross
 river on R1 sectors near E sector column or D. rotate a bit. then redecorate if needed.

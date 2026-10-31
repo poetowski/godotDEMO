@@ -68,11 +68,9 @@ func step(weight: float = 1.0) -> void:
 	stepped.emit(surface)
 
 
-## &"water" when standing in water, else &"grass".
+## &"water" when standing in water, not merely above it, else &"grass".
 func surface_underfoot() -> StringName:
 	var terrain := get_tree().get_first_node_in_group(&"terrains") as FieldTerrain if is_inside_tree() else null
-	if terrain:
-		var xz := Vector2(global_position.x, global_position.z)
-		if terrain.water_level_at(xz) > terrain.height_at(xz) + 0.03:
-			return &"water"
+	if terrain and LevelMap.at(terrain, global_position).water_over_point() > 0.03:
+		return &"water"
 	return &"grass"

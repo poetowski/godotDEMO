@@ -14,6 +14,7 @@ extends Node3D
 var start_sector: String = "A1"
 
 var _sector := Vector2i(-2, -2)
+var _place_name := ""
 var _spawn := Vector2i.ZERO
 var _warned := false
 
@@ -23,6 +24,7 @@ var _warned := false
 @onready var _streamer: SectorStreamer = $Streamer
 @onready var _clock: WorldClock = $Clock
 @onready var _border: ZoneBorder = $ZoneBorder
+@onready var _ambience: Ambience = $Ambience
 
 
 ## A new field is a new game.
@@ -71,9 +73,12 @@ func _wake_residents() -> void:
 
 func _process(_delta: float) -> void:
 	var cell := SectorMap.cell_at(_player.global_position)
-	if cell != _sector:
+	var place := LevelMap.at(_terrain, _player.global_position)
+	if cell != _sector or place.place_name() != _place_name:
 		_sector = cell
-		_hud.show_sector(SectorMap.name_of(cell))
+		_place_name = place.place_name()
+		_hud.show_sector(SectorMap.name_of(cell), _place_name)
+	_ambience.set_enclosed(place.is_enclosed())
 	_hud.show_clock(_clock.text())
 	_keep_to_the_limit()
 

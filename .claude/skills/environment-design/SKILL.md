@@ -86,6 +86,13 @@ sectors.
    of about 5 x 5 sectors sharing a script, since a design streams as one unit.
    `src/world/field/sectors/r1_waterside/` is a finished example.
 
+10. **More than one level.** `height_at`, `is_dry`, `claim` and `is_clear` are about the
+   land. For a building, a bridge or a cave, see "Levels" in `docs/world/README.md`: floors
+   are colliders with ramps, named places and pools are `LevelVolume`s added with
+   `add_content`, a way through the land is a `GroundOpening` in the scene, frozen props on a
+   floor set `keep_height`, and repeated floors put the level in `scatter_id`'s kind. Keep
+   masses off a hole yourself: nothing else does.
+
 ## Workflow
 
 1. **Resolve the sectors.** Write down each sector's bounds: a sector at column

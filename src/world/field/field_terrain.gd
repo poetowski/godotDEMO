@@ -47,6 +47,9 @@ var _far_models: Dictionary[SectorDesign, MeshInstance3D] = {}
 var _chunks: TerrainChunks
 ## What the streamed ground and the grid follow in the editor.
 var _view_focus: Node3D
+## Each GroundOpening's inverse placement and half size, swapped whole so worker
+## threads may read it.
+var _openings: Array[Array] = []
 
 
 ## The grass-and-grid material every piece of ground shares.
@@ -69,6 +72,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	add_to_group(&"terrains")
 	_collect()
+	_read_openings()
 	if chunked:
 		_build_border()
 		_start_chunks()
@@ -109,8 +113,28 @@ func surface_height_at(xz: Vector2) -> float:
 	return maxf(height_at(xz), water_level_at(xz))
 
 
+## True on ground someone can stand on, so not over a GroundOpening.
 func is_dry(xz: Vector2, margin_above_water: float = 0.05) -> bool:
-	return height_at(xz) > water_level_at(xz) + margin_above_water
+	return height_at(xz) > water_level_at(xz) + margin_above_water and not is_ground_open(xz)
+
+
+## True over a GroundOpening. Safe on worker threads.
+func is_ground_open(xz: Vector2) -> bool:
+	for opening: Array in _openings:
+		var inverse: Transform3D = opening[0]
+		var half: Vector2 = opening[1]
+		var local := inverse * Vector3(xz.x, 0.0, xz.y)
+		if absf(local.x) < half.x and absf(local.z) < half.y:
+			return true
+	return false
+
+
+## Reads the openings again and makes the ground under an area of samples (x, north)
+## over, once one is added or moved.
+func refresh_openings(area: Rect2i) -> void:
+	_read_openings()
+	if _chunks:
+		_chunks.rebuild(area)
 
 
 ## The dry ground nearest to a point, searched in widening rings up to
@@ -230,6 +254,14 @@ func _collect() -> void:
 			_owners[cell] = design
 
 
+func _read_openings() -> void:
+	var found: Array[Array] = []
+	for node in get_tree().get_nodes_in_group(GroundOpening.GROUP):
+		var opening := node as GroundOpening
+		found.append([opening.global_transform.affine_inverse(), opening.size * 0.5])
+	_openings = found
+
+
 func _reshape_designs(area: Rect2i) -> void:
 	for design in _designs:
 		design.reshape_ground(area)
@@ -247,7 +279,7 @@ func _start_chunks() -> void:
 		_chunks.focus = _view_focus
 		_chunks.editable = true
 	_chunks.height = WorldShape.height
-	_chunks.is_designed = func(xz: Vector2) -> bool: return _owners.has(SectorMap.unbounded_cell_at(xz))
+	_chunks.is_open = func(xz: Vector2) -> bool: return _owners.has(SectorMap.unbounded_cell_at(xz)) or is_ground_open(xz)
 	_chunks.tint = Landforms.ground_tint
 	_chunks.material = ground_material()
 	_chunks.view_regions = view_regions

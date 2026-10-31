@@ -154,6 +154,10 @@ msgstr ""
 msgid "Sector %s"
 msgstr ""
 
+#: src/ui/hud/hud.gd
+msgid "Sector %s, %s"
+msgstr ""
+
 #: src/ui/game_menu/game_menu.gd
 msgid "Slot %s"
 msgstr ""

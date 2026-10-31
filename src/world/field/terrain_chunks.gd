@@ -10,8 +10,9 @@ extends Node
 ##   every 20 m, out to `view_regions` regions.
 ## Each tile hangs a skirt down from its edges, hiding the cracks where tiles
 ## of different detail meet. Tiles are built on worker threads and attached a
-## few per frame. Designed sectors are left open: their designs bring their
-## own ground. Heights come from `height` (the world's shape).
+## few per frame. Designed sectors are left open, as their designs bring their
+## own ground, and so are ground openings. Heights come from `height` (the world's
+## shape).
 ##
 ## In the editor (`editable`) the tiles keep their triangles, so sculpting can
 ## change the few under the brush at once (`reshape`); `rebuild` then makes
@@ -31,8 +32,8 @@ var focus: Node3D
 ## Height of the open ground at a world x and z. Must be safe to call from
 ## worker threads.
 var height: Callable
-## True for a cell a design owns (left open). Safe on worker threads.
-var is_designed: Callable
+## True where the ground is left open. Safe on worker threads.
+var is_open: Callable
 ## The ground's colour for the grass shader at (xz, height, up), such as
 ## rock on steep slopes; plain grass when unset. Safe on worker threads.
 var tint: Callable
@@ -199,7 +200,7 @@ func _generate(key: Vector3i, step: float, corner: Vector2, side: float, build: 
 	for j in samples - 1:
 		for i in samples - 1:
 			var middle := corner + Vector2((i + 0.5) * step, -(j + 0.5) * step)
-			if is_designed.is_valid() and bool(is_designed.call(middle)):
+			if is_open.is_valid() and bool(is_open.call(middle)):
 				open_everywhere = false
 				quads.append(-1)
 				continue

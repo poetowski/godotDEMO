@@ -50,7 +50,7 @@ func _initialize() -> void:
 
 
 static func standing_height(prop: Prop) -> float:
-	if PropLibrary.SPANS.has(PropLibrary.slug_of(prop.asset)):
+	if not prop.stands_on_ground():
 		return prop.position.y
 	var xz := Vector2(prop.position.x, prop.position.z)
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
