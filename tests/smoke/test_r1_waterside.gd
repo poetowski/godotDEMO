@@ -147,7 +147,8 @@ func test_no_water_hangs_over_the_ravine() -> void:
 		for n in range(-40, 40, 2):
 			var xz := Vector2(x, -n)
 			var level := WaterField.level_at(xz)
-			if level != SectorDesign.NO_WATER:
+			# The tarn, far below, is deep on purpose.
+			if level != SectorDesign.NO_WATER and level > -50.0:
 				assert_lt(level - WorldShape.height(xz), 5.0, "at most a lip at the rim, at %s" % xz)
 
 
@@ -171,13 +172,43 @@ func test_the_new_assets_are_placed_along_the_fall() -> void:
 	assert_gt(_copies(["SprayMoss"] as Array[String]).size(), 0, "spray moss")
 
 
-func test_the_fog_has_a_wall_the_player_cannot_cross() -> void:
-	var barrier := _world.get_node("MistBarrier")
+func test_the_fog_follows_its_line_and_thickens_away_from_it() -> void:
+	var barrier := _world.get_node("MistBarrier") as MistBarrier
 	assert_not_null(barrier.get_node("Fog"))
-	var wall := barrier.get_node("Wall") as StaticBody3D
-	assert_gt(wall.get_child_count(), 20)
-	var north_end := MistBarrier.WEST_FROM
-	var south_end := MistBarrier.WEST_TO
-	assert_eq(north_end.y, SectorMap.bounds().end.y, "reaches the world's north edge")
-	assert_eq(south_end.y, SectorMap.bounds().position.y, "reaches the world's south edge")
+	assert_gt((barrier.get_node("Wall") as StaticBody3D).get_child_count(), 15)
+	var line := barrier.line()
+	assert_gt(line.size(), 20)
+	var r8_rim := Vector2(-73.0, -20.0)
+	assert_eq(barrier.depth_at(r8_rim + Vector2(10.0, 0.0)), 0.0, "clear on the near side")
+	assert_gt(barrier.depth_at(r8_rim + Vector2(-30.0, 0.0)), 20.0, "three sectors in")
+	assert_gt(barrier.depth_at(r8_rim + Vector2(-80.0, 0.0)), barrier.depth_at(r8_rim + Vector2(-30.0, 0.0)), "further in")
 
+
+func test_the_wall_stops_the_player_inside_the_fog() -> void:
+	await wait_physics_frames(2)
+	var space := (_world as Node3D).get_world_3d().direct_space_state
+	# Above the ground, from the rim in R6 towards the world's south edge.
+	var query := PhysicsRayQueryParameters3D.create(Vector3(40.0, 20.0, 148.0), Vector3(40.0, 20.0, 199.0) + Vector3(0.0, 0.0, 60.0))
+	var hit := space.intersect_ray(query)
+	assert_false(hit.is_empty(), "the wall is there")
+	assert_gt((hit.get("position", Vector3.ZERO) as Vector3).z, 148.0)
+
+
+func test_moving_a_point_moves_the_fog() -> void:
+	var barrier := _world.get_node("MistBarrier") as MistBarrier
+	var marker := barrier.get_node("FogLine").get_child(22) as Node3D
+	var was := marker.position
+	var spot := Vector2(was.x + 15.0, was.z)
+	assert_eq(barrier.depth_at(spot), 0.0, "before")
+	marker.position.x += 40.0
+	barrier.rebuild()
+	assert_gt(barrier.depth_at(spot), 0.0, "after")
+	marker.position = was
+	barrier.rebuild()
+
+
+func test_no_prop_floats() -> void:
+	for design in _designs:
+		for prop in design.scene_props():
+			var xz := Vector2(prop.position.x, prop.position.z)
+			assert_lt(prop.position.y - WorldShape.height(xz), 0.6, "%s/%s" % [design.name, prop.name])

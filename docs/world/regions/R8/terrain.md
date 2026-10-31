@@ -20,15 +20,15 @@ R6, as a natural barrier to movement. The ravine's floor lies about 55 m down.
   to about R7:P20 and R8:P1. Surface -2.15 m to -2.7 m. **Placeholder:** the levels.
 - **Rapids:** from the sill at about x -40, a stepped run to the rim at x -63. Surface
   -3.6 m to -8 m. **Placeholder.**
-- **The fall:** from x -64 down the author's slope to the floor at x -133, 9 m wide
-  and about 50 m high. It's in `RegionWater.falls`. **Placeholder:** its line and width.
-- **Tarn:** in the hollow on the floor, around R8:F2, surface -57 m, about 35 x 60 m.
-  **Placeholder.**
-- **The abyss and the fog:** at the author's request, the ravine runs on north through
-  R9 along the west border, and west of about x -166 the land drops to -220 m.
-  Fog (`MistBarrier`) stands over that line from R9's north edge to R7's south edge,
-  with a wall inside it the player can't cross, and on along the ravine's south face
-  as far as R5. **Placeholder:** the depth, the fog's line and look.
+- **The fall:** from x -64 down the author's slope into the tarn at about (-112, 3
+  north), 9 m wide. It's in `RegionWater.falls`. **Placeholder:** its line and width.
+- **Tarn:** in the hollow on the floor, around R8:F3, surface -57 m. **Placeholder.**
+- **The abyss and the fog:** the land runs down to -220 m at the world's west edge. Fog
+  (`MistBarrier`) fills everything beyond a line of points along the rim of the drop,
+  from R9's north edge round to R6's south edge: thin for about the first 3 sectors,
+  then thickening, with a wall inside it at about 6 sectors. To change where it
+  starts, drag the points under `MistBarrier/FogLine` in the editor. **Placeholder:**
+  the points, and how fast it thickens.
 - **The limit:** the player is warned in column M (x -80 to -70) and returned to the
   spawn point past it, so the fall's foot and the tarn are seen from above only.
 - **Decoration:** the blocks `River*` in `field.tscn`. Their props can be moved by

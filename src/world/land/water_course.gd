@@ -19,3 +19,6 @@ extends Resource
 ## running down a slope set it, so their sloping surface stops where the ground
 ## falls away instead of hanging in the air.
 @export var max_depth: float = 0.0
+## Metres either side of the middle the river can spread; 0 for WaterField's
+## usual reach. Rapids set it, or they run along a slope's contour.
+@export var half_width: int = 0

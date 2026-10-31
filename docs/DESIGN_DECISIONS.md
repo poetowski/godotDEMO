@@ -27,6 +27,17 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "make zoom out ingame limited to 10 meters away of player up
+to 1m close. do not allow bigger zoom outs", "also make zoom in and zoom out slower".
+**Placeholder:** 0.25 m per notch of the wheel, half what it was.
+
+Request (2026-10-31): "i redesigned western terrain, please fix flying objects now.
+also, please make the western fog polygonal or something in sence that i want to
+move it further in some areas even severals ectors more east, please make it follow
+the shape of the heavy drop and make fog more gradual, like looking through first 3
+sectors better but then worse etc." The fog's line is points in `MistBarrier/FogLine`.
+**Placeholder:** where they start, and how fast the fog thickens.
+
 Request (2026-10-31): "also create a hardcoded barrier on M sector of western
 regions, if player approach, he will get message "I should not be here..." and he
 will be teleported to spawn point if he approaches further to west". Column M of

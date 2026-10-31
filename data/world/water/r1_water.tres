@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d2pucarqvwkk1" path="res://src/world/land/water_course.gd" id="1_i611k"]
 [ext_resource type="Script" uid="uid://difwh3sgdkpp2" path="res://src/world/land/region_water.gd" id="2_xn6gt"]
-[ext_resource type="Script" path="res://src/world/land/waterfall.gd" id="3_fall"]
+[ext_resource type="Script" uid="uid://cpp5n3vm3hk7v" path="res://src/world/land/waterfall.gd" id="3_fall"]
 
 [sub_resource type="Resource" id="Resource_i611k"]
 script = ExtResource("1_i611k")
@@ -30,11 +30,12 @@ points = PackedVector2Array(-40, -9, -45, -9, -48, -10, -51, -10, -54, -10, -57,
 levels = PackedFloat32Array(-3.6, -3.75, -3.8, -4.6, -5, -6, -7, -8)
 speed = 1.0
 max_depth = 2.4
+half_width = 9
 
 [sub_resource type="Resource" id="Resource_fall"]
 script = ExtResource("3_fall")
 top = Vector2(-64, -10)
-bottom = Vector2(-133, -4)
+bottom = Vector2(-112, 3)
 width = 9.0
 pool_radius = 0.0
 pool_level = -57.0

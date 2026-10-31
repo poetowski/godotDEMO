@@ -24,6 +24,7 @@
 //                                in a window; writes .perf/<world>.json
 //   npm run props -- <Design>    freeze a sector design's code-placed props
 //                                into field.tscn as Prop nodes to edit by hand
+//   npm run settle               set props back on the ground after sculpting
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
@@ -305,6 +306,16 @@ const commands = {
       timeoutMs: 3 * 60_000,
     });
     return report('props', result);
+  },
+
+  // Sets props under sector designs back on the ground after sculpting; only
+  // their height changes. The editor must be closed.
+  async settle() {
+    if (!(await ensureImported())) return false;
+    const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/settle_props.gd'], {
+      timeoutMs: 3 * 60_000,
+    });
+    return report('settle', result);
   },
 
   async strings() {

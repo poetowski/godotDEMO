@@ -14,6 +14,7 @@
     "strings": "node tools/dev.mjs strings",
     "perf": "node tools/dev.mjs perf",
     "props": "node tools/dev.mjs props",
+    "settle": "node tools/dev.mjs settle",
     "models": "node tools/dev.mjs models",
     "blender": "node tools/dev.mjs blender",
     "asset-preview": "node tools/dev.mjs asset-preview",

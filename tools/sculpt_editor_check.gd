@@ -37,15 +37,18 @@ func _steps() -> void:
 	EditorInterface.get_selection().clear()
 	EditorInterface.get_selection().add_node(terrain)
 	await tree.create_timer(1.0).timeout
-	var camera := EditorInterface.get_editor_viewport_3d(0).get_camera_3d()
-	# Wherever the saved view looks, so the strokes land on screen.
-	var middle := camera.get_viewport().get_visible_rect().size * 0.5
-	var looked_at := terrain.ground_hit(camera.project_ray_origin(middle), camera.project_ray_normal(middle))
+	# Its own camera straight above open ground in R1, so strokes land where they
+	# should wherever the author last left the editor's view.
+	var spot := Vector2(100.0, -150.0)
+	var camera := Camera3D.new()
+	EditorInterface.get_editor_viewport_3d(0).add_child(camera)
+	camera.global_position = Vector3(spot.x, 90.0, spot.y)
+	camera.global_rotation = Vector3(-PI / 2.0, 0.0, 0.0)
+	var looked_at := terrain.ground_hit(camera.project_ray_origin(_screen(camera, spot)), camera.project_ray_normal(_screen(camera, spot)))
 	_expect(looked_at != Vector3.INF, "the view looks at the ground")
 	if looked_at == Vector3.INF:
 		_finish()
 		return
-	var spot := Vector2(clampf(looked_at.x, 20.0, 180.0), clampf(looked_at.z, -180.0, -20.0))
 	var tile := Vector2i(floori(spot.x / TerrainSculpt.TILE), floori(-spot.y / TerrainSculpt.TILE))
 	await tree.create_timer(5.0).timeout
 	_shot("sculpt_1_before")
@@ -86,6 +89,7 @@ func _steps() -> void:
 	await tree.create_timer(2.0).timeout
 	_shot("sculpt_5_undone")
 	await _check_painting(camera, spot, tile, history)
+	await _check_moving_the_fog()
 	_finish()
 
 
@@ -113,10 +117,27 @@ func _check_painting(camera: Camera3D, spot: Vector2, tile: Vector2i, history: U
 	_expect(tabs.current_tab == 0, "back to the Sculpt tab")
 
 
+## Dragging one of the fog's points in the editor moves the fog, without saving.
+func _check_moving_the_fog() -> void:
+	var barrier := EditorInterface.get_edited_scene_root().get_node("MistBarrier") as MistBarrier
+	var marker := barrier.get_node("FogLine").get_child(22) as Node3D
+	var was := marker.position
+	var spot := Vector2(was.x + 15.0, was.z)
+	_expect(barrier.depth_at(spot) == 0.0, "no fog east of the fog's line")
+	marker.position.x += 40.0
+	await _plugin.get_tree().create_timer(1.0).timeout
+	_expect(barrier.depth_at(spot) > 0.0, "moving a point moved the fog")
+	marker.position = was
+	await _plugin.get_tree().create_timer(1.0).timeout
+	_expect(barrier.depth_at(spot) == 0.0, "moving it back moved the fog back")
+	_shot("fog_1_points")
+
+
 ## Presses at `from` and moves to `to` over `seconds`; releases unless `hold`.
 func _drag(camera: Camera3D, from: Vector2, to: Vector2, seconds: float, hold: bool = false) -> void:
 	_button(camera, from, true)
 	var started := Time.get_ticks_msec()
+	var frames := 0
 	while true:
 		var t := (Time.get_ticks_msec() - started) / (seconds * 1000.0)
 		var motion := InputEventMouseMotion.new()
@@ -125,6 +146,8 @@ func _drag(camera: Camera3D, from: Vector2, to: Vector2, seconds: float, hold: b
 		if t >= 1.0:
 			break
 		await _plugin.get_tree().process_frame
+		frames += 1
+	print("sculpt-check: %d frames in a drag of %.1f s" % [frames, seconds])
 	if not hold:
 		_button(camera, to, false)
 

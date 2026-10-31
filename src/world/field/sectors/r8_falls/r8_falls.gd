@@ -9,7 +9,7 @@ extends "res://src/world/field/sectors/r1_waterside/r1_waterside.gd"
 
 ## Where the fall runs (x east, y north), as in data/world/water/r1_water.tres.
 const FALL_TOP := Vector2(-64.0, -10.0)
-const FALL_BOTTOM := Vector2(-133.0, -4.0)
+const FALL_BOTTOM := Vector2(-112.0, 3.0)
 ## Metres either side of the fall that its spray keeps wet.
 const SPRAY := 14.0
 ## Metres along the fall between bedrock outcrops, on each side.

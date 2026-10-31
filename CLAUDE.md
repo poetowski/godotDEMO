@@ -45,6 +45,7 @@ working title and the game's design is not decided yet.
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor -- [scene]` | Opens the editor, on the given scene if one is named. The MCP tools need it. |
+| `npm run settle` | Sets props under sector designs back on the ground after sculpting; only their height changes. Close the editor first. |
 | `npm run sculpt-check` | Drives the Sculpt and Paint tabs inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png` and `paint_*.png`. Leaves the project's sculpted and painted ground alone. Close the editor first. |
 | `npm run game -- --regions=5` | A test world of 5 x 5 regions instead of the starting zone. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
@@ -144,7 +145,11 @@ every stroke.
   `RegionWater.falls`.
 - The player can't go past column M of the western regions: `field.gd` warns in it,
   and returns them to the spawn point past it. `goto` further west bounces back too.
-- `MistBarrier` is the world's western edge: fog over the abyss with a wall inside.
+- After sculpting, `npm run settle` sets props under designs back on the ground,
+  changing only their height.
+- `MistBarrier` is the fog over the western drop: a volume filling the polygon
+  beyond the Marker3D points of `MistBarrier/FogLine`, thin at first and thickening
+  with distance from them, with a wall inside. Drag the points to change it.
   `tools/carve_western_abyss.gd` carved the land under it, once, into the sculpt
   tiles, at the author's request; it only ever lowers ground.
 

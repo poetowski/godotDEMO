@@ -234,20 +234,25 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 	near_flow.resize(count)
 	var near_limit := PackedFloat32Array()
 	near_limit.resize(count)
+	var near_width := PackedInt32Array()
+	near_width.resize(count)
 	var ring: Array[int] = []
 	for course in plan.courses:
-		_lay_course(grid, course, near_level, near_flow, near_limit, ring)
+		_lay_course(grid, course, near_level, near_flow, near_limit, near_width, ring)
 	var sources: Array[int] = []
 	sources.assign(ring)
 	for step in CORRIDOR:
 		var next: Array[int] = []
 		for k in ring:
+			if near_width[k] > 0 and step >= near_width[k]:
+				continue
 			for side in SIDES:
 				var other := _neighbour(grid, k, side)
 				if other >= 0 and is_inf(near_level[other]):
 					near_level[other] = near_level[k]
 					near_flow[other] = near_flow[k]
 					near_limit[other] = near_limit[k]
+					near_width[other] = near_width[k]
 					next.append(other)
 		ring = next
 	# Water stands where the land lies below the level here, connected to a
@@ -290,7 +295,7 @@ static func _pour(grid: Grid, plan: RegionWater) -> void:
 
 
 ## Marks the samples under a river's middle with its level and flow.
-static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat32Array, near_flow: PackedVector2Array, near_limit: PackedFloat32Array, sources: Array[int]) -> void:
+static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat32Array, near_flow: PackedVector2Array, near_limit: PackedFloat32Array, near_width: PackedInt32Array, sources: Array[int]) -> void:
 	var total := 0.0
 	for s in course.points.size() - 1:
 		total += course.points[s].distance_to(course.points[s + 1])
@@ -319,6 +324,7 @@ static func _lay_course(grid: Grid, course: WaterCourse, near_level: PackedFloat
 			# Flow is along world x and z; the course's y runs north, -z.
 			near_flow[k] = Vector2(along.x, -along.y) * speed
 			near_limit[k] = course.max_depth
+			near_width[k] = course.half_width
 			sources.append(k)
 		travelled += length
 

@@ -40,8 +40,10 @@ const SWING_STRIKE := 0.3
 @export var stick_look_speed: float = 2.6
 @export var min_pitch_degrees: float = -65.0
 @export var max_pitch_degrees: float = 30.0
-@export var min_distance: float = 2.0
-@export var max_distance: float = 8.0
+@export var min_distance: float = 1.0
+@export var max_distance: float = 10.0
+## Metres the camera moves per notch of the wheel.
+@export var zoom_step: float = 0.25
 @export_group("Sword")
 @export var swing_duration: float = 0.5
 
@@ -96,9 +98,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_spring_arm.spring_length = maxf(_spring_arm.spring_length - 0.5, min_distance)
+			_spring_arm.spring_length = maxf(_spring_arm.spring_length - zoom_step, min_distance)
 		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_spring_arm.spring_length = minf(_spring_arm.spring_length + 0.5, max_distance)
+			_spring_arm.spring_length = minf(_spring_arm.spring_length + zoom_step, max_distance)
 	var motion := event as InputEventMouseMotion
 	if motion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_turn_camera(-motion.relative.x * mouse_sensitivity, -motion.relative.y * mouse_sensitivity)

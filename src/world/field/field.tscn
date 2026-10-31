@@ -18,14 +18,12 @@
 [ext_resource type="PackedScene" uid="uid://ct5u8kxtb4lt5" path="res://assets/models/props/driftwood_branch/driftwood_branch.glb" id="65_asset"]
 [ext_resource type="Script" uid="uid://dccimpkv36jk3" path="res://src/world/land/waters.gd" id="65_waters"]
 [ext_resource type="PackedScene" uid="uid://c8qqnxfs7bwf3" path="res://assets/models/props/mossy_boulder_a/mossy_boulder_a.glb" id="66_asset"]
+[ext_resource type="PackedScene" uid="uid://dx3v2s472iapj" path="res://assets/models/props/wind_snag/wind_snag.glb" id="67_asset"]
+[ext_resource type="PackedScene" uid="uid://b5vmtb7m5o2ho" path="res://assets/models/props/cliff_outcrop_a/cliff_outcrop_a.glb" id="68_asset"]
 [ext_resource type="Script" uid="uid://6ov4j0b8nfbk" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
-
-[ext_resource type="Script" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
-[ext_resource type="PackedScene" path="res://assets/models/props/wind_snag/wind_snag.glb" id="67_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/cliff_outcrop_a/cliff_outcrop_a.glb" id="68_asset"]
-[ext_resource type="PackedScene" path="res://assets/models/props/cliff_outcrop_b/cliff_outcrop_b.glb" id="90_asset"]
-
-[ext_resource type="Script" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
+[ext_resource type="Script" uid="uid://co6sxvfrart4c" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
+[ext_resource type="Script" uid="uid://dtfcbitpb00x5" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
+[ext_resource type="PackedScene" uid="uid://s1up22h5rakd" path="res://assets/models/props/cliff_outcrop_b/cliff_outcrop_b.glb" id="90_asset"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
@@ -133,7 +131,7 @@ kind = 4
 asset = ExtResource("61_asset")
 
 [node name="Asset7" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=2044091132]
-transform = Transform3D(1.06834, 0, 0.0537639, 0, 1.0696919, 0, -0.0537639, 0, 1.06834, 36.478355, -0.7452807, -18.94736)
+transform = Transform3D(1.06834, 0, 0.0537639, 0, 1.0696919, 0, -0.0537639, 0, 1.06834, 36.478355, -0.8635, -18.94736)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -377,14 +375,14 @@ solid = true
 asset = ExtResource("66_asset")
 
 [node name="Asset2" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=819743411]
-transform = Transform3D(-0.65447783, 0, 0.6494846, 0, 0.9220474, 0, -0.6494846, 0, -0.65447783, 168.13332, -5.59, -3.2)
+transform = Transform3D(-0.65447783, 0, 0.6494846, 0, 0.9220474, 0, -0.6494846, 0, -0.65447783, 168.13332, -5.7508, -3.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
 asset = ExtResource("60_asset")
 
 [node name="Asset3" type="Node3D" parent="Sectors/R1WatersideP1/Props" unique_id=520252027]
-transform = Transform3D(0.73848814, 0, -0.9361463, 0, 1.1923652, 0, 0.9361463, 0, 0.73848814, 170.4317, -5.71, -3.2)
+transform = Transform3D(0.73848814, 0, -0.9361463, 0, 1.1923652, 0, 0.9361463, 0, 0.73848814, 170.4317, -5.8920, -3.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -494,21 +492,21 @@ solid = true
 asset = ExtResource("63_asset")
 
 [node name="Asset5" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=785301125]
-transform = Transform3D(0.9126633, 0, -0.7540003, 0, 1.1838373, 0, 0.7540003, 0, 0.9126633, 196.9, -0.59973955, -107.01163)
+transform = Transform3D(0.9126633, 0, -0.7540003, 0, 1.1838373, 0, 0.7540003, 0, 0.9126633, 196.9, -1.5019, -107.01163)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
 asset = ExtResource("66_asset")
 
 [node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=2070015056]
-transform = Transform3D(-0.23535766, 0, -1.0012021, 0, 1.0284935, 0, 1.0012021, 0, -0.23535766, 191.0307, 0.43418673, -135.82085)
+transform = Transform3D(-0.23535766, 0, -1.0012021, 0, 1.0284935, 0, 1.0012021, 0, -0.23535766, 191.0307, 0.3175, -135.82085)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
 asset = ExtResource("64_asset")
 
 [node name="Asset7" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=1287111250]
-transform = Transform3D(1.1280968, 0, -0.37347877, 0, 1.1883135, 0, 0.37347877, 0, 1.1280968, 190.39856, -0.10571468, -132.86159)
+transform = Transform3D(1.1280968, 0, -0.37347877, 0, 1.1883135, 0, 0.37347877, 0, 1.1280968, 190.39856, -0.2655, -132.86159)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -525,498 +523,589 @@ decorates_land = true
 
 [node name="Props" type="Node3D" parent="Sectors/R1WatersideP16" unique_id=36788662]
 
-[node name="RiverDelta" type="Node3D" parent="Sectors"]
+[node name="RiverDelta" type="Node3D" parent="Sectors" unique_id=850133408]
 editor_description = "The delta before the rim: the river beyond R1, decorated."
 script = ExtResource("71_falls")
 sectors = PackedStringArray("R7:P18", "R7:P19", "R7:P20", "R7:Q18", "R7:Q19", "R7:Q20", "R7:R18", "R7:R19", "R7:R20", "R7:S18", "R7:S19", "R7:S20", "R7:T18", "R7:T19", "R7:T20", "R8:P1", "R8:P2", "R8:Q1", "R8:Q2", "R8:R1", "R8:R2", "R8:S1", "R8:S2", "R8:T1", "R8:T2")
 design_id = "r8_riverdelta"
 design_seed = 211
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverDelta"]
+[node name="Props" type="Node3D" parent="Sectors/RiverDelta" unique_id=2068980655]
 
-[node name="Asset1" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=435240865]
 transform = Transform3D(-0.5700026, 0, 0.9165813, 0, 1.0793629, 0, -0.9165813, 0, -0.5700026, -39.184536, -1.0432762, 17.295912)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=169786717]
 transform = Transform3D(0.49116647, 0, -0.7968972, 0, 0.9361034, 0, 0.7968972, 0, 0.49116647, -13.784808, 0.35003683, 21.438147)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=258797153]
 transform = Transform3D(0.8622704, 0, 0.6224741, 0, 1.0634774, 0, -0.6224741, 0, 0.8622704, -31.01559, 0.74958706, -14.513383)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=117755590]
 transform = Transform3D(0.6575337, 0, -0.7274558, 0, 0.9805828, 0, 0.7274558, 0, 0.6575337, -28.120256, 0.6801937, -15.935923)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/RiverDelta/Props"]
-transform = Transform3D(-0.37774184, 0, 1.091488, 0, 1.1550043, 0, -1.091488, 0, -0.37774184, -28.520699, 0.7442581, -13.958147)
+[node name="Asset5" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=1273283155]
+transform = Transform3D(-0.37774184, 0, 1.091488, 0, 1.1550043, 0, -1.091488, 0, -0.37774184, -28.520699, 0.6973, -13.958147)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=1289029826]
 transform = Transform3D(-0.99185944, 0, 0.18859467, 0, 1.0096302, 0, -0.18859467, 0, -0.99185944, -10.503166, 0.33724135, -7.881453)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=1701111653]
 transform = Transform3D(1.0446074, 0, -0.37480566, 0, 1.1098126, 0, 0.37480566, 0, 1.0446074, -45.001648, 0.18083715, -12.771)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("67_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset8" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=133803645]
 transform = Transform3D(0.9259946, 0, -0.40972915, 0, 1.0125927, 0, 0.40972915, 0, 0.9259946, -47.98046, 0.06294009, 19.66091)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/RiverDelta/Props"]
+[node name="Asset9" type="Node3D" parent="Sectors/RiverDelta/Props" unique_id=1668790897]
 transform = Transform3D(1.1124755, 0, 0.27085954, 0, 1.1449745, 0, -0.27085954, 0, 1.1124755, -49.10035, -0.12352243, 1.4590836)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("67_asset")
 
-[node name="RiverRim" type="Node3D" parent="Sectors"]
+[node name="RiverRim" type="Node3D" parent="Sectors" unique_id=939442135]
 editor_description = "The rapids and the top of the fall: the river beyond R1, decorated."
 script = ExtResource("71_falls")
 sectors = PackedStringArray("R7:K17", "R7:K18", "R7:K19", "R7:K20", "R7:L17", "R7:L18", "R7:L19", "R7:L20", "R7:M17", "R7:M18", "R7:M19", "R7:M20", "R7:N17", "R7:N18", "R7:N19", "R7:N20", "R7:O17", "R7:O18", "R7:O19", "R7:O20", "R8:K1", "R8:K2", "R8:L1", "R8:L2", "R8:M1", "R8:M2", "R8:N1", "R8:N2", "R8:O1", "R8:O2")
 design_id = "r8_riverrim"
 design_seed = 212
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverRim"]
+[node name="Props" type="Node3D" parent="Sectors/RiverRim" unique_id=1162717701]
 
-[node name="Asset1" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-1.0522525, 0, 0.3392951, 0, 1.1056024, 0, -0.3392951, 0, -1.0522525, -70.29698, -9.190703, 35.059494)
+[node name="Asset1" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1841925746]
+transform = Transform3D(-1.0522525, 0, 0.3392951, 0, 1.1056024, 0, -0.3392951, 0, -1.0522525, -70.29698, -14.4706, 35.059494)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-0.8803805, 0, 0.49760818, 0, 1.0112783, 0, -0.49760818, 0, -0.8803805, -59.54698, -3.8567092, 3.7280183)
+[node name="Asset2" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1984913316]
+transform = Transform3D(-0.8803805, 0, 0.49760818, 0, 1.0112783, 0, -0.49760818, 0, -0.8803805, -59.54698, -4.0257, 3.7280183)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/RiverRim/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1481444890]
 transform = Transform3D(0.8459554, 0, 0.74136347, 0, 1.1248379, 0, -0.74136347, 0, 0.8459554, -54.51987, -2.9039867, 1.7672133)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/RiverRim/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=373510469]
 transform = Transform3D(0.90396374, 0, -0.014875203, 0, 0.9040861, 0, 0.014875203, 0, 0.90396374, -61.947052, -4.622192, -9.368694)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-0.84364176, 0, 0.54307157, 0, 1.0033236, 0, -0.54307157, 0, -0.84364176, -62.580147, -5.0708814, 18.50934)
+[node name="Asset5" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=611382784]
+transform = Transform3D(-0.84364176, 0, 0.54307157, 0, 1.0033236, 0, -0.54307157, 0, -0.84364176, -62.580147, -5.4047, 18.50934)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-1.107563, 0, -0.85348505, 0, 1.3982605, 0, 0.85348505, 0, -1.107563, -74.41458, -16.969706, 21.928772)
+[node name="Asset6" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1256769585]
+transform = Transform3D(-1.107563, 0, -0.85348505, 0, 1.3982605, 0, 0.85348505, 0, -1.107563, -74.41458, -19.0284, 21.928772)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-0.72609156, 0, -0.6917375, 0, 1.0028508, 0, 0.6917375, 0, -0.72609156, -74.96708, -20.680273, -3.1071062)
+[node name="Asset7" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1536888672]
+transform = Transform3D(-0.72609156, 0, -0.6917375, 0, 1.0028508, 0, 0.6917375, 0, -0.72609156, -74.96708, -20.8776, -3.1071062)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-1.0934086, 0, -0.87386644, 0, 1.3997089, 0, 0.87386644, 0, -1.0934086, -82.78429, -27.598658, 21.67052)
+[node name="Asset8" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1772666140]
+transform = Transform3D(-1.0934086, 0, -0.87386644, 0, 1.3997089, 0, 0.87386644, 0, -1.0934086, -82.78429, -31.0735, 21.67052)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(-0.2053837, 0, -1.0776917, 0, 1.0970879, 0, 1.0776917, 0, -0.2053837, -85.04889, -21.426811, -4.1088448)
+[node name="Asset9" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=204352496]
+transform = Transform3D(-0.2053837, 0, -1.0776917, 0, 1.0970879, 0, 1.0776917, 0, -0.2053837, -85.04889, -35.6089, -4.1088448)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(0.31780028, 0, 0.86020744, 0, 0.91703534, 0, -0.86020744, 0, 0.31780028, -92.31215, -41.335403, 18.29324)
+[node name="Asset10" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=340582563]
+transform = Transform3D(0.31780028, 0, 0.86020744, 0, 0.91703534, 0, -0.86020744, 0, 0.31780028, -92.31215, -40.8186, 18.29324)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset11" type="Node3D" parent="Sectors/RiverRim/Props"]
-transform = Transform3D(0.12584546, 0, -1.4253621, 0, 1.4309068, 0, 1.4253621, 0, 0.12584546, -92.69054, -28.997782, -3.0132933)
+[node name="Asset11" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1925654128]
+transform = Transform3D(0.12584546, 0, -1.4253621, 0, 1.4309068, 0, 1.4253621, 0, 0.12584546, -92.69054, -41.8505, -3.0132933)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset12" type="Node3D" parent="Sectors/RiverRim/Props"]
+[node name="Asset12" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1242255469]
 transform = Transform3D(1.0095953, 0, -0.12533139, 0, 1.0173448, 0, 0.12533139, 0, 1.0095953, -59.48577, -2.15847, 24.424164)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("67_asset")
 
-[node name="Asset13" type="Node3D" parent="Sectors/RiverRim/Props"]
+[node name="Asset13" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1475864705]
 transform = Transform3D(0.9946127, 0, -0.08935947, 0, 0.9986188, 0, 0.08935947, 0, 0.9946127, -55.025703, -2.3704743, -0.26986694)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset14" type="Node3D" parent="Sectors/RiverRim/Props"]
+[node name="Asset14" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=678415638]
 transform = Transform3D(1.0115074, 0, 0.32704216, 0, 1.0630634, 0, -0.32704216, 0, 1.0115074, -52.63388, -1.1387064, -5.400322)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("67_asset")
 
-[node name="RiverFace" type="Node3D" parent="Sectors"]
+[node name="RiverFace" type="Node3D" parent="Sectors" unique_id=1621139291]
 editor_description = "The fall and its foot: the river beyond R1, decorated."
 script = ExtResource("71_falls")
 sectors = PackedStringArray("R7:F18", "R7:F19", "R7:F20", "R7:G18", "R7:G19", "R7:G20", "R7:H18", "R7:H19", "R7:H20", "R7:I18", "R7:I19", "R7:I20", "R7:J18", "R7:J19", "R7:J20", "R8:F1", "R8:F2", "R8:G1", "R8:G2", "R8:H1", "R8:H2", "R8:I1", "R8:I2", "R8:J1", "R8:J2")
 design_id = "r8_riverface"
 design_seed = 213
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverFace"]
+[node name="Props" type="Node3D" parent="Sectors/RiverFace" unique_id=432278777]
 
-[node name="Asset1" type="Node3D" parent="Sectors/RiverFace/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=26642708]
 transform = Transform3D(-0.046564747, 0, 1.0646724, 0, 1.0656902, 0, -1.0646724, 0, -0.046564747, -140.48729, -57.118042, 0.65194845)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/RiverFace/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1567568424]
 transform = Transform3D(-0.09083528, 0, -1.1279548, 0, 1.1316065, 0, 1.1279548, 0, -0.09083528, -137.43362, -54.169693, 10.49575)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/RiverFace/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=2018449482]
 transform = Transform3D(0.2465319, 0, 1.0521932, 0, 1.0806888, 0, -1.0521932, 0, 0.2465319, -137.68726, -53.90527, 11.356048)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/RiverFace/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1207495123]
 transform = Transform3D(0.6451206, 0, -0.71673995, 0, 0.96431154, 0, 0.71673995, 0, 0.6451206, -125.61357, -56.7454, 13.303513)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(-1.1172792, 0, 0.24457034, 0, 1.143734, 0, -0.24457034, 0, -1.1172792, -123.181114, -56.862526, 3.652811)
+[node name="Asset5" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=525745175]
+transform = Transform3D(-1.1172792, 0, 0.24457034, 0, 1.143734, 0, -0.24457034, 0, -1.1172792, -123.181114, -58.7360, 3.652811)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("66_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(0.85520864, 0, -0.2022886, 0, 0.8788074, 0, 0.2022886, 0, 0.85520864, -121.65458, -56.20094, -5.8873267)
+[node name="Asset6" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=435585532]
+transform = Transform3D(0.85520864, 0, -0.2022886, 0, 0.8788074, 0, 0.2022886, 0, 0.85520864, -121.65458, -62.4389, -5.8873267)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(0.42787293, 0, -0.9112217, 0, 1.0066777, 0, 0.9112217, 0, 0.42787293, -117.701805, -53.830727, -7.2321076)
+[node name="Asset7" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1660236972]
+transform = Transform3D(0.42787293, 0, -0.9112217, 0, 1.0066777, 0, 0.9112217, 0, 0.42787293, -117.701805, -64.3516, -7.2321076)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(-0.3028751, 0, -1.39208, 0, 1.4246473, 0, 1.39208, 0, -0.3028751, -106.43906, -43.548935, 16.223818)
+[node name="Asset8" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1644145424]
+transform = Transform3D(-0.3028751, 0, -1.39208, 0, 1.4246473, 0, 1.39208, 0, -0.3028751, -106.43906, -58.0222, 16.223818)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(-1.020472, 0, 0.20844373, 0, 1.0415431, 0, -0.20844373, 0, -1.020472, -104.26915, -38.834614, -4.3788457)
+[node name="Asset9" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1528004853]
+transform = Transform3D(-1.020472, 0, 0.20844373, 0, 1.0415431, 0, -0.20844373, 0, -1.020472, -104.26915, -56.6327, -4.3788457)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(-0.17526132, 0, 1.2433239, 0, 1.2556157, 0, -1.2433239, 0, -0.17526132, -115.24845, -48.95317, 19.052681)
+[node name="Asset10" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=229225189]
+transform = Transform3D(-0.17526132, 0, 1.2433239, 0, 1.2556157, 0, -1.2433239, 0, -0.17526132, -115.24845, -56.2120, 19.052681)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset11" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(0.42301503, 0, -0.9599408, 0, 1.0490129, 0, 0.9599408, 0, 0.42301503, -110.442535, -47.6331, -7.3503494)
+[node name="Asset11" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1218682780]
+transform = Transform3D(0.42301503, 0, -0.9599408, 0, 1.0490129, 0, 0.9599408, 0, 0.42301503, -110.442535, -63.5523, -7.3503494)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset12" type="Node3D" parent="Sectors/RiverFace/Props"]
+[node name="Asset12" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1709781865]
 transform = Transform3D(-1.3814852, 0, 0.5304552, 0, 1.4798257, 0, -0.5304552, 0, -1.3814852, -125.104004, -57.13037, 12.327705)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="Asset13" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(0.980607, 0, -0.16692685, 0, 0.9947133, 0, 0.16692685, 0, 0.980607, -123.44257, -57.292145, -7.3815465)
+[node name="Asset13" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=857047710]
+transform = Transform3D(0.980607, 0, -0.16692685, 0, 0.9947133, 0, 0.16692685, 0, 0.980607, -123.44257, -61.8542, -7.3815465)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("68_asset")
 
-[node name="Asset14" type="Node3D" parent="Sectors/RiverFace/Props"]
-transform = Transform3D(0.6896534, 0, 0.9976451, 0, 1.2128139, 0, -0.9976451, 0, 0.6896534, -135.06628, -55.95783, 15.489382)
+[node name="Asset14" type="Node3D" parent="Sectors/RiverFace/Props" unique_id=1032771355]
+transform = Transform3D(0.6896534, 0, 0.9976451, 0, 1.2128139, 0, -0.9976451, 0, 0.6896534, -135.06628, -55.7408, 15.489382)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("90_asset")
 
-[node name="RiverTarn" type="Node3D" parent="Sectors"]
+[node name="RiverTarn" type="Node3D" parent="Sectors" unique_id=1101096638]
 editor_description = "The tarn on the ravine floor: the river beyond R1, decorated."
 script = ExtResource("71_falls")
-sectors = PackedStringArray("R7:E20", "R8:E1", "R8:E2", "R8:E3", "R8:E4", "R8:E5", "R8:E6", "R8:E7", "R8:F3", "R8:F4", "R8:F5", "R8:F6", "R8:F7", "R8:G3", "R8:G4", "R8:G5", "R8:G6", "R8:G7", "R8:H3", "R8:H4", "R8:H5", "R8:H6", "R8:H7", "R8:I3", "R8:I4", "R8:I5", "R8:I6", "R8:I7")
+sectors = PackedStringArray("R7:E20", "R8:E1", "R8:E2", "R8:E3", "R8:E4", "R8:E5", "R8:E6", "R8:E7", "R8:F3", "R8:F4", "R8:F5", "R8:F6", "R8:F7", "R8:G3", "R8:G4", "R8:G5", "R8:G6", "R8:G7", "R8:H3", "R8:H4", "R8:H5", "R8:H6", "R8:H7", "R8:I3", "R8:I4", "R8:I5", "R8:I6", "R8:I7", "R8:J3", "R8:J4", "R8:J5", "R8:J6", "R8:J7")
 design_id = "r8_rivertarn"
 design_seed = 214
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverTarn"]
+[node name="Props" type="Node3D" parent="Sectors/RiverTarn" unique_id=1006212450]
 
-[node name="Asset1" type="Node3D" parent="Sectors/RiverTarn/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1758235477]
 transform = Transform3D(-0.6638805, 0, -0.99168223, 0, 1.1933863, 0, 0.99168223, 0, -0.6638805, -146.70178, -53.85414, -46.36483)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/RiverTarn/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1054310910]
 transform = Transform3D(0.7830341, 0, -0.35303575, 0, 0.85893923, 0, 0.35303575, 0, 0.7830341, -149.04836, -54.401237, -45.51434)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/RiverTarn/Props"]
-transform = Transform3D(-0.9850587, 0, 0.08082032, 0, 0.98836863, 0, -0.08082032, 0, -0.9850587, -136.86324, -54.514275, -49.655186)
+[node name="Asset3" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=961016154]
+transform = Transform3D(-0.9850587, 0, 0.08082032, 0, 0.98836863, 0, -0.08082032, 0, -0.9850587, -136.86324, -54.6408, -49.655186)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/RiverTarn/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1577679827]
 transform = Transform3D(0.57509124, 0, 0.8326364, 0, 1.0119355, 0, -0.8326364, 0, 0.57509124, -135.43794, -54.50396, -54.94793)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/RiverTarn/Props"]
-transform = Transform3D(0.98088646, 0, 0.4858693, 0, 1.0946265, 0, -0.4858693, 0, 0.98088646, -122.10491, -56.90969, -46.869774)
+[node name="Asset5" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1266237554]
+transform = Transform3D(0.98088646, 0, 0.4858693, 0, 1.0946265, 0, -0.4858693, 0, 0.98088646, -122.10491, -58.8982, -46.869774)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("60_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/RiverTarn/Props"]
-transform = Transform3D(0.7149272, 0, 0.8192459, 0, 1.0873291, 0, -0.8192459, 0, 0.7149272, -123.25363, -57.01669, -44.6501)
+[node name="Asset6" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=17595227]
+transform = Transform3D(0.7149272, 0, 0.8192459, 0, 1.0873291, 0, -0.8192459, 0, 0.7149272, -123.25363, -58.0304, -44.6501)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("62_asset")
 
-[node name="Asset7" type="Node3D" parent="Sectors/RiverTarn/Props"]
+[node name="Asset7" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1528516641]
 transform = Transform3D(0.8930465, 0, -0.69642836, 0, 1.1324948, 0, 0.69642836, 0, 0.8930465, -129.77652, -56.03282, -54.83186)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset8" type="Node3D" parent="Sectors/RiverTarn/Props"]
+[node name="Asset8" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=446391351]
 transform = Transform3D(-0.6661948, 0, 0.7754525, 0, 1.0223219, 0, -0.7754525, 0, -0.6661948, -121.99513, -56.480865, -57.49335)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset9" type="Node3D" parent="Sectors/RiverTarn/Props"]
-transform = Transform3D(-0.3472216, 0, 1.0146532, 0, 1.0724196, 0, -1.0146532, 0, -0.3472216, -118.01822, -55.01092, -39.5781)
+[node name="Asset9" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=1946262521]
+transform = Transform3D(-0.3472216, 0, 1.0146532, 0, 1.0724196, 0, -1.0146532, 0, -0.3472216, -118.01822, -56.6733, -39.5781)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset10" type="Node3D" parent="Sectors/RiverTarn/Props"]
-transform = Transform3D(0.41255888, 0, -0.987726, 0, 1.070424, 0, 0.987726, 0, 0.41255888, -117.78923, -55.03444, -41.7147)
+[node name="Asset10" type="Node3D" parent="Sectors/RiverTarn/Props" unique_id=330257374]
+transform = Transform3D(0.41255888, 0, -0.987726, 0, 1.070424, 0, 0.987726, 0, 0.41255888, -117.78923, -57.4835, -41.7147)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="RiverSouthA" type="Node3D" parent="Sectors"]
+[node name="RiverSouthA" type="Node3D" parent="Sectors" unique_id=1175595256]
 editor_description = "The river's south bank, in R6: the river beyond R1, decorated."
 script = ExtResource("71_falls")
 sectors = PackedStringArray("R6:A18", "R6:A19", "R6:A20", "R6:B18", "R6:B19", "R6:B20", "R6:C20", "R6:D20", "R6:E20")
 design_id = "r8_riversoutha"
 design_seed = 215
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverSouthA"]
+[node name="Props" type="Node3D" parent="Sectors/RiverSouthA" unique_id=1320070543]
 
-[node name="Asset1" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset1" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=804051716]
 transform = Transform3D(1.000335, 0, 0.21197543, 0, 1.0225476, 0, -0.21197543, 0, 1.000335, 9.447172, 0.20915882, 19.965784)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset2" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset2" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=86518967]
 transform = Transform3D(-0.21512012, 0, 0.9017337, 0, 0.9270385, 0, -0.9017337, 0, -0.21512012, 11.250049, 0.4525626, 14.48728)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset3" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset3" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=1161318528]
 transform = Transform3D(-0.80869186, 0, 0.66287214, 0, 1.045649, 0, -0.66287214, 0, -0.80869186, 20.56444, -0.004886885, 3.40766)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("63_asset")
 
-[node name="Asset4" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset4" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=1676938072]
 transform = Transform3D(-0.47919512, 0, 0.87845427, 0, 1.0006547, 0, -0.87845427, 0, -0.47919512, 26.331068, 0.03150383, 3.7367356)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
 solid = true
 asset = ExtResource("64_asset")
 
-[node name="Asset5" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset5" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=643258734]
 transform = Transform3D(-0.8415206, 0, 0.50956863, 0, 0.9837769, 0, -0.50956863, 0, -0.8415206, 32.133205, -0.015688261, 2.4231143)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="Asset6" type="Node3D" parent="Sectors/RiverSouthA/Props"]
+[node name="Asset6" type="Node3D" parent="Sectors/RiverSouthA/Props" unique_id=279465866]
 transform = Transform3D(-0.28329557, 0, -1.0846583, 0, 1.1210442, 0, 1.0846583, 0, -0.28329557, 43.653824, -0.026209015, 1.5790343)
 script = ExtResource("50_prop")
 kind = 4
-variant = 0
-solid = false
 asset = ExtResource("61_asset")
 
-[node name="RiverSouthF" type="Node3D" parent="Sectors"]
+[node name="RiverSouthF" type="Node3D" parent="Sectors" unique_id=1575152732]
 editor_description = "The river's south bank, in R6: the river beyond R1, decorated."
 script = ExtResource("71_falls")
 sectors = PackedStringArray("R6:F20", "R6:G20", "R6:H20")
 design_id = "r8_riversouthf"
 design_seed = 216
-decorates_land = true
 props_frozen = true
+decorates_land = true
 
-[node name="Props" type="Node3D" parent="Sectors/RiverSouthF"]
+[node name="Props" type="Node3D" parent="Sectors/RiverSouthF" unique_id=2128736395]
 
-[node name="MistBarrier" type="Node3D" parent="."]
+[node name="MistBarrier" type="Node3D" parent="." unique_id=643534875]
 script = ExtResource("72_mist")
+
+[node name="FogLine" type="Node3D" parent="MistBarrier"]
+editor_description = "The rim of the fog. Drag these points, or duplicate one to add a point: the fog fills everything on the far side, in order."
+
+[node name="P01" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -175, 0, -400)
+gizmo_extents = 4.0
+
+[node name="P02" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -169, 0, -380)
+gizmo_extents = 4.0
+
+[node name="P03" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -165, 0, -360)
+gizmo_extents = 4.0
+
+[node name="P04" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -145, 0, -340)
+gizmo_extents = 4.0
+
+[node name="P05" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -134, 0, -320)
+gizmo_extents = 4.0
+
+[node name="P06" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -139, 0, -300)
+gizmo_extents = 4.0
+
+[node name="P07" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -143, 0, -280)
+gizmo_extents = 4.0
+
+[node name="P08" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -145, 0, -260)
+gizmo_extents = 4.0
+
+[node name="P09" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -139, 0, -240)
+gizmo_extents = 4.0
+
+[node name="P10" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -148, 0, -220)
+gizmo_extents = 4.0
+
+[node name="P11" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140, 0, -200)
+gizmo_extents = 4.0
+
+[node name="P12" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136, 0, -180)
+gizmo_extents = 4.0
+
+[node name="P13" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -128, 0, -155)
+gizmo_extents = 4.0
+
+[node name="P14" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -120, 0, -143)
+gizmo_extents = 4.0
+
+[node name="P15" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0, -138)
+gizmo_extents = 4.0
+
+[node name="P16" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 0, -129)
+gizmo_extents = 4.0
+
+[node name="P17" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75, 0, -120)
+gizmo_extents = 4.0
+
+[node name="P18" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -77, 0, -100)
+gizmo_extents = 4.0
+
+[node name="P19" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 0, -80)
+gizmo_extents = 4.0
+
+[node name="P20" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83, 0, -60)
+gizmo_extents = 4.0
+
+[node name="P21" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 0, -40)
+gizmo_extents = 4.0
+
+[node name="P22" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -73, 0, -20)
+gizmo_extents = 4.0
+
+[node name="P23" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 0)
+gizmo_extents = 4.0
+
+[node name="P24" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75, 0, 20)
+gizmo_extents = 4.0
+
+[node name="P25" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71, 0, 40)
+gizmo_extents = 4.0
+
+[node name="P26" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69, 0, 60)
+gizmo_extents = 4.0
+
+[node name="P27" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -67, 0, 80)
+gizmo_extents = 4.0
+
+[node name="P28" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, 100)
+gizmo_extents = 4.0
+
+[node name="P29" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 108)
+gizmo_extents = 4.0
+
+[node name="P30" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 114)
+gizmo_extents = 4.0
+
+[node name="P31" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 119)
+gizmo_extents = 4.0
+
+[node name="P32" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 130)
+gizmo_extents = 4.0
+
+[node name="P33" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 146)
+gizmo_extents = 4.0
+
+[node name="P34" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 0, 154)
+gizmo_extents = 4.0
+
+[node name="P35" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 0, 156)
+gizmo_extents = 4.0
+
+[node name="P36" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 163)
+gizmo_extents = 4.0
+
+[node name="P37" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112, 0, 180)
+gizmo_extents = 4.0
+
+[node name="P38" type="Marker3D" parent="MistBarrier/FogLine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 118, 0, 200)
+gizmo_extents = 4.0
 
 [node name="Terrain" type="StaticBody3D" parent="." unique_id=2031718324 node_paths=PackedStringArray("designs_root", "focus")]
 script = ExtResource("2_terrain")
