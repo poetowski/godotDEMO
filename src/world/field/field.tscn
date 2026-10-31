@@ -23,7 +23,6 @@
 [ext_resource type="Script" uid="uid://6ov4j0b8nfbk" path="res://src/world/field/sectors/r1_waterside/r1_waterside.gd" id="70_waterside"]
 [ext_resource type="Script" uid="uid://co6sxvfrart4c" path="res://src/world/field/sectors/r8_falls/r8_falls.gd" id="71_falls"]
 [ext_resource type="Script" uid="uid://dtfcbitpb00x5" path="res://src/world/field/mist_barrier.gd" id="72_mist"]
-[ext_resource type="PackedScene" uid="uid://s1up22h5rakd" path="res://assets/models/props/cliff_outcrop_b/cliff_outcrop_b.glb" id="90_asset"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.26, 0.47, 0.8, 1)
