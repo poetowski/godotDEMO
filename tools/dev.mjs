@@ -25,6 +25,8 @@
 //   npm run props -- <Design>    freeze a sector design's code-placed props
 //                                into field.tscn as Prop nodes to edit by hand
 //   npm run settle               set props back on the ground after sculpting
+//   npm run land-check           report what the land as it is now means for what
+//                                stands on it; changes nothing (see /land-sync)
 //   npm run strings              collect every player-facing English string
 //                                into locale/messages.pot
 //   npm run check                import, then load every script, scene and
@@ -45,7 +47,7 @@
 // variable to use another binary (on Windows, the *_console.exe one).
 // Blender is pinned to BLENDER_VERSION the same way, overridden by BLENDER.
 
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -316,6 +318,18 @@ const commands = {
       timeoutMs: 3 * 60_000,
     });
     return report('settle', result);
+  },
+
+  // Reports floating props, water cut short, bare shores and the like after
+  // sculpting, naming the land files with uncommitted changes. Changes nothing.
+  async 'land-check'() {
+    if (!(await ensureImported())) return false;
+    const status = spawnSync('git', ['-C', ROOT, 'status', '--porcelain', '--', 'data/world/sculpt'], { encoding: 'utf8' }).stdout ?? '';
+    const tiles = [...status.matchAll(/tile_(-?\d+)_(-?\d+)\.res/g)].map((found) => `${found[1]},${found[2]}`);
+    const result = await godot(['--headless', '--path', ROOT, '--script', 'res://tools/land_check.gd', '--', ...tiles], {
+      timeoutMs: 3 * 60_000,
+    });
+    return report('land-check', result);
   },
 
   async strings() {

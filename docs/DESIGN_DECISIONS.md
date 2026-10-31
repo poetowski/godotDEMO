@@ -27,6 +27,13 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "i changed terrain, please redecorate like you did and also define
+this as a skill so if i change terrain, you detect and propose lowering of flying
+objects, or puting new objects, or even generating new assets." The skill is `/land-sync`,
+with `npm run land-check`. The lake's blocks were regenerated on the new shore, none having
+been moved by hand; no new assets were needed. **Placeholder:** the thresholds in
+`land_check.gd`, and the new layout.
+
 Request (2026-10-31): "fix water in R4 i cannot see lake there but i am sure i put it
 there. i just changed terrain. please decorate properly. also, the "you should not be
 here line" should not block southern regions, rather it should follow few meters into

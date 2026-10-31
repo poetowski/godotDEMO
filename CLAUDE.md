@@ -149,8 +149,9 @@ every stroke.
   the spawn point 8 m further on, and `SectorGrid` draws both lines in red. The only
   one so far runs a few metres inside the rim of the western ravine, as draggable
   points under `ZoneBorder/Line`. `goto` past it bounces back too.
-- After sculpting, `npm run settle` sets props under designs back on the ground,
-  changing only their height.
+- After sculpting, follow `/land-sync`: `npm run land-check` reports what the change
+  broke or made possible, and
+  `npm run settle` sets props under designs back on the ground, changing only their height.
 - Nothing is placed in the ravine below the mist (`r8_falls.gd`, `LOWEST_GROWTH`).
 - `MistBarrier` is the fog over the western drop: a volume filling the polygon
   beyond the Marker3D points of `MistBarrier/FogLine`, thin at first and thickening
@@ -222,7 +223,7 @@ heights, water and flow stay known everywhere. So:
   `data/world/landforms/`); `/environment-design <sectors> <brief>` builds
   the detail of sectors on top; `/asset-design <brief>` makes one object in
   Blender (`tools/blender/assets/`) to place as a prop. Shape the regions
-  first.
+  first. `/land-sync` brings them back in line after the author sculpts.
 
 - The world is regions of 20 x 20 sectors (200 m): the starting zone, with R1 in
   the middle and R2 to R9 clockwise around it from the north (`FieldWorld`,

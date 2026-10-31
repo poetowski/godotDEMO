@@ -13,7 +13,8 @@ Low Perlin noise, with the author's hand sculpting along its west edge
   row 5. Flat surface at -1.4 m.
   It's one body of water with R1's, so it's poured from
   `data/world/water/r1_water.tres`, and its `lake_reach` is what lets it fill this far.
-- **The inflow's bank:** R1's inflow runs just west of column A; A8-A16 are its east bank.
+- **The inflow's bank:** R1's inflow runs just west of column A; A8-A16 are its east bank,
+  and the author dug a side channel along A8-A9, joined to the inflow at both ends.
 
 ## The lakeside
 

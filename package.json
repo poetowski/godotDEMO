@@ -15,6 +15,7 @@
     "perf": "node tools/dev.mjs perf",
     "props": "node tools/dev.mjs props",
     "settle": "node tools/dev.mjs settle",
+    "land-check": "node tools/dev.mjs land-check",
     "models": "node tools/dev.mjs models",
     "blender": "node tools/dev.mjs blender",
     "asset-preview": "node tools/dev.mjs asset-preview",

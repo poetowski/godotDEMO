@@ -14,7 +14,7 @@ the other way round: it follows if the ground is sculpted again.
 - **Lake:** in the south-east, around P-T 1-5, running on east into R4 (see
   `R4/terrain.md`) with a tip south into R6. Flat surface at -1.4 m. Still.
 - **River in:** rises at T15 and flows south down the S and T columns into the
-  lake. Surface from -0.95 m to -1.4 m. **Placeholder:** 0.55 m/s. Shallowest
+  lake, swinging east around T6-T7 where the author moved its channel. Surface from -0.95 m to -1.4 m. **Placeholder:** 0.55 m/s. Shallowest
   about 0.7 m, around T7.
 - **River out:** leaves the lake through N4 and flows west to the edge at A1.
   Surface from -1.4 m to -2.15 m. **Placeholder:** 0.55 m/s. Shallowest about

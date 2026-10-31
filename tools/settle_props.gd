@@ -33,7 +33,7 @@ func _initialize() -> void:
 			continue
 		var numbers := match_found.get_string(3).split(",")
 		var was := numbers[10].to_float()
-		var settled := _standing_height(prop)
+		var settled := standing_height(prop)
 		if absf(settled - was) < TOLERANCE:
 			continue
 		numbers[10] = " %.4f" % settled
@@ -49,7 +49,7 @@ func _initialize() -> void:
 	quit()
 
 
-func _standing_height(prop: Prop) -> float:
+static func standing_height(prop: Prop) -> float:
 	var xz := Vector2(prop.position.x, prop.position.z)
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
 	if not prop.asset.resource_path.contains("outcrop"):
