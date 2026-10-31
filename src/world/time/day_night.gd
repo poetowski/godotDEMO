@@ -33,11 +33,7 @@ extends Node
 @export var night_top: Color = Color(0.015, 0.025, 0.07)
 @export var night_horizon: Color = Color(0.05, 0.07, 0.14)
 
-## How strongly the nebulae show at night, 0 to 1.
-@export var nebula_strength: float = 0.42
 
-## Nebula colours (sRGB), blended across the sky.
-const NEBULA_COLORS: Array[Color] = [Color(0.95, 0.3, 0.75), Color(0.55, 0.3, 0.95), Color(0.25, 0.55, 1.0), Color(0.2, 0.85, 0.8), Color(0.95, 0.45, 0.55)]
 
 var _sky: ProceduralSkyMaterial
 var _stars: Texture2D
@@ -120,11 +116,11 @@ func _aim(light: DirectionalLight3D, toward: Vector3) -> void:
 	light.global_basis = Basis.looking_at(-toward, up)
 
 
-## The night sky: soft, colourful nebulae with scattered stars of a few
-## sizes and brightnesses over them. The same every run.
+## The night sky: scattered stars of a few sizes and brightnesses. The same
+## every run.
 func _star_texture() -> Texture2D:
-	var image := _nebulae()
-	image.resize(2048, 1024, Image.INTERPOLATE_BILINEAR)
+	var image := Image.create(2048, 1024, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.0, 0.0, 0.0, 0.0))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	for k in 2600:
@@ -137,36 +133,3 @@ func _star_texture() -> Texture2D:
 		if rng.randf() < 0.08:
 			image.set_pixel(mini(x + 1, image.get_width() - 1), y, tint * 0.7)
 	return ImageTexture.create_from_image(image)
-
-
-## Nebulae over the sky's upper half at low resolution (smoothed when
-## enlarged): wisps of glowing gas from warped noise, sampled on the sky's
-## sphere so they don't seam where the sky wraps, coloured magenta, violet,
-## teal and blue by a second, slower noise, and thinning toward the horizon.
-func _nebulae() -> Image:
-	var image := Image.create(768, 384, false, Image.FORMAT_RGBA8)
-	image.fill(Color(0.0, 0.0, 0.0, 0.0))
-	var gas := FastNoiseLite.new()
-	gas.seed = 23
-	gas.frequency = 1.6
-	gas.fractal_octaves = 4
-	gas.domain_warp_enabled = true
-	gas.domain_warp_amplitude = 0.6
-	gas.domain_warp_frequency = 1.2
-	var hue := FastNoiseLite.new()
-	hue.seed = 41
-	hue.frequency = 0.9
-	for y in image.get_height() / 2:
-		var polar := PI * (y + 0.5) / image.get_height()
-		var fade := smoothstep(0.0, 0.25, cos(polar)) * nebula_strength
-		for x in image.get_width():
-			var around := TAU * (x + 0.5) / image.get_width()
-			var on_sky := Vector3(sin(polar) * cos(around), cos(polar), sin(polar) * sin(around))
-			var density := smoothstep(0.0, 0.7, gas.get_noise_3dv(on_sky))
-			if density <= 0.0:
-				continue
-			var pick := clampf(0.5 + 0.9 * hue.get_noise_3dv(on_sky), 0.0, 0.999) * (NEBULA_COLORS.size() - 1)
-			var low := int(pick)
-			var colour := NEBULA_COLORS[low].lerp(NEBULA_COLORS[low + 1], pick - low)
-			image.set_pixel(x, y, Color(colour, density * fade))
-	return image

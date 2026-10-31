@@ -3,14 +3,17 @@ extends GutTest
 ## birds by day, crickets by night; sounds made in code, on their own buses.
 
 const SCENE_PATH := "res://src/world/field/field.tscn"
+const FixtureDesign := preload("res://tests/fixtures/fixture_design.gd")
 
 var _world: Node
 var _player: Player
 var _steps: Footsteps
+var _pond: SectorDesign
 
 
 func before_all() -> void:
 	_world = (load(SCENE_PATH) as PackedScene).instantiate()
+	_pond = FixtureDesign.add_to(_world, "SoundPond", PackedStringArray(["A4"]))
 	add_child(_world)
 	_player = _world.call("player") as Player
 	_steps = _player.get_node("Footsteps") as Footsteps
@@ -48,15 +51,9 @@ func test_walking_makes_footsteps_on_grass() -> void:
 
 
 func test_water_splashes() -> void:
-	var stream := _world.get_node("Sectors/A1A3Stream") as SectorDesign
-	var wet := Vector2.ZERO
-	for k in 400:
-		var xz := Vector2(1.0 + (k % 20) * 0.45, -1.0 - (k / 20) * 0.45)
-		if stream.water_level_at(xz) > stream.height_at(xz) + 0.1:
-			wet = xz
-			break
-	assert_ne(wet, Vector2.ZERO, "found water in the pond")
-	_steps.global_position = Vector3(wet.x, stream.height_at(wet), wet.y)
+	var wet: Vector2 = _pond.call("pond", "A4") + Vector2(2.0, 0.0)
+	assert_gt(_pond.water_level_at(wet), _pond.height_at(wet) + 0.1, "water in the pond")
+	_steps.global_position = Vector3(wet.x, _pond.height_at(wet), wet.y)
 	assert_eq(_steps.surface_underfoot(), &"water")
 	_steps.position = Vector3.ZERO
 

@@ -10,56 +10,12 @@ msgid_plural "%d items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: data/quests/samirs_cornflower.tres
-msgid "A Flower for the Fever"
-msgstr ""
-
-#: data/items/cornflower.tres
-msgid "A slender wildflower with a head of frilled, deep blue florets. It grows in sunny meadows and among grain, and keeps its colour long after it is picked."
-msgstr ""
-
-#: data/items/chanterelle.tres
-msgid "A small golden mushroom shaped like a funnel, with ridges running down its stem. It smells faintly of apricots."
-msgstr ""
-
-#: data/items/penny_bun.tres
-msgid "A stout mushroom with a brown, bun-shaped cap and a thick pale stem. It hides in the moss under trees and is prized by cooks."
-msgstr ""
-
-#: data/items/cornflower.tres
-msgid "About 70 cm"
-msgstr ""
-
 #: src/ui/game_menu/game_menu.gd
 msgid "Back"
 msgstr ""
 
-#: src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd
-msgid "Before the statue"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Bless you. Look for the blue flower among the grass in B1. I'll be here."
-msgstr ""
-
-#: data/quests/samirs_cornflower.tres
-msgid "Bring the cornflower to Samir at the oasis."
-msgstr ""
-
-#: data/items/penny_bun.tres
-msgid "Brown and domed"
-msgstr ""
-
 #: src/save/save_game.gd
 msgid "Can't be loaded"
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Cap"
-msgstr ""
-
-#: data/items/chanterelle.tres
-msgid "Chanterelle"
 msgstr ""
 
 #: src/ui/inventory/inventory_panel.gd
@@ -70,32 +26,12 @@ msgstr ""
 msgid "Click to look around with the mouse"
 msgstr ""
 
-#: data/items/cornflower.tres
-msgid "Colour"
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/cornflower.tres data/items/fly_agaric.tres
-msgid "Common"
-msgstr ""
-
 #: src/ui/quests/quest_panel.gd
 msgid "Completed"
 msgstr ""
 
-#: data/items/cornflower.tres
-msgid "Cornflower"
-msgstr ""
-
-#: data/items/cornflower.tres
-msgid "Cornflower blue"
-msgstr ""
-
 #: src/world/field/field.gd
 msgid "Could not save: %s"
-msgstr ""
-
-#: src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd
-msgid "Cry"
 msgstr ""
 
 #: src/world/time/world_clock.gd
@@ -106,24 +42,12 @@ msgstr ""
 msgid "Drag to turn it"
 msgstr ""
 
-#: data/items/chanterelle.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Edible"
-msgstr ""
-
 #: src/save/save_game.gd
 msgid "Empty"
 msgstr ""
 
 #: src/ui/choice/choice_menu.gd
 msgid "Esc  cancel"
-msgstr ""
-
-#: data/items/fly_agaric.tres
-msgid "Fly Agaric"
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/cornflower.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Found in"
 msgstr ""
 
 #: src/ui/quests/quest_panel.gd
@@ -134,60 +58,12 @@ msgstr ""
 msgid "Gave away: %s"
 msgstr ""
 
-#: data/items/chanterelle.tres
-msgid "Golden funnel"
-msgstr ""
-
-#: data/dialogue/samir.tres src/ui/hud/hud.gd
+#: src/ui/hud/hud.gd
 msgid "Goodbye."
-msgstr ""
-
-#: data/items/cornflower.tres
-msgid "Height"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Here is the cornflower."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I can't right now."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I understand. If you find the time, come back to me."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I'll be back soon."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I'll bring you a cornflower."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I'll steep it at once. You have done a kindness I won't forget. Whenever you pass this way, there is water and shade for you here."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I'm glad I could help."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "I'm on my way."
 msgstr ""
 
 #: src/ui/inventory/inventory_panel.gd
 msgid "Inventory"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Is that blue I see in your hand? You found one!"
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/cornflower.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Kind"
 msgstr ""
 
 #: src/ui/game_menu/game_menu.gd
@@ -198,28 +74,12 @@ msgstr ""
 msgid "Loaded %s"
 msgstr ""
 
-#: data/items/chanterelle.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Mushroom"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "My daughter lies in the tent with a fever, and the heat makes it worse. My mother cooled fevers with the petals of a blue cornflower, steeped in water. One grows in the meadow in sector B1, to the south-west. My legs are too old for the walk. Would you bring me one?"
-msgstr ""
-
 #: src/dialogue/dialogue_rules.gd
 msgid "New quest: %s"
 msgstr ""
 
 #: src/ui/quests/quest_panel.gd
 msgid "No quests yet. Talk to people you meet."
-msgstr ""
-
-#: data/items/fly_agaric.tres
-msgid "No, poisonous"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Not yet."
 msgstr ""
 
 #: src/world/field/field.gd
@@ -232,22 +92,6 @@ msgstr ""
 
 #: src/ui/game_menu/game_menu.gd
 msgid "Paused"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Peace be with you, traveller. Forgive me if I'm poor company today."
-msgstr ""
-
-#: data/items/penny_bun.tres
-msgid "Penny Bun"
-msgstr ""
-
-#: data/quests/samirs_cornflower.tres
-msgid "Pick a cornflower in the meadow in sector B1."
-msgstr ""
-
-#: src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd
-msgid "Pray"
 msgstr ""
 
 #: src/ui/quests/quest_panel.gd
@@ -270,28 +114,12 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: data/items/chanterelle.tres data/items/cornflower.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "Rarity"
-msgstr ""
-
 #: src/dialogue/dialogue_rules.gd
 msgid "Received: %s"
 msgstr ""
 
-#: data/items/fly_agaric.tres
-msgid "Red with white spots"
-msgstr ""
-
 #: src/ui/game_menu/game_menu.gd
 msgid "Resume"
-msgstr ""
-
-#: data/dialogue/samir.tres data/quests/samirs_cornflower.tres
-msgid "Samir"
-msgstr ""
-
-#: data/quests/samirs_cornflower.tres
-msgid "Samir's daughter lies sick with a fever in his tent at the oasis. He trusts the old remedy: the petals of a blue cornflower, steeped in water, to cool it."
 msgstr ""
 
 #: src/ui/game_menu/game_menu.gd
@@ -306,68 +134,16 @@ msgstr ""
 msgid "Sector %s"
 msgstr ""
 
-#: data/items/cornflower.tres
-msgid "Sector B1, a sunny meadow"
-msgstr ""
-
 #: src/ui/game_menu/game_menu.gd
 msgid "Slot %s"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "Take care, Samir."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "The cornflower grows in the meadow in sector B1, to the south-west. Please hurry, the fever hasn't broken."
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "The fever broke in the night, and my daughter is asking for figs again. Rest in the shade as long as you like, friend."
-msgstr ""
-
-#: data/items/fly_agaric.tres
-msgid "The storybook toadstool: a scarlet cap flecked with white, on a tall white stem. Beautiful to look at, poisonous to eat."
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/fly_agaric.tres data/items/penny_bun.tres
-msgid "The woods"
-msgstr ""
-
-#: data/items/penny_bun.tres
-msgid "Uncommon"
 msgstr ""
 
 #: src/ui/hud/hud.gd
 msgid "WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load"
 msgstr ""
 
-#: data/items/cornflower.tres
-msgid "Wildflower"
-msgstr ""
-
-#: data/items/chanterelle.tres data/items/penny_bun.tres
-msgid "Yes"
-msgstr ""
-
-#: data/dialogue/samir.tres
-msgid "You look troubled. Can I help?"
-msgstr ""
-
 #: src/items/item_pickup.gd
 msgid "[E]  Pick up %s"
-msgstr ""
-
-#: src/world/field/sectors/a7_ivy_statue/a7_ivy_statue.gd
-msgid "[E]  Stand before the statue"
-msgstr ""
-
-#: src/items/gesture_spot.gd
-msgid "[E]  Stand here"
-msgstr ""
-
-#: src/items/sword/sword_holder.gd
-msgid "[E]  Take %s"
 msgstr ""
 
 #: src/npc/talk.gd
@@ -380,12 +156,4 @@ msgstr ""
 
 #: src/world/field/field.gd
 msgid "slot %s"
-msgstr ""
-
-#: src/world/field/sectors/c2_archer_tower/c2_archer_tower.gd
-msgid "the flame katana"
-msgstr ""
-
-#: src/items/sword/sword_holder.gd
-msgid "the sword"
 msgstr ""

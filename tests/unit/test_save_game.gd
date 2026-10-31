@@ -72,8 +72,8 @@ func test_format_1_saves_keep_what_was_taken_under_the_stable_ids() -> void:
 
 func test_inventory_and_world_state_give_their_ids() -> void:
 	var inventory := Inventory.new()
-	inventory.add(ItemCatalog.find(&"cornflower"))
-	assert_eq(inventory.ids()[0], "cornflower")
+	inventory.add(ItemCatalog.find(&"pebble"))
+	assert_eq(inventory.ids()[0], "pebble")
 	assert_eq(inventory.ids()[1], "")
 	WorldState.restore({"A": {"taken": true}, "B": {"open": 2}})
 	assert_true(WorldState.is_taken("A"))

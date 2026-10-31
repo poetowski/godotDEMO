@@ -8,6 +8,9 @@ patches listed here; to change behaviour, wrap it from `src/`.
 | `godot_mcp` | 0.6.1 | [tomyud1/godot-mcp](https://github.com/tomyud1/godot-mcp) tag `v0.6.1` | MIT | `runtime/mcp_runtime.gd` `_ready()` returns early unless the `editor` feature is present |
 | `gut` | 9.7.1 | [bitwes/Gut](https://github.com/bitwes/Gut) tag `v9.7.1` (the Godot 4.7 line) | MIT | none |
 
+`terrain_sculpt/` is the exception: it's this project's own plugin, kept here
+only because Godot looks for plugins in `addons/`. Edit it freely.
+
 ## godot_mcp notes
 
 - The editor plugin talks to `godot-mcp-server` (started by `.mcp.json`) on

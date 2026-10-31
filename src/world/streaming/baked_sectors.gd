@@ -63,7 +63,7 @@ static func scene_for(design_name: String) -> String:
 
 
 static func _check() -> bool:
-	if not FileAccess.file_exists(STAMP):
+	if not FileAccess.file_exists(STAMP) or TerrainSculpt.skips_saved_tiles():
 		return false
 	if OS.has_feature("template"):
 		return true

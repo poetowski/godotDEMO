@@ -1,14 +1,15 @@
 extends GutTest
-## The cornflower in B1 can be picked up into the inventory, which opens with
+## An item in the world can be picked up into the inventory, which opens with
 ## I from the right edge over 40% of the screen, freezes the hero, and shows
-## the flower's model and info when its slot is clicked.
+## the item's model and info when its slot is clicked.
 
 const SCENE_PATH := "res://src/world/field/field.tscn"
-const MeadowDesign := preload("res://src/world/field/sectors/b1_cornflower/b1_cornflower.gd")
+const PEBBLE := preload("res://tests/fixtures/items/pebble.tres")
 
 var _world: Node3D
 var _player: Player
 var _panel: InventoryPanel
+var _pickup: ItemPickup
 
 
 func before_all() -> void:
@@ -23,23 +24,22 @@ func after_all() -> void:
 	_world.free()
 
 
-func test_1_the_cornflower_grows_in_b1() -> void:
-	var pickup := _world.get_node("Sectors/B1Cornflower/Content/Cornflower") as ItemPickup
-	assert_eq(pickup.item.id, &"cornflower")
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(pickup.global_position)), "R1:B1")
-
-
 func test_2_walking_up_and_pressing_e_picks_it_up() -> void:
 	watch_signals(_player)
-	var flower := MeadowDesign.FLOWER_AT
-	_player.global_position = Vector3(flower.x, 0.3, flower.y + 0.8)
+	var terrain := _world.get_node("Terrain") as FieldTerrain
+	var at := Vector2(_player.global_position.x + 3.0, _player.global_position.z)
+	_pickup = ItemPickup.new()
+	_pickup.item = PEBBLE
+	_pickup.position = Vector3(at.x, terrain.height_at(at), at.y)
+	_world.add_child(_pickup)
+	_player.global_position = _pickup.position + Vector3(0.0, 0.3, 0.8)
 	_player.velocity = Vector3.ZERO
 	await wait_physics_frames(8)
-	assert_signal_emitted_with_parameters(_player, "prompt_changed", ["[E]  Pick up Cornflower"])
+	assert_signal_emitted_with_parameters(_player, "prompt_changed", ["[E]  Pick up Pebble"])
 	_player.interact()
 	await wait_process_frames(2)
-	assert_true(_player.inventory.has(&"cornflower"))
-	assert_null(_world.get_node_or_null("Sectors/B1Cornflower/Content/Cornflower"), "gone from the meadow")
+	assert_true(_player.inventory.has(&"pebble"))
+	assert_false(is_instance_valid(_pickup), "gone from the world")
 
 
 func test_3_i_opens_the_inventory_from_the_right_over_40_percent() -> void:
@@ -55,13 +55,13 @@ func test_3_i_opens_the_inventory_from_the_right_over_40_percent() -> void:
 	assert_eq(_panel.slot_count(), 24)
 
 
-func test_4_clicking_the_flower_shows_its_info() -> void:
+func test_4_clicking_the_item_shows_its_info() -> void:
 	_panel.select(0)
 	await wait_process_frames(2)
-	assert_eq(_panel.viewed_item().id, &"cornflower")
+	assert_eq(_panel.viewed_item().id, &"pebble")
 	var text := _panel.viewer_text()
-	assert_string_contains(text, "Cornflower")
-	assert_string_contains(text, "Wildflower")
+	assert_string_contains(text, "Pebble")
+	assert_string_contains(text, "Stone")
 	assert_true((_panel.get_node("Viewer") as Control).visible)
 
 

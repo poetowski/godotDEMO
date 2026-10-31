@@ -14,6 +14,10 @@ extends StaticBody3D
 ## In a big world (`chunked`), the open ground isn't one mesh: TerrainChunks
 ## streams it around `focus`, detailed near and coarse far, and a flat ring
 ## lies around the world's edge.
+##
+## In the editor the streamed ground shows too, around a focus the sculpting
+## plugin moves with the view (`move_view_focus`), and follows the brush
+## (`reshape_ground`, `finish_reshaping`).
 
 const GRASS_SHADER := preload("res://src/world/field/grass_grid.gdshader")
 ## Samples along each side of a sector's stand-in.
@@ -41,6 +45,8 @@ var _owners: Dictionary[Vector2i, SectorDesign] = {}
 var _stand_ins: Dictionary[Vector2i, Array] = {}
 var _far_models: Dictionary[SectorDesign, MeshInstance3D] = {}
 var _chunks: TerrainChunks
+## What the streamed ground and the grid follow in the editor.
+var _view_focus: Node3D
 
 
 ## The grass-and-grid material every piece of ground shares.
@@ -51,13 +57,20 @@ static func ground_material() -> ShaderMaterial:
 	return _material
 
 
+## In the editor nothing else has set up the world, and designs ask about
+## their ground from their own _ready.
+func _enter_tree() -> void:
+	if Engine.is_editor_hint() and chunked:
+		TerrainSculpt.editing = true
+		FieldWorld.configure()
+
+
 func _ready() -> void:
 	add_to_group(&"terrains")
 	_collect()
 	if chunked:
 		_build_border()
-		if not Engine.is_editor_hint():
-			_start_chunks()
+		_start_chunks()
 	else:
 		_build_flat()
 	for cell: Vector2i in _owners.keys():
@@ -128,6 +141,61 @@ func chunks() -> TerrainChunks:
 	return _chunks
 
 
+## Where the editor's view is, for the streamed ground and the grid; null in
+## the game.
+func view_focus() -> Node3D:
+	return _view_focus
+
+
+func move_view_focus(point: Vector3) -> void:
+	if _view_focus:
+		_view_focus.global_position = point
+
+
+## Follows the brush at once: the 1 m open ground under an area of samples
+## (x, north), and if `designs_too`, designed sectors, which cost more.
+func reshape_ground(area: Rect2i, designs_too: bool) -> void:
+	if _chunks:
+		_chunks.reshape(area)
+	if designs_too:
+		_reshape_designs(area)
+
+
+## After a stroke: makes everything under an area of samples whole again.
+func finish_reshaping(area: Rect2i) -> void:
+	if _chunks:
+		_chunks.rebuild(area)
+	_reshape_designs(area)
+	for node in get_tree().get_nodes_in_group(&"sector_grids"):
+		node.call(&"refresh")
+
+
+## The first place a ray meets the ground, or Vector3.INF. Walks in steps as
+## long as a part of the height above the ground, then closes in.
+func ground_hit(from: Vector3, direction: Vector3, reach: float = 4000.0) -> Vector3:
+	var travelled := 0.0
+	var previous := 0.0
+	while travelled <= reach:
+		var point := from + direction * travelled
+		var gap := point.y - height_at(Vector2(point.x, point.z))
+		if gap <= 0.0:
+			if travelled == 0.0:
+				return Vector3.INF
+			var low := previous
+			var high := travelled
+			for k in 12:
+				var middle := (low + high) * 0.5
+				var probe := from + direction * middle
+				if probe.y > height_at(Vector2(probe.x, probe.z)):
+					low = middle
+				else:
+					high = middle
+			return from + direction * high
+		previous = travelled
+		travelled += clampf(gap * 0.5, 0.25, 50.0)
+	return Vector3.INF
+
+
 ## The far model shown for a design while its content is away, or null.
 func far_model(design: SectorDesign) -> MeshInstance3D:
 	return _far_models.get(design)
@@ -157,11 +225,22 @@ func _collect() -> void:
 			_owners[cell] = design
 
 
+func _reshape_designs(area: Rect2i) -> void:
+	for design in _designs:
+		design.reshape_ground(area)
+
+
 func _start_chunks() -> void:
 	_chunks = TerrainChunks.new()
 	_chunks.name = "Chunks"
 	_chunks.body = self
 	_chunks.focus = focus
+	if Engine.is_editor_hint():
+		_view_focus = Node3D.new()
+		_view_focus.name = "ViewFocus"
+		add_child(_view_focus)
+		_chunks.focus = _view_focus
+		_chunks.editable = true
 	_chunks.height = WorldShape.height
 	_chunks.is_designed = func(xz: Vector2) -> bool: return _owners.has(SectorMap.unbounded_cell_at(xz))
 	_chunks.tint = Landforms.ground_tint

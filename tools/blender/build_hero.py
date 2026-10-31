@@ -327,23 +327,6 @@ def build_animations(armature):
                  LeftUpperArm=(-15, 0, 15))),
         (15, pose(RightUpperArm=(15, 0, 8), RightLowerArm=55, RightHand=-20)),
     ], loop=False)
-    # Kneeling on both knees, bowed, hands together before the chest.
-    kneel = dict(LeftUpperLeg=0, RightUpperLeg=0, LeftLowerLeg=-90, RightLowerLeg=-90, LeftFoot=-30, RightFoot=-30,
-                 Spine=8, Chest=6, Neck=8, Head=14,
-                 LeftUpperArm=(32, 35, -24), RightUpperArm=(32, 35, -24), LeftLowerArm=100, RightLowerArm=100,
-                 LeftHand=(0, 0, -20), RightHand=(0, 0, -20), drop=0.38)
-    key_action(armature, "pray", [(0, pose(**kneel)), (45, pose(**{**kneel, "Chest": 8, "Head": 17}))], loop=True)
-    # Crying: hunched, hands over the face, shoulders shaking.
-    weep = dict(Spine=10, Chest=12, Neck=10, Head=22,
-                LeftUpperArm=(42, 40, -20), RightUpperArm=(42, 40, -20), LeftLowerArm=135, RightLowerArm=135,
-                LeftHand=(10, 0, 0), RightHand=(10, 0, 0), LeftUpperLeg=4, RightUpperLeg=4, LeftLowerLeg=-8,
-                RightLowerLeg=-8, drop=0.03)
-    key_action(armature, "cry", [
-        (0, pose(**weep)),
-        (4, pose(**{**weep, "Chest": 15, "LeftShoulder": (0, 0, 5), "RightShoulder": (0, 0, 5), "drop": 0.04})),
-        (8, pose(**weep)),
-        (12, pose(**{**weep, "Chest": 14, "LeftShoulder": (0, 0, 4), "RightShoulder": (0, 0, 4)})),
-    ], loop=True)
     # Swimming a front crawl: the body face down along the surface (the hips
     # tipped forward), head up to breathe-look ahead, arms reaching and
     # pulling in turn, the high elbow recovering over the water, legs

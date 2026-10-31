@@ -1,6 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://src/items/flower/cornflower.gd" id="1_flower"]
-
-[node name="Cornflower" type="Node3D"]
-script = ExtResource("1_flower")

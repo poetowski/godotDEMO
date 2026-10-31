@@ -2,7 +2,7 @@ extends GutTest
 ## Every sector design in the field keeps to its own sectors: no sector is
 ## claimed twice, everything a design builds stays inside its sectors, its
 ## ground meets the flat field without a step, and the player starts on dry
-## ground. New designs are covered without changes here.
+## ground. There are none yet; new designs are covered without changes here.
 
 const SCENE_PATH := "res://src/world/field/field.tscn"
 
@@ -19,10 +19,6 @@ func before_all() -> void:
 
 func after_all() -> void:
 	_world.free()
-
-
-func test_there_are_designs() -> void:
-	assert_gt(_terrain.designs().size(), 0)
 
 
 func test_every_design_has_its_own_stable_id() -> void:
@@ -42,7 +38,6 @@ func test_saved_things_are_named_by_their_design_id() -> void:
 			if id is String and not (id as String).is_empty():
 				assert_true((id as String).begins_with(design.design_id + "/"), id)
 				count += 1
-	assert_gt(count, 1, "the cornflower and the katana chest")
 
 
 func test_no_sector_is_claimed_twice() -> void:
@@ -83,17 +78,6 @@ func test_designs_meet_the_flat_field_without_a_step() -> void:
 				for point in edges:
 					if _touches_foreign(design, point):
 						assert_almost_eq(design.height_at(point), 0.0, 0.002, "%s at %s" % [design.name, point])
-
-
-func test_the_ground_outside_designs_is_flat() -> void:
-	for row in SectorMap.ROWS:
-		for column in SectorMap.COLUMNS:
-			var cell := Vector2i(column, row)
-			var centre := SectorMap.center_of(cell)
-			var xz := Vector2(centre.x, centre.z)
-			if _terrain.design_at(xz) == null:
-				assert_eq(_terrain.height_at(xz), 0.0, SectorMap.name_of(cell))
-	assert_eq(_terrain.height_at(Vector2(-50.0, 50.0)), 0.0, "beyond the grid")
 
 
 func test_the_player_starts_on_dry_ground_in_a1() -> void:
@@ -143,3 +127,24 @@ func _inside(design: SectorDesign, box: AABB) -> bool:
 		if not design.owns(corner):
 			return false
 	return true
+
+
+func test_baked_content_matches_what_the_designs_generate() -> void:
+	for design in _terrain.designs():
+		var path := BakedSectors.scene_for(design.name)
+		assert_false(path.is_empty(), "%s is baked and fresh" % design.name)
+		if path.is_empty():
+			continue
+		var baked := (load(path) as PackedScene).instantiate()
+		var generated := design.generate_content()
+		assert_eq(_names(baked), _names(generated), design.name)
+		baked.free()
+		generated.free()
+
+
+func _names(root: Node) -> PackedStringArray:
+	var names := PackedStringArray()
+	for child in root.get_children():
+		names.append(child.name)
+	names.sort()
+	return names

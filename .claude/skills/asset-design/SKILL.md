@@ -9,7 +9,7 @@ argument-hint: <description>
 Make one object from a brief: a Blender Python script builds it, it's
 exported as `assets/models/props/<slug>/<slug>.glb` with its own collision,
 and a prop scene lets anyone place it in the world. The alchemist's column
-(`tools/blender/assets/alchemist_column.py`) is a finished example.
+(`tools/blender/assets/alchemist_column.py` at git tag `demo-final`) is a finished example.
 
 The design skills at their scales:
 
@@ -69,7 +69,7 @@ in the brief are rules. If the description is missing, ask for it.
    keep the script the source of truth.)
 5. **Make its prop scene:** `src/world/props/assets/<slug>.tscn`, a Prop
    with `kind = 4` (ASSET), `solid = true` and `asset` pointing at the
-   `.glb` (copy `alchemist_column.tscn`). It's dragged under a design's
+   `.glb` (like `alchemist_column.tscn` at git tag `demo-final`). It's dragged under a design's
    `Props` node in the editor to place it.
 6. **Test:** `npm run verify`. `tests/smoke/test_assets.gd` checks every
    asset (meshes, collision, standing on its origin, a prop scene). Add the

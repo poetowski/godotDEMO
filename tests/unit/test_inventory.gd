@@ -1,7 +1,7 @@
 extends GutTest
 ## Inventory: 4 x 6 slots, filled from the first empty one.
 
-const CORNFLOWER := preload("res://data/items/cornflower.tres")
+const PEBBLE := preload("res://tests/fixtures/items/pebble.tres")
 
 
 func test_has_four_columns_and_six_rows() -> void:
@@ -15,62 +15,45 @@ func test_has_four_columns_and_six_rows() -> void:
 func test_items_fill_the_first_empty_slot() -> void:
 	var inventory := Inventory.new()
 	watch_signals(inventory)
-	assert_true(inventory.add(CORNFLOWER))
+	assert_true(inventory.add(PEBBLE))
 	assert_signal_emitted(inventory, "changed")
-	assert_eq(inventory.item_at(0), CORNFLOWER)
-	assert_true(inventory.has(&"cornflower"))
-	inventory.add(CORNFLOWER)
+	assert_eq(inventory.item_at(0), PEBBLE)
+	assert_true(inventory.has(&"pebble"))
+	inventory.add(PEBBLE)
 	inventory.remove_at(0)
-	inventory.add(CORNFLOWER)
-	assert_eq(inventory.item_at(0), CORNFLOWER, "a freed slot is reused first")
+	inventory.add(PEBBLE)
+	assert_eq(inventory.item_at(0), PEBBLE, "a freed slot is reused first")
 	assert_eq(inventory.count(), 2)
 
 
 func test_refuses_items_when_full() -> void:
 	var inventory := Inventory.new()
 	for k in inventory.capacity():
-		assert_true(inventory.add(CORNFLOWER))
+		assert_true(inventory.add(PEBBLE))
 	assert_true(inventory.is_full())
-	assert_false(inventory.add(CORNFLOWER))
-
-
-func test_the_cornflower_has_basic_info() -> void:
-	assert_eq(CORNFLOWER.display_name, "Cornflower")
-	assert_false(CORNFLOWER.description.is_empty())
-	assert_gt(CORNFLOWER.facts.size(), 2)
-	assert_not_null(CORNFLOWER.model)
+	assert_false(inventory.add(PEBBLE))
 
 
 func test_stackable_items_share_a_slot() -> void:
 	var inventory := Inventory.new()
-	var mushroom := preload("res://data/items/chanterelle.tres")
-	for k in mushroom.stack_size + 1:
-		assert_true(inventory.add(mushroom))
-	assert_eq(inventory.amount_at(0), mushroom.stack_size)
+	var berry := preload("res://tests/fixtures/items/berry.tres")
+	for k in berry.stack_size + 1:
+		assert_true(inventory.add(berry))
+	assert_eq(inventory.amount_at(0), berry.stack_size)
 	assert_eq(inventory.amount_at(1), 1, "a full stack starts another")
-	assert_eq(inventory.total(&"chanterelle"), mushroom.stack_size + 1)
-	inventory.add(CORNFLOWER)
-	inventory.add(CORNFLOWER)
-	assert_eq(inventory.amount_at(2), 1, "cornflowers don't stack")
+	assert_eq(inventory.total(&"berry"), berry.stack_size + 1)
+	inventory.add(PEBBLE)
+	inventory.add(PEBBLE)
+	assert_eq(inventory.amount_at(2), 1, "pebbles don't stack")
 	assert_eq(inventory.amount_at(3), 1)
 
 
 func test_a_full_inventory_still_takes_items_its_stacks_have_room_for() -> void:
 	var inventory := Inventory.new()
-	var mushroom := preload("res://data/items/penny_bun.tres")
-	inventory.add(mushroom)
+	var berry := preload("res://tests/fixtures/items/berry.tres")
+	inventory.add(berry)
 	for k in inventory.capacity() - 1:
-		inventory.add(CORNFLOWER)
+		inventory.add(PEBBLE)
 	assert_true(inventory.is_full())
-	assert_false(inventory.can_add(CORNFLOWER))
-	assert_true(inventory.can_add(mushroom))
-
-
-func test_every_mushroom_has_basic_info() -> void:
-	for id: StringName in [&"penny_bun", &"fly_agaric", &"chanterelle"]:
-		var item := ItemCatalog.find(id)
-		assert_not_null(item, id)
-		assert_false(item.description.is_empty())
-		assert_eq(item.facts.get("Kind"), "Mushroom")
-		assert_gt(item.stack_size, 1)
-		assert_not_null(item.model)
+	assert_false(inventory.can_add(PEBBLE))
+	assert_true(inventory.can_add(berry))

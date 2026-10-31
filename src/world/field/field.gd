@@ -4,7 +4,7 @@ extends Node3D
 ## sectors they own and streamed in around the player by `Streamer`, and the
 ## player starting in A1 facing north, and the time of day (Clock, with
 ## DayNight lighting the world by it), and the villagers living in it
-## (`Residents`). Pass `--sector=C4` after `--` on the
+## (`Residents`, none yet). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at
 ## another time.
 
@@ -13,16 +13,6 @@ var start_sector: String = "A1"
 
 var _sector := Vector2i(-2, -2)
 
-## Regions east and north: 10 makes 2 km. `--regions=20` after `--` makes
-## 4 km, for testing.
-const REGIONS := 10
-## Metres the hills rise and fall at most.
-const HILL_HEIGHT := 34.0
-## How quickly the hills come and go: about one every 250 m.
-const HILL_FREQUENCY := 0.004
-## Metres inside the world's edge over which the land eases flat.
-const BORDER := 80.0
-
 @onready var _player: Player = $Player
 @onready var _hud: Hud = $Hud
 @onready var _terrain: FieldTerrain = $Terrain
@@ -30,22 +20,16 @@ const BORDER := 80.0
 @onready var _clock: WorldClock = $Clock
 
 
-const SWORD_SCENE := preload("res://src/items/sword/sword.tscn")
-
-
 ## A new field is a new game.
 func _init() -> void:
 	WorldState.reset()
 	QuestLog.reset()
-	var regions := REGIONS
+	# `--regions=20` after `--` makes 4 km, for testing.
+	var regions := FieldWorld.REGIONS
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--regions="):
 			regions = clampi(arg.trim_prefix("--regions=").to_int(), 1, 50)
-	RegionMap.configure(regions, regions)
-	WorldShape.configure(HILL_HEIGHT, HILL_FREQUENCY, 3)
-	WorldShape.border = BORDER
-	# R1 is where the world is built from: flat, hills rising beyond it.
-	WorldShape.home = Rect2(Vector2.ZERO, Vector2.ONE * RegionMap.SIZE)
+	FieldWorld.configure(regions)
 
 
 func _ready() -> void:
@@ -90,10 +74,6 @@ func clock() -> WorldClock:
 	return _clock
 
 
-func vegetation() -> Vegetation:
-	return get_node_or_null("Vegetation") as Vegetation
-
-
 func player() -> Player:
 	return _player
 
@@ -115,15 +95,12 @@ func teleport(cell: Vector2i) -> void:
 	_player.velocity = Vector3.ZERO
 	_player.face(0.0)
 	_terrain.prepare_around_focus()
-	if vegetation():
-		vegetation().build_now()
 	_streamer.load_around_now()
 
 
 ## Everything a save keeps, as plain data (see SaveGame).
 func capture() -> Dictionary:
 	var at := _player.global_position
-	var sword := _player.sword()
 	return {
 		"version": SaveGame.FORMAT,
 		"saved_at": SaveGame.now(),
@@ -131,7 +108,8 @@ func capture() -> Dictionary:
 		"player": {
 			"position": [at.x, at.y, at.z],
 			"yaw": _player.facing(),
-			"sword": "" if sword == null else ("flame_katana" if sword is FlameKatana else "sword"),
+			# No swords exist right now; a save's field stays for when they do.
+			"sword": "",
 		},
 		"inventory": Array(_player.inventory.ids()),
 		"amounts": Array(_player.inventory.amounts()),
@@ -174,14 +152,12 @@ func apply(data: Dictionary) -> void:
 	for slot in mini(inventory.size(), _player.inventory.capacity()):
 		var id: String = inventory[slot]
 		if not id.is_empty():
-			_player.inventory.put(slot, ItemCatalog.find(StringName(id)), int(amounts[slot]) if slot < amounts.size() else 1)
+			var item := ItemCatalog.find(StringName(id))
+			# An old save can hold items that no longer exist.
+			if item:
+				_player.inventory.put(slot, item, int(amounts[slot]) if slot < amounts.size() else 1)
 	var player: Dictionary = data.get("player", {})
 	_player.unequip_sword()
-	match String(player.get("sword", "")):
-		"flame_katana":
-			_player.equip_sword(FlameKatana.new())
-		"sword":
-			_player.equip_sword(SWORD_SCENE.instantiate() as Node3D)
 	var at: Array = player.get("position", [0.0, 0.0, 0.0])
 	_player.global_position = Vector3(at[0], at[1], at[2])
 	_player.velocity = Vector3.ZERO

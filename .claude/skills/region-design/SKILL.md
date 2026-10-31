@@ -12,7 +12,7 @@ data in `data/world/landforms/<slug>.tres`. The world adds them to its
 height everywhere (`WorldShape`): rolling hills, then the landforms, then a
 little small detail. The ground turns to rock where it's steep and to snow
 above a landform's snow line, and the procedural woods thin out on them as
-told. `data/world/landforms/r2_mountain.tres` is a finished example: a big
+told. `data/world/landforms/r2_mountain.tres` at git tag `demo-final` is a finished example: a big
 mountain in R2, with a shoulder ridge and a foothill.
 
 The two design skills work at two scales and stack:
@@ -49,9 +49,10 @@ edges. So shape the regions first, then detail sectors on top.
    around them, and a landform under one would lift or bury it. List them
    first: `grep -n "sectors = " src/world/field/field.tscn`. If the brief
    needs land under a design, say so and ask.
-3. **R1 is the flat building ground.** The hills and the small detail stay
-   off in R1 (`WorldShape.home`). Landforms may go into R1 only when the
-   brief asks for it there.
+3. **The world is R1 alone for now** (`FieldWorld.REGIONS`). A brief for another
+   region needs the world made bigger first: ask. The author also sculpts the
+   land by hand (`TerrainSculpt`), which adds on top of landforms; check
+   `data/world/sculpt/` before reshaping land they may have worked on.
 4. **The brief is the author's request.** Build what it says without asking
    for approval. Your own choices (exact heights, how many landforms, rock,
    snow, tree lines) are placeholders, recorded as such. Don't add things the

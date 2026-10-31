@@ -12,7 +12,7 @@ var _translation: Translation
 func before_each() -> void:
 	_translation = Translation.new()
 	_translation.locale = STAND_IN
-	for english: String in ["[E]  Pick up %s", "Cornflower", "Empty", "Inventory", "Sector %s", "Pray"]:
+	for english: String in ["[E]  Pick up %s", "Pebble", "Empty", "Inventory", "Sector %s", "Pray"]:
 		_translation.add_message(english, "<" + english + ">")
 	TranslationServer.add_translation(_translation)
 	TranslationServer.set_locale(STAND_IN)
@@ -28,17 +28,16 @@ func test_the_string_catalog_is_up_to_date() -> void:
 	assert_eq(FileAccess.get_file_as_string(EXTRACTOR.OUTPUT), EXTRACTOR.catalog(), "out of date: run npm run strings")
 
 
-func test_the_catalog_holds_ui_item_and_design_text() -> void:
+func test_the_catalog_holds_ui_text() -> void:
 	var catalog: String = EXTRACTOR.catalog()
-	for english: String in ["Inventory", "Cornflower", "Fly Agaric", "[E]  Stand before the statue", "the flame katana", "Pray", "Save game"]:
-		assert_string_contains(catalog, "msgid \"%s\"" % english)
+	assert_string_contains(catalog, "msgid \"Inventory\"")
 	assert_string_contains(catalog, "msgid_plural \"%d items\"")
 
 
 func test_prompts_and_item_names_are_translated() -> void:
 	var pickup := ItemPickup.new()
-	pickup.item = preload("res://data/items/cornflower.tres")
-	assert_eq(pickup.prompt(), "<[E]  Pick up %s>" % "<Cornflower>")
+	pickup.item = preload("res://tests/fixtures/items/pebble.tres")
+	assert_eq(pickup.prompt(), "<[E]  Pick up %s>" % "<Pebble>")
 	pickup.free()
 
 
@@ -54,7 +53,7 @@ func test_the_hud_shows_translated_text() -> void:
 	hud.show_sector("B1")
 	assert_eq(hud.sector_text(), "<Sector %s>" % "B1")
 	hud.inventory_panel().bind(Inventory.new())
-	hud.choice_menu().ask("Before the statue", PackedStringArray(["Pray", "Cry"]))
+	hud.choice_menu().ask("A choice", PackedStringArray(["Pray", "Cry"]))
 	var labels: Array[String] = []
 	for node in hud.find_children("*", "Button", true, false):
 		labels.append((node as Button).text)

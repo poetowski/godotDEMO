@@ -1,14 +1,17 @@
 extends GutTest
-## The hero swims in water at least a metre deep (the oasis pond, the
-## R11 lake), floating at the surface with the swim animation, and
-## walks again on the shore.
+## The hero swims in water at least a metre deep, floating at the surface
+## with the swim animation, and walks again on the shore.
+
+const FixtureDesign := preload("res://tests/fixtures/fixture_design.gd")
 
 var _world: Node
 var _player: Player
+var _pond: SectorDesign
 
 
 func before_all() -> void:
 	_world = (load("res://src/world/field/field.tscn") as PackedScene).instantiate()
+	_pond = FixtureDesign.add_to(_world, "SwimPond", PackedStringArray(["F6"]))
 	add_child(_world)
 	(_world.get_node("Streamer") as SectorStreamer).load_all_now()
 	_player = _world.call("player") as Player
@@ -24,9 +27,9 @@ func test_the_hero_has_a_swim_animation() -> void:
 	assert_eq(animations.get_animation(&"swim").loop_mode, Animation.LOOP_LINEAR)
 
 
-func test_swims_in_the_oasis_pond_and_floats_at_the_surface() -> void:
+func test_swims_in_a_pond_and_floats_at_the_surface() -> void:
 	var terrain := _world.call("terrain") as FieldTerrain
-	var spot := Vector2(30.0, -49.0)
+	var spot: Vector2 = _pond.call("pond", "F6")
 	assert_gt(terrain.water_level_at(spot) - terrain.height_at(spot), 1.0, "the pond is over a metre deep")
 	_player.global_position = Vector3(spot.x, terrain.water_level_at(spot) - 0.5, spot.y)
 	await wait_physics_frames(60)
@@ -37,15 +40,9 @@ func test_swims_in_the_oasis_pond_and_floats_at_the_surface() -> void:
 
 func test_walks_on_dry_land_and_in_shallow_water() -> void:
 	var terrain := _world.call("terrain") as FieldTerrain
-	_player.global_position = Vector3(25.0, terrain.height_at(Vector2(25.0, -42.5)) + 0.1, -42.5)
+	_player.global_position = Vector3(120.0, terrain.height_at(Vector2(120.0, -120.0)) + 0.1, -120.0)
 	await wait_physics_frames(30)
 	assert_false(_player.is_swimming)
-
-
-func test_the_r11_lake_is_water_to_swim_in() -> void:
-	var terrain := _world.call("terrain") as FieldTerrain
-	var spot := Vector2(100.0, -260.0)
-	assert_gt(terrain.water_level_at(spot) - terrain.height_at(spot), 1.0)
 
 
 func test_splashes_while_swimming_and_not_on_land() -> void:
@@ -53,13 +50,13 @@ func test_splashes_while_swimming_and_not_on_land() -> void:
 	var sounds := _player.get_node("SwimSounds") as SwimSounds
 	var splashes: Array[bool] = []
 	sounds.splashed.connect(func(strong: bool) -> void: splashes.append(strong))
-	var spot := Vector2(28.0, -49.0)
+	var spot: Vector2 = _pond.call("pond", "F6") - Vector2(1.5, 0.0)
 	_player.global_position = Vector3(spot.x, terrain.water_level_at(spot) - 0.5, spot.y)
 	Input.action_press(&"move_right")
 	await wait_physics_frames(75)
 	Input.action_release(&"move_right")
 	assert_gt(splashes.count(true), 1, "strokes splash")
 	splashes.clear()
-	_player.global_position = Vector3(25.0, terrain.height_at(Vector2(25.0, -42.5)) + 0.1, -42.5)
+	_player.global_position = Vector3(120.0, terrain.height_at(Vector2(120.0, -120.0)) + 0.1, -120.0)
 	await wait_physics_frames(60)
 	assert_eq(splashes.size(), 0, "silent on land")

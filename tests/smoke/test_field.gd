@@ -22,12 +22,12 @@ func test_player_starts_on_the_ground_in_a1() -> void:
 	var player := _world.get_node("Player") as Player
 	await wait_until(player.is_on_floor, 5.0)
 	assert_true(player.is_on_floor())
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "R1:A1")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "A1")
 
 
 func test_hud_names_the_current_sector() -> void:
 	await wait_process_frames(2)
-	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector R1:A1")
+	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector A1")
 
 
 func test_every_sector_has_a_painted_name() -> void:
@@ -37,10 +37,10 @@ func test_every_sector_has_a_painted_name() -> void:
 	assert_eq(grid.get_children().filter(func(child: Node) -> bool: return child is Label3D).size(), SectorMap.COLUMNS * SectorMap.ROWS)
 
 
-func test_names_are_hidden_where_a_design_shapes_the_ground() -> void:
+func test_names_show_in_sectors_without_a_design() -> void:
 	var grid := _world.get_node("SectorGrid")
-	assert_false((grid.get_node("LabelA1") as Label3D).visible, "A1 has a design")
-	assert_true((grid.get_node("LabelT20") as Label3D).visible, "T20 is still flat grass")
+	assert_true((grid.get_node("LabelA1") as Label3D).visible)
+	assert_true((grid.get_node("LabelT20") as Label3D).visible)
 
 
 func test_grass_is_solid_far_beyond_the_grid() -> void:

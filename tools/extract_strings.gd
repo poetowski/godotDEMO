@@ -44,7 +44,7 @@ static func catalog() -> String:
 		for found in list.search_all(source):
 			for item in literal.search_all(found.get_string(1)):
 				_add(singles, item.get_string(1), where)
-	for file_name in DirAccess.get_files_at(ITEMS):
+	for file_name in _files_in(ITEMS):
 		if not file_name.ends_with(".tres"):
 			continue
 		var item := load(ITEMS.path_join(file_name)) as ItemData
@@ -56,7 +56,7 @@ static func catalog() -> String:
 		for label: String in item.facts:
 			_add(singles, _escape(label), where)
 			_add(singles, _escape(item.facts[label]), where)
-	for file_name in DirAccess.get_files_at(QUESTS):
+	for file_name in _files_in(QUESTS):
 		if not file_name.ends_with(".tres"):
 			continue
 		var quest := load(QUESTS.path_join(file_name)) as QuestData
@@ -67,7 +67,7 @@ static func catalog() -> String:
 			_add(singles, _escape(text), where)
 		for step in quest.steps:
 			_add(singles, _escape(step.text), where)
-	for file_name in DirAccess.get_files_at(DIALOGUE):
+	for file_name in _files_in(DIALOGUE):
 		if not file_name.ends_with(".tres"):
 			continue
 		var dialogue := load(DIALOGUE.path_join(file_name)) as DialogueData
@@ -127,3 +127,8 @@ static func _scripts(folder: String) -> PackedStringArray:
 	for directory in DirAccess.get_directories_at(folder):
 		found.append_array(_scripts(folder.path_join(directory)))
 	return found
+
+
+## The files in a data folder, which doesn't exist until it holds something.
+static func _files_in(folder: String) -> PackedStringArray:
+	return DirAccess.get_files_at(folder) if DirAccess.dir_exists_absolute(folder) else PackedStringArray()

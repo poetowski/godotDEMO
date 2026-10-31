@@ -12,7 +12,7 @@ extends SceneTree
 ##   --heading=45         degrees from north toward east
 ##   --regions=10         passed on to the field (20 makes 4 km)
 ##   --without=A,B        switch off these nodes (paths from the world's
-##                        root, such as Vegetation/FarForest), to measure
+##                        root, such as Waters), to measure
 ##                        what they cost
 
 const DEFAULT_SCENE := "res://src/world/field/field.tscn"
@@ -62,7 +62,6 @@ func _run() -> void:
 	var slow: Array[Dictionary] = []
 	var region := RegionMap.at(player.global_position)
 	var crossings := 0
-	var most_chunks := 0
 	var travelled := 0.0
 	var elapsed := 0.0
 	var next_sample := 0.0
@@ -99,8 +98,6 @@ func _run() -> void:
 		calls.append(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
 		if terrain.chunks():
 			most_tiles = maxi(most_tiles, terrain.chunks().tile_count())
-		if world.has_method("vegetation"):
-			most_chunks = maxi(most_chunks, (world.call("vegetation") as Vegetation).chunk_count())
 		if elapsed >= next_sample:
 			next_sample += 1.0
 			memory.append(Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0)
@@ -121,7 +118,6 @@ func _run() -> void:
 		"memory_mb": _trend(memory),
 		"video_mb": _trend(video),
 		"most_terrain_tiles": most_tiles,
-		"most_vegetation_chunks": most_chunks,
 		"designs_loaded_at_end": streamer.loaded_designs().size(),
 		"region_crossings": crossings,
 		"slow_frames": slow,

@@ -5,7 +5,7 @@ extends Node3D
 ## player tells it how it moves; it blends the animations:
 ##   idle, walk and run by ground speed; fall while airborne;
 ##   hold_sword on the right arm while a sword is held; swing on the upper
-##   body; pray or cry over everything while a gesture runs; swim over
+##   body; swim over
 ##   everything in deep water, faster the faster it moves.
 ## It also carries the attachment points: the right hand and the eyes.
 
@@ -16,7 +16,7 @@ const UPPER_BODY: Array[String] = [
 	"RightShoulder", "RightUpperArm", "RightLowerArm", "RightHand",
 ]
 const SWORD_ARM: Array[String] = ["RightUpperArm", "RightLowerArm", "RightHand"]
-const LOOPS: Array[StringName] = [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"pray", &"cry", &"swim"]
+const LOOPS: Array[StringName] = [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"swim"]
 ## Metres per second the swim animation is made for; slower swimming plays it
 ## slower, down to a gentle paddle when still.
 const SWIM_SPEED := 2.4
@@ -27,7 +27,6 @@ const RUN_SPEED := 7.5
 var _tree: AnimationTree
 var _skeleton: Skeleton3D
 var _hand: Node3D
-var _eyes: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -47,18 +46,11 @@ func _ready() -> void:
 	_tree.tree_root = _build_tree(skeleton_path)
 	_tree.active = true
 	_hand = _attach("RightHand", "Hand", Transform3D(Basis(Vector3.RIGHT, PI), Vector3(0.0, 0.06, 0.0)))
-	_eyes.append(_attach("Head", "LeftEye", Transform3D(Basis(Vector3.UP, PI), Vector3(0.06, 0.15, 0.145))))
-	_eyes.append(_attach("Head", "RightEye", Transform3D(Basis(Vector3.UP, PI), Vector3(-0.06, 0.15, 0.145))))
 
 
 ## Where a held sword goes: the right palm, -Y down the arm and -Z ahead.
 func hand() -> Node3D:
 	return _hand
-
-
-## The left and right eyes, -Z looking ahead, for tears.
-func eyes() -> Array[Node3D]:
-	return _eyes
 
 
 ## Recolours one of the body's materials ("Tunic", "Trousers", "Hair"...)
@@ -102,14 +94,6 @@ func swim(swimming: bool, speed: float, delta: float) -> void:
 	_tree.set("parameters/swim_pace/scale", clampf(speed / SWIM_SPEED, 0.35, 1.6))
 
 
-## Blends a gesture (&"pray" or &"cry") over the whole body by `weight`,
-## 0 to 1.
-func gesture(name_of_gesture: StringName, weight: float) -> void:
-	if weight > 0.0:
-		_tree.set("parameters/gesture_pick/transition_request", String(name_of_gesture))
-	_tree.set("parameters/gesture/blend_amount", weight)
-
-
 ## A bone's height above the body's origin, in metres, as posed now.
 func bone_height(bone: String) -> float:
 	var index := _skeleton.find_bone(bone)
@@ -147,14 +131,6 @@ func _build_tree(skeleton: NodePath) -> AnimationNodeBlendTree:
 	swing.fadeout_time = 0.12
 	root.add_node(&"swing_clip", _clip(&"swing"))
 	root.add_node(&"swing", swing)
-	var pick := AnimationNodeTransition.new()
-	pick.xfade_time = 0.2
-	pick.add_input("pray")
-	pick.add_input("cry")
-	root.add_node(&"pray", _clip(&"pray"))
-	root.add_node(&"cry", _clip(&"cry"))
-	root.add_node(&"gesture_pick", pick)
-	root.add_node(&"gesture", AnimationNodeBlend2.new())
 	root.add_node(&"swim", _clip(&"swim"))
 	root.add_node(&"swim_pace", AnimationNodeTimeScale.new())
 	root.add_node(&"water", AnimationNodeBlend2.new())
@@ -164,14 +140,10 @@ func _build_tree(skeleton: NodePath) -> AnimationNodeBlendTree:
 	root.connect_node(&"hold", 1, &"hold_sword")
 	root.connect_node(&"swing", 0, &"hold")
 	root.connect_node(&"swing", 1, &"swing_clip")
-	root.connect_node(&"gesture_pick", 0, &"pray")
-	root.connect_node(&"gesture_pick", 1, &"cry")
 	root.connect_node(&"swim_pace", 0, &"swim")
 	root.connect_node(&"water", 0, &"swing")
 	root.connect_node(&"water", 1, &"swim_pace")
-	root.connect_node(&"gesture", 0, &"water")
-	root.connect_node(&"gesture", 1, &"gesture_pick")
-	root.connect_node(&"output", 0, &"gesture")
+	root.connect_node(&"output", 0, &"water")
 	return root
 
 

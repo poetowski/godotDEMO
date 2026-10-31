@@ -12,39 +12,37 @@ design arrives.
 | Developer console | `src/autoload/dev_console.gd` | Opened with ` (left of 1). Commands: help, where, goto <sector>, time [hh:mm], fast, give <item> [n], items, radius <load> [unload], reset, save/load [slot], map, fps, clear, quit. Other code adds commands with `register`. Its text is for developers and isn't translated. |
 | Streaming map | `src/autoload/streaming_map.gd` | F4 or `map`: the 20 x 20 grid from above, each sector coloured loaded (green), loading (yellow), distant view only (blue) or empty; the hero's arrow, the load and unload radius, design counts, memory, draw calls and fps. |
 | MCPRuntime autoload | `addons/godot_mcp/runtime/` | Lets the MCP server screenshot, drive input in and inspect the running game. Editor builds only (local patch). |
-| Field | `src/world/field/` | The main scene: grass everywhere, the sector grid, and the sector designs under `Sectors` (see the design record). `grass_grid.gdshader` paints the grass, designed ground's colours and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names (not in designed sectors), and `field.gd` starts the player on dry ground in A1 (or the `--sector` given). |
+| Field | `src/world/field/` | The main scene: the ground, the sector grid, and sector designs under `Sectors` (none yet). `grass_grid.gdshader` paints the grass, designed ground's colours and the glowing lines, `sector_grid.gd` raises the light curtains and paints sector names, and `field.gd` starts the player on dry ground in A1 (or the `--sector` given). |
 | SectorMap | `src/world/field/sector_map.gd` | Sector maths: which sector a point is in, names to cells and back, sector centres, corners and start points. Everything that talks about sectors goes through it. Cells run across the whole world; names carry the region in a multi-region world (`R45:J10`), and stay plain (`C4`) in a one-region world such as the main field. |
 | Regions | `src/world/field/region_map.gd` | `RegionMap`: the world is `columns` x `rows` regions of 20 x 20 sectors (200 m), numbered R1, R2... from the south-west corner, east along each row and then north. The world's root configures it (the main field is R1 alone). The sector grid, the HUD, the console's `goto` and the streaming map all work per region. |
-| The world | `src/world/field/` | The field is the whole world: 10 x 10 regions (2 km, R1 to R100; `--regions=20` makes 4 km). R1, the south-west region, is flat and clear: it's where the world is built from by hand, and holds the sector designs. Beyond it rolling hills (34 m) rise over 300 m (`WorldShape.home`) and woods grow, all streamed around the player. |
-| Landforms | `src/world/land/`, `data/world/landforms/` | Region designs: each `LandformSet` (made by `/region-design`) is a few `Landform`s (mountain, hill, ridge, valley, plateau) for some regions. `WorldShape` adds them up with the rolling hills and a little small detail; `Landforms` also answers where trees thin out (tree density, tree line, no trees on cliffs) and the ground's colour (rock where steep, snow above a snow line). Tests keep every landform inside its regions and off designed sectors. The first: a big mountain in R2. |
-| Streamed ground | `src/world/field/terrain_chunks.gd` | `TerrainChunks`, the ground of a `chunked` FieldTerrain: the 3 x 3 regions around the player in 100 m chunks with collision (1 m samples next to the player, 4 m beyond), farther regions as single 200 m tiles (8 m, then 20 m) out to 6 regions. Skirts hide the cracks between levels of detail; tiles are built on worker threads and attached two a frame. Designed sectors are left open for their designs' own ground. |
-| Props | `src/world/props/`, `tools/freeze_props.gd` | Bushes, rocks and trees as `Prop` nodes under a design's `Props` node in `field.tscn`: selected, moved, turned, scaled, duplicated or deleted in the editor, where each shows a preview. The game never draws them one by one: the design merges them (`PropLibrary`) into one mesh per kind and sector, with their collision, when its content is built and baked. A design's code places props with `place_prop` while it's being made; `npm run props -- <Design>` freezes them into the scene for hand editing. The A1-A3 stream's 75 rocks and bushes are props. |
-| Assets | `tools/blender/assets/`, `tools/blender/kit.py`, `assets/models/props/`, `src/world/props/assets/` | Objects made by `/asset-design`: a Blender script per asset (`npm run models -- <slug>`) builds it low-poly with its own convex collision and exports a `.glb`; `npm run asset-preview -- <slug>` renders it in Godot next to a 1.8 m figure. Each has a prop scene (a Prop of kind ASSET) to place it under a design's `Props`; it's placed whole, streamed and baked with the design (as a reference to the `.glb`). The first: the alchemist's column, by the A5 cottage. |
-| Waters | `src/world/land/waterfall.gd`, `lake.gd`, `waters.gd`, `waterfall.gdshader` | Region designs' water. Waterfalls (`LandformSet.waterfalls`): `Waters` drapes a streaming sheet over WorldShape's ground from top to bottom, with a pool and spray. Lakes (`LandformSet.lakes`): a basin carved after the landforms (`Landforms.shape_lakes`, in `WorldShape.height`) with a flat surface, green banks, an optional island and thick shore woods; no trees in the water. Both are water for `FieldTerrain.water_level_at` (swimming, footsteps). Tropical landforms (`Landform.tropical`) grow palms and jungle trees (Vegetation kinds 4 and 5) and stay green on steeper slopes. |
-| Far forest | `src/world/nature/far_forest.gd`, `far_forest.gdshader` | Stand-in trees beyond the real ones (350 m) out to 1.3 km, where Vegetation's trees stand (every other one, a little bigger), in 400 m blocks, one MultiMesh per kind and block; each dissolves where the real trees take over. |
-| Vegetation | `src/world/nature/vegetation.gd` | Woods that grow on their own over open ground, streamed in 100 m chunks: trees out to 3 chunks (350 m), bushes, grass and trunk collision within 1 chunk. Thick where a world-wide noise says forest, thin in clearings; the same every time; built on worker threads, one MultiMesh per kind and chunk. |
+| The world | `src/world/field/field_world.gd` | `FieldWorld` sets the world up, for the game and the editor alike: R1 alone (200 m; `--regions=N` makes more, for testing), rolling with Perlin noise (`WorldShape`, 1.8 m, one bump about every 70 m), easing flat over the last 12 m. Flat grass continues 900 m past it on every side. |
+| Hand sculpting | `addons/terrain_sculpt/`, `src/world/land/terrain_sculpt.gd`, `sculpt_brush.gd`, `data/world/sculpt/` | An editor plugin: select Terrain and paint in the 3D view (raise, lower, smooth, flatten, restore), with undo. `TerrainSculpt` holds what was sculpted, metres added to the land on a 1 m grid in 100 m tiles, one `.res` file per tile that holds anything, saved after every stroke. `WorldShape.height` adds it last, so everything reading the land follows: ground, collision, designs, grid, water edges. In the editor the open ground streams around the view, the 1 m tiles under the brush change at once (`TerrainChunks.reshape`) and are rebuilt whole after the stroke; designed sectors' ground follows every 0.25 s (`SectorDesign.reshape_ground`). The game reads the tiles once at start; a sculpt makes baked content stale, so the next `npm run game` bakes again. Tests ignore the author's sculpts (`tests/pre_run.gd`). `npm run sculpt-check` drives the plugin in the real editor with made-up mouse events. |
+| Landforms | `src/world/land/`, `data/world/landforms/` | Region designs (none yet): each `LandformSet` (made by `/region-design`) is a few `Landform`s (mountain, hill, ridge, valley, plateau) for some regions. `WorldShape` adds them up with the rolling hills and a little small detail; `Landforms` also answers where trees would thin out and the ground's colour (rock where steep, snow above a snow line). Tests keep every landform inside its regions and off designed sectors. |
+| Streamed ground | `src/world/field/terrain_chunks.gd` | `TerrainChunks`, the ground of a `chunked` FieldTerrain: the 3 x 3 regions around the player in 100 m chunks with collision (1 m samples next to the player, 4 m beyond), farther regions as single 200 m tiles (8 m, then 20 m) out to 6 regions. Skirts hide the cracks between levels of detail; tiles are built on worker threads and attached two a frame. Designed sectors are left open for their designs' own ground. Also runs in the editor (see Hand sculpting). |
+| Props | `src/world/props/`, `tools/freeze_props.gd` | Bushes, rocks and trees as `Prop` nodes under a design's `Props` node in `field.tscn`: selected, moved, turned, scaled, duplicated or deleted in the editor, where each shows a preview. The game never draws them one by one: the design merges them (`PropLibrary`) into one mesh per kind and sector, with their collision, when its content is built and baked. A design's code places props with `place_prop` while it's being made; `npm run props -- <Design>` freezes them into the scene for hand editing. |
+| Assets | `tools/blender/assets/`, `tools/blender/kit.py`, `assets/models/props/`, `src/world/props/assets/` | Objects made by `/asset-design`: a Blender script per asset (`npm run models -- <slug>`) builds it low-poly with its own convex collision and exports a `.glb`; `npm run asset-preview -- <slug>` renders it in Godot next to a 1.8 m figure. Each has a prop scene (a Prop of kind ASSET) to place it under a design's `Props`; it's placed whole, streamed and baked with the design (as a reference to the `.glb`). None yet. |
+| Waters | `src/world/land/waterfall.gd`, `lake.gd`, `waters.gd`, `waterfall.gdshader` | Region designs' water. Waterfalls (`LandformSet.waterfalls`): `Waters` drapes a streaming sheet over WorldShape's ground from top to bottom, with a pool and spray. Lakes (`LandformSet.lakes`): a basin carved after the landforms (`Landforms.shape_lakes`, in `WorldShape.height`) with a flat surface, green banks, an optional island and thick shore woods; no trees in the water. Both are water for `FieldTerrain.water_level_at` (swimming, footsteps). |
 | Sound | `src/audio/`, `default_bus_layout.tres` | Made in code like the models (`SoundSynth`): footsteps on grass and splashing in water (`Footsteps` on the player: a step every stride, longer strides when sprinting, a heavier one on landing), swimming splashes (`SwimSounds` on the player: a splash per stroke in time with the swim animation, soft laps while paddling), and one ambient for the whole world (`Ambience`: wind always, birds by day, crickets by night, by the light). Buses: Effects and Ambient, for volume settings later. |
 | Benchmark | `tools/perf.gd`, `npm run perf` | Travels the player across a world in a straight line and reports frame times, GPU time, draw calls, memory over time, streamed tiles and every frame over 40 ms with where it happened, to `.perf/<world>.json`. |
 | Sector designs | `src/world/field/sector_design.gd`, `src/world/field/sectors/` | A `SectorDesign` owns some sectors and shapes only them: its hooks describe ground height, water level and flow, and ground colour, sampled every 0.25 m; it places its own props. The ground eases back to flat within 2 m of every edge shared with a sector it doesn't own. Built with the `/environment-design` skill. |
 | FieldTerrain | `src/world/field/field_terrain.gd` | The field's ground: one flat mesh and collision for the undesigned sectors plus a 900 m ring around the grid, and a coarse (1 m) stand-in for each designed sector and a far model (`FarModel`) for each design, shown while its content isn't loaded. Answers height and water questions for the whole field. |
 | Streaming | `src/world/streaming/` | `SectorStreamer` loads a design's content while one of its sectors is within `load_radius` (4) sectors of the player or the camera, nearest first, and unloads it beyond `unload_radius` (5). Content comes from scenes baked by `tools/bake_sectors.gd` (`npm run bake`) into `baked/sectors/`, read on a background thread, or is generated live when the bake is stale. `SectorGround` keeps every design's heights, water and flow loaded. `WorldState` remembers what the player took, so reloaded content stays changed. |
 | Nature kit | `src/shared/nature/` | Low-poly rocks, bushes, grass tufts and lily pads (`NatureKit`), stream courses (`StreamPath`), and shaders for flowing water, swaying grass and floating things. |
-| Player | `src/player/` | Third-person hero: SpringArm camera, camera-relative movement, sprint, jump, sword pickup and swing with a swoosh trail, gestures, swimming in water at least 1 m deep (`swim_depth`; floats at the surface, slower, no jumping or swinging; any `FieldTerrain` water, waterfall pools included). The body is `HeroBody`: the skinned hero from `assets/models/hero/hero.glb` and an `AnimationTree` built in code (idle/walk/run blended by speed, fall, the sword arm, a swing over the upper body, pray and cry over everything, swim over everything in deep water, paced by speed), with the right hand and eyes as attachment points. |
+| Player | `src/player/` | Third-person hero: SpringArm camera, camera-relative movement, sprint, jump, holding a sword and swinging it with a swoosh trail, swimming in water at least 1 m deep (`swim_depth`; floats at the surface, slower, no jumping or swinging; any `FieldTerrain` water, waterfall pools included). The body is `HeroBody`: the skinned hero from `assets/models/hero/hero.glb` and an `AnimationTree` built in code (idle/walk/run blended by speed, fall, the sword arm, a swing over the upper body, swim over everything in deep water, paced by speed), with the right hand as an attachment point. |
 | World clock | `src/world/time/world_clock.gd`, `Clock` in the field | Time of day and day count, part of every field world and of saves (`time`). A game day lasts 24 real minutes; F7 (dev builds only) runs it at a game hour per second. The HUD shows it top right. `--hour=21.5` starts at another time (`npm run game`, `npm run shot`). |
 | Day and night | `src/world/time/day_night.gd`, `DayNight`, `Sun` and `Moon` in the field | Lights the world by the clock: the sun rises in the east at 6:00, stands 60 degrees high in the south at 13:00 and sets in the west at 20:00; at night a dimmer blue moon lights from the other side, casting the shadows, stars fade in (a generated texture on the sky's cover), and the sky, fog and ambient light pass through dawn, day, dusk and night. |
 | Dialogue | `src/dialogue/`, `data/dialogue/` | Conversations as data (`DialogueData`: entries with a line and answers; a conversation opens at the first opening entry whose condition holds). `DialogueRules` is the small language for conditions (`quest:<id>:none\|active\|done`, `has:<item>`, `!has:`, joined by `&`) and actions (`start:`, `complete:`, `take:`, `give:`, joined by `;`). A villager with `dialogue` gets a `Talk` interactable ("[E] Talk to ..."), stops and faces the player; the HUD runs the conversation through the choice menu (title = speaker, body = line). |
-| Quests | `src/quests/`, `data/quests/`, `src/ui/quests/` | Quests as data (`QuestData`: id, title, giver, description, `QuestStep`s; an item step is done while the item is carried, the rest when the quest is). `QuestLog` keeps each quest's state (active, done), saved in format 4. Q opens `QuestPanel`, a drawer from the left. The first: Samir's "A Flower for the Fever". |
-| Villagers | `src/npc/villager.gd` | NPCs with a daily program: from each hour, go home, to work or to the meeting place and rest, work or talk there. The program and walking run everywhere; the body (`HeroBody` with its own tunic colour) is only shown and animated within 60 m of the player. No collision or path finding: they walk straight over the ground. Residents of the field live under its `Residents` node, wired to the clock by `field.gd`; the first is Samir at the C5-D6 oasis. |
-| Hero model | `tools/blender/build_hero.py`, `assets/models/hero/` | Built in Blender by a script (`npm run models`): a low-poly body skinned to 22 bones named after Godot's humanoid profile, and 9 animations (idle, walk, run, fall, hold_sword, swing, pray, cry, swim). |
-| Swords | `src/items/sword/`, `src/items/flame_katana/` | `SwordHolder` offers a blade to the player: the sword-in-the-stone (not placed now) and `SwordChest`, which holds the `FlameKatana` on top of the C2 tower. The katana is built in code: burning blade shader, flame particles, flickering light. |
+| Quests | `src/quests/`, `data/quests/`, `src/ui/quests/` | Quests as data (`QuestData`: id, title, giver, description, `QuestStep`s; an item step is done while the item is carried, the rest when the quest is). `QuestLog` keeps each quest's state (active, done), saved in format 4. Q opens `QuestPanel`, a drawer from the left. No quests yet. |
+| Villagers | `src/npc/villager.gd` | NPCs with a daily program: from each hour, go home, to work or to the meeting place and rest, work or talk there. The program and walking run everywhere; the body (`HeroBody` with its own tunic colour) is only shown and animated within 60 m of the player. No collision or path finding: they walk straight over the ground. Residents of the field live under its `Residents` node (none yet), wired to the clock by `field.gd`. |
+| Hero model | `tools/blender/build_hero.py`, `assets/models/hero/` | Built in Blender by a script (`npm run models`): a low-poly body skinned to 22 bones named after Godot's humanoid profile, and 7 animations (idle, walk, run, fall, hold_sword, swing, swim). |
 | HUD | `src/ui/hud/` | Current sector, interaction prompt, controls line, mouse-capture hint; opens the inventory on I and freezes the hero while it's open. |
-| Inventory | `src/items/inventory.gd`, `src/items/item_data.gd`, `src/ui/inventory/`, `data/items/` | `Inventory` (4 x 6 slots, on the player) holds `ItemData` resources: name, description, facts, model and stack size (mushrooms stack 20 to a slot). `InventoryPanel` is the drawer sliding in from the right over 40% of the screen, with 3D slot pictures and a viewer (`ItemPreview`, a model in its own small world, dragged to turn). |
-| Interaction | `src/items/interactable.gd`, `src/items/item_pickup.gd`, `src/items/gesture_spot.gd` | `Interactable` offers itself to the player inside its area with a prompt, and acts on E. `ItemPickup` puts an item in the inventory; `SwordHolder` hands over a blade; `GestureSpot` asks the player to choose a gesture (pray, cry) and has the hero perform it. |
-| Save and load | `src/save/save_game.gd`, `src/save/save_migration.gd`, `src/ui/game_menu/`, `Field.capture` / `Field.apply`, `src/items/item_catalog.gd` | JSON saves in `user://saves/slot_<name>.json` (a quicksave and slots 1 to 3): the player's position, facing and sword, the inventory by item id and amount, and `WorldState`'s record per object. Saves carry a format number (2 now); `SaveMigration` upgrades older ones step by step, checked against a frozen save of every old format in `tests/fixtures/saves/`. Loading happens in place: the world state, inventory and sword are restored, then every streamed design reloads around the player. The game menu (Esc) pauses the game; F5 quicksaves, F9 quickloads. |
+| Inventory | `src/items/inventory.gd`, `src/items/item_data.gd`, `src/ui/inventory/`, `data/items/` | `Inventory` (4 x 6 slots, on the player) holds `ItemData` resources: name, description, facts, model and stack size. No items yet; tests use their own in `tests/fixtures/items/`. `InventoryPanel` is the drawer sliding in from the right over 40% of the screen, with 3D slot pictures and a viewer (`ItemPreview`, a model in its own small world, dragged to turn). |
+| Interaction | `src/items/interactable.gd`, `src/items/item_pickup.gd` | `Interactable` offers itself to the player inside its area with a prompt, and acts on E. `ItemPickup` puts an item in the inventory. |
+| Save and load | `src/save/save_game.gd`, `src/save/save_migration.gd`, `src/ui/game_menu/`, `Field.capture` / `Field.apply`, `src/items/item_catalog.gd` | JSON saves in `user://saves/slot_<name>.json` (a quicksave and slots 1 to 3): the player's position and facing, the inventory by item id and amount, and `WorldState`'s record per object. Saves carry a format number (2 now); `SaveMigration` upgrades older ones step by step, checked against a frozen save of every old format in `tests/fixtures/saves/`. Loading happens in place: the world state, inventory and sword are restored, then every streamed design reloads around the player. The game menu (Esc) pauses the game; F5 quicksaves, F9 quickloads. |
 | Stable ids | `SectorDesign.design_id`, `content_id`, `scatter_id`, `WorldState` | Everything saved about the world is keyed by ids that survive renaming nodes and retuning scatters: `<design_id>/<local name>` for hand-placed things, `<design_id>/<kind>@<x>,<z>` (decimetres) for scattered ones. A design issuing the same id twice is an error. `WorldState` keeps a small record per id (`taken` now; doors, NPCs and the like later). |
 | Localization | `src/shared/text.gd`, `tools/extract_strings.gd`, `locale/messages.pot` | English only for now, ready for translation: player-facing text goes through `tr`, `TranslationServer.translate`, plural forms or `Text.mark`; `npm run strings` collects it, with item texts, into `messages.pot`. Adding a language means translating that file into `locale/<lang>.po` and listing it under Localization in the project settings. |
-| Choices and gestures | `src/ui/choice/choice_menu.gd`, `Player.ask`, `Player.perform` | `Player.ask` raises a choice the HUD's `ChoiceMenu` shows (numbered buttons, Esc cancels). `Player.perform` plays a timed gesture (kneeling prayer, crying with tears) while the hero stands still. |
-| Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material (the clouds use it). |
+| Choices | `src/ui/choice/choice_menu.gd`, `Player.ask` | `Player.ask` raises a choice the HUD's `ChoiceMenu` shows (numbered buttons, Esc cancels). |
+| Shared mesh tools | `src/shared/mesh_kit.gd`, `src/shared/shaders/lowpoly.gdshader` | Primitive-mesh merging, MultiMesh setup and a flat-shaded low-poly material (a shared look for what's built in code). |
 | Tests | `tests/`, GUT 9.7.1 | `npm test`; failing asserts, engine errors and `push_error` all fail a run. |
 | Project check | `tools/check_project.gd` | `npm run check` loads everything and fails on parse, load and typing errors. |
 
@@ -58,86 +56,26 @@ The camera's spring arm only collides with `world`; the sword pickup only
 sees `player`.
 
 Sectors: 10 x 10 m, 20 x 20 of them (A to T, 1 to 20). A1's south-west corner
-is the world origin; letters grow east (+X), numbers north (-Z). The flat
-grass continues 900 m past the grid on every side.
+is the world origin; letters grow east (+X), numbers north (-Z).
 
 Player controls: WASD or the left stick to move, Shift to sprint, Space to jump,
 E to interact, left click to swing, the mouse to look (click the window to
 capture it, Esc to release), the wheel to zoom. Gamepad: A jump, Y interact,
 X swing, right stick look.
 
-Code-generated parts of the world (the ground, sector designs, curtains,
-sector names and clouds) are built by `@tool` scripts, so the editor shows
+Code-generated parts of the world (the ground, sector designs, curtains and
+sector names) are built by `@tool` scripts, so the editor shows
 them too. In the editor every design generates its content live; the game
 streams the baked content. Their generated
 children have no owner, so the editor never saves them into the scene file.
 
-The castle proof of concept (terrain, castle, path, trees) was removed when
-the sector grid replaced it. It is kept at git tag `poc-castle`.
+The castle proof of concept is kept at git tag `poc-castle`, the whole demo
+(sector designs, landforms, assets, woods, swords, NPC, stress test and big
+world benchmarks) at `demo-final`. `demo-final` also holds tests worth restoring
+once designs exist: far models and a design unloaded mid-read.
 
 Battery note: on battery this laptop caps games at 30 fps (NVIDIA Battery
 Boost or Windows power saving). Measure performance on AC power.
-
-## Stress test (2026-10-27, world removed 2026-10-29)
-
-The stress world (`src/world/stress/stress_field.tscn`, removed on
-2026-10-29; see git history before then) filled all 400 sectors with woodland
-(`StressWoods`: 4 to 9 trees, bushes, rocks, 900 grass tufts and up to 3 mushrooms to collect each) on
-Perlin hills from `WorldShape` (3.5 m), which runs under every sector so
-hills cross sector borders without a step. It's generated by
-`tools/make_stress_field.py` and isn't game content. Play it with
-`npm run game -- src/world/stress/stress_field.tscn`; the player starts in
-J10, where ten villagers live by daily programs (T fast-forwards time).
-
-Measured on the dev laptop (GTX 1650) on battery, running from A1 to T20 at
-sprint speed:
-
-| | Result |
-|---|---|
-| Bake, 400 designs | 18 s; 44 MB of content, 10 MB of far models, 3 MB of ground |
-| Designs loaded at once | 115 with load radius 4, 43 with 2 (the stress world uses 2) |
-| Draw calls | up to 1,067 with radius 4, 869 with 2, of which about 600 are far models and ground stand-ins |
-| Memory | 200 MB with radius 4, 169 MB with 2; video 290 MB |
-| GPU time per frame | median 21 ms (13.5 ms in the main field) |
-| Frame times | median at the battery's 30 fps cap; 95th percentile 54 ms |
-
-Findings:
-
-- Attaching designs isn't the bottleneck: frames with a load have the same
-  median as frames without.
-- The slow 5% of frames come from the laptop on battery: the nearly empty
-  main field shows the same pattern (95th percentile 59 ms). Measure on
-  mains power before drawing conclusions about frame rate.
-- Dense content needs a smaller load radius; far models and stand-ins carry
-  the distance. Load radius should be set per world.
-- Next levers when needed: merge far models and stand-ins per region to
-  cut draw calls, give trees visibility ranges, and limit shadow distance
-  for forests.
-
-## Big world benchmark (2026-10-28)
-
-`npm run perf` on the dev laptop (GTX 1650, plugged in), the hero carried
-across the world (then a separate big-world scene, now the field itself)
-in a straight line:
-
-| | 2 km, 15 m/s, 600 m | 4 km, 30 m/s, 2.7 km |
-|---|---|---|
-| Frame time | median 8.4 ms, p99 9.6 ms | median 8.3 ms, p99 10.0 ms |
-| GPU time | median 5.0 ms | median 5.0 ms |
-| Draw calls | about 280, at most 340 | about 280, at most 380 |
-| Memory | 142 MB at the start, 142 MB at the end | 143 MB at the start, 136 MB at the end |
-| Terrain tiles at once | at most 127 | at most 196 |
-
-Memory and draw calls stay flat however big the world is and however far
-the hero goes: only the surroundings are ever built. Crossing into a region
-used to stall a frame for 130 ms (the sector grid rebuilt itself on the main
-thread); it now works out the new region on a worker thread, and the worst
-frame of the run is 17 ms.
-
-Not done yet: moving the world's origin with the player. (Forests beyond
-350 m, missing then, are filled by FarForest since.)
-Positions stay precise to well under a millimetre within 4 km, so the shift
-only matters for worlds of about 8 km or more.
 
 ## Open technical questions
 
@@ -162,10 +100,13 @@ decided until the author says so.
    use. Once the world is full, merging the far models of a whole region
    would cut draw calls.
 3. **Terrain.** In: our own streamed ground (`TerrainChunks`) from a height
-   function (`WorldShape`, noise for now). Open: where heights come from in
-   production: painted heightmap tiles read by the same streaming, or the
-   Terrain3D add-on if editor sculpting matters more.
-4. **World size.** Regions and streaming hold at 4 km (see the benchmark).
+   function (`WorldShape`: noise plus hand-sculpted tiles, `TerrainSculpt`).
+   Sculpting was built on this rather than the Terrain3D add-on, so the
+   streaming, designs and tools all keep working. Open: a resolution finer than
+   1 m, painting the ground's colour by hand, and loading tiles by streaming
+   instead of all at the start once whole regions are sculpted (about 40 KB
+   each before compression).
+4. **World size.** Regions and streaming held at 4 km (benchmark at tag `demo-final`).
    Single-precision floats start to jitter around 8 km from the origin:
    beyond that, shift the origin with the player (not built yet) or split
    the world into zones. Double-precision builds need custom-built export

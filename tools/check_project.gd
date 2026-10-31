@@ -3,7 +3,7 @@ extends SceneTree
 ## errors and broken references surface without opening the editor.
 ## Run it through `npm run check`, which also fails on any error in the log.
 
-const ROOTS: Array[String] = ["res://src", "res://data", "res://assets", "res://tests", "res://tools"]
+const ROOTS: Array[String] = ["res://src", "res://data", "res://assets", "res://tests", "res://tools", "res://addons/terrain_sculpt"]
 const EXTENSIONS: Array[String] = ["gd", "tscn", "scn", "tres", "res"]
 
 

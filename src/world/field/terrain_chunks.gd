@@ -1,3 +1,4 @@
+@tool
 class_name TerrainChunks
 extends Node
 ## Streams the open ground of a big world in tiles, detailed near `focus`
@@ -11,6 +12,10 @@ extends Node
 ## of different detail meet. Tiles are built on worker threads and attached a
 ## few per frame. Designed sectors are left open: their designs bring their
 ## own ground. Heights come from `height` (the world's shape).
+##
+## In the editor (`editable`) the tiles keep their triangles, so sculpting can
+## change the few under the brush at once (`reshape`); `rebuild` then makes
+## the touched tiles over, skirts and collision included.
 
 ## Metres along a near chunk's side.
 const CHUNK := 100.0
@@ -36,8 +41,11 @@ var material: Material
 var view_regions: int = 6
 ## Seconds between checks of what should be shown.
 var check_interval: float = 0.25
+## Keep each 1 m tile's triangles for `reshape`, which costs memory.
+var editable: bool = false
 
-## Tiles shown or being built: key -> {"step", "mesh", "collision", "building"}.
+## Tiles shown or being built: key -> {"step", "mesh", "collision", "building",
+## "build"}, and when `editable`, {"faces", "normals", "colors", "quads"}.
 var _tiles: Dictionary[Vector3i, Dictionary] = {}
 var _done: Array[Dictionary] = []
 var _mutex := Mutex.new()
@@ -81,6 +89,29 @@ func build_now() -> void:
 	_tasks.clear()
 	while not _done.is_empty():
 		_attach_done(1000)
+
+
+## Changes the 1 m tiles under an area of samples (x, north) at once, for
+## sculpting. Their skirts stay behind until `rebuild`.
+func reshape(area: Rect2i) -> void:
+	for key in _chunks_in(area):
+		var entry: Dictionary = _tiles.get(key, {})
+		if entry.has("quads") and is_equal_approx(float(entry["step"]), 1.0):
+			_reshape_tile(key, entry, area.grow(1))
+
+
+## Makes every tile under an area of samples (x, north) over from the current
+## heights, on worker threads.
+func rebuild(area: Rect2i) -> void:
+	var keys := _chunks_in(area)
+	var low := Vector2(area.position) / RegionMap.SIZE
+	var high := Vector2(area.end) / RegionMap.SIZE
+	for z in range(floori(low.y), floori(high.y) + 1):
+		for x in range(floori(low.x), floori(high.x) + 1):
+			keys.append(Vector3i(x, z, 1))
+	for key in keys:
+		if _tiles.has(key):
+			_build(key, float(_tiles[key]["step"]))
 
 
 ## The tiles wanted around a point and their sample spacing. A key is
@@ -140,19 +171,21 @@ func _focus_xz() -> Vector2:
 
 
 func _build(key: Vector3i, step: float) -> void:
-	var entry: Dictionary = _tiles.get(key, {"mesh": null, "collision": null})
+	var entry: Dictionary = _tiles.get(key, {"mesh": null, "collision": null, "build": 0})
 	entry["step"] = step
 	entry["building"] = true
+	# Only the newest build counts: an older one read older heights.
+	entry["build"] = int(entry["build"]) + 1
 	_tiles[key] = entry
 	var side := CHUNK if key.z == 0 else RegionMap.SIZE
 	var corner := Vector2(key.x * side, -key.y * side)
-	var task := WorkerThreadPool.add_task(_generate.bind(key, step, corner, side))
+	var task := WorkerThreadPool.add_task(_generate.bind(key, step, corner, side, int(entry["build"])))
 	_tasks.append(task)
 
 
 ## Worker thread: the tile's triangles (flat-shaded, with skirts) and, for
 ## the detailed chunks, a height grid for collision.
-func _generate(key: Vector3i, step: float, corner: Vector2, side: float) -> void:
+func _generate(key: Vector3i, step: float, corner: Vector2, side: float, build: int) -> void:
 	var samples := int(round(side / step)) + 1
 	var heights := PackedFloat32Array()
 	heights.resize(samples * samples)
@@ -161,12 +194,16 @@ func _generate(key: Vector3i, step: float, corner: Vector2, side: float) -> void
 			heights[j * samples + i] = float(height.call(corner + Vector2(i * step, -j * step)))
 	var faces := PackedVector3Array()
 	var open_everywhere := true
+	# Where each square's triangles start in `faces`; -1 for an open one.
+	var quads := PackedInt32Array()
 	for j in samples - 1:
 		for i in samples - 1:
 			var middle := corner + Vector2((i + 0.5) * step, -(j + 0.5) * step)
 			if is_designed.is_valid() and bool(is_designed.call(middle)):
 				open_everywhere = false
+				quads.append(-1)
 				continue
+			quads.append(faces.size())
 			var sw := Vector3(corner.x + i * step, heights[j * samples + i], corner.y - j * step)
 			var se := Vector3(sw.x + step, heights[j * samples + i + 1], sw.z)
 			var nw := Vector3(sw.x, heights[(j + 1) * samples + i], sw.z - step)
@@ -200,7 +237,9 @@ func _generate(key: Vector3i, step: float, corner: Vector2, side: float) -> void
 			colors[t] = color
 			colors[t + 1] = color
 			colors[t + 2] = color
-	var result := {"key": key, "step": step, "faces": faces, "normals": normals, "colors": colors, "collide": key.z == 0}
+	var result := {"key": key, "step": step, "build": build, "faces": faces, "normals": normals, "colors": colors, "collide": key.z == 0}
+	if editable and step <= 1.0:
+		result["quads"] = quads
 	if step <= 1.0:
 		result["heights"] = heights
 		result["samples"] = samples
@@ -222,7 +261,7 @@ func _attach_done(limit: int = ATTACH_PER_FRAME) -> void:
 	_mutex.unlock()
 	for result: Dictionary in ready:
 		var key: Vector3i = result["key"]
-		if not _tiles.has(key) or not is_equal_approx(float(_tiles[key]["step"]), float(result["step"])):
+		if not _tiles.has(key) or int(_tiles[key]["build"]) != int(result["build"]):
 			continue
 		_replace(key, result)
 
@@ -239,6 +278,10 @@ func _replace(key: Vector3i, result: Dictionary) -> void:
 		arrays[Mesh.ARRAY_COLOR] = result["colors"]
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	entry.erase("quads")
+	if result.has("quads"):
+		for part: String in ["faces", "normals", "colors", "quads"]:
+			entry[part] = result[part]
 	var instance := MeshInstance3D.new()
 	instance.name = "Tile_%d_%d_%d" % [key.x, key.y, key.z]
 	instance.mesh = mesh
@@ -279,6 +322,75 @@ func _collision(key: Vector3i, result: Dictionary) -> CollisionShape3D:
 		collision.shape = shape
 	body.add_child(collision)
 	return collision
+
+
+## The 100 m chunks around an area of samples, the squares just past it too.
+func _chunks_in(area: Rect2i) -> Array[Vector3i]:
+	var keys: Array[Vector3i] = []
+	var side := int(CHUNK)
+	for z in range(floori(float(area.position.y - 1) / side), floori(float(area.end.y) / side) + 1):
+		for x in range(floori(float(area.position.x - 1) / side), floori(float(area.end.x) / side) + 1):
+			keys.append(Vector3i(x, z, 0))
+	return keys
+
+
+## Moves the squares of a 1 m tile inside an area of samples to the current
+## heights, with their normals and colours.
+func _reshape_tile(key: Vector3i, entry: Dictionary, area: Rect2i) -> void:
+	var side := int(CHUNK)
+	var origin := Vector2i(key.x, key.y) * side
+	var squares := Rect2i(origin, Vector2i.ONE * side).intersection(area)
+	var mesh_node: MeshInstance3D = entry["mesh"]
+	if not squares.has_area() or mesh_node == null:
+		return
+	var faces: PackedVector3Array = entry["faces"]
+	var normals: PackedVector3Array = entry["normals"]
+	var colors: PackedColorArray = entry["colors"]
+	var quads: PackedInt32Array = entry["quads"]
+	var columns := squares.size.x + 1
+	var heights := PackedFloat32Array()
+	heights.resize(columns * (squares.size.y + 1))
+	for j in squares.size.y + 1:
+		for i in columns:
+			heights[j * columns + i] = float(height.call(Vector2(squares.position.x + i, -squares.position.y - j)))
+	for j in squares.size.y:
+		for i in squares.size.x:
+			var square := squares.position + Vector2i(i, j) - origin
+			var start := quads[square.y * side + square.x]
+			if start < 0:
+				continue
+			var south_west := heights[j * columns + i]
+			var south_east := heights[j * columns + i + 1]
+			var north_west := heights[(j + 1) * columns + i]
+			var north_east := heights[(j + 1) * columns + i + 1]
+			var corners: Array[float] = [south_west, north_west, south_east, south_east, north_west, north_east]
+			for k in 6:
+				var point := faces[start + k]
+				point.y = corners[k]
+				faces[start + k] = point
+			for t: int in [start, start + 3]:
+				var normal := (faces[t + 2] - faces[t]).cross(faces[t + 1] - faces[t]).normalized()
+				normals[t] = normal
+				normals[t + 1] = normal
+				normals[t + 2] = normal
+				if tint.is_valid():
+					var middle := (faces[t] + faces[t + 1] + faces[t + 2]) / 3.0
+					var color: Color = tint.call(Vector2(middle.x, middle.z), middle.y, normal.y)
+					colors[t] = color
+					colors[t + 1] = color
+					colors[t + 2] = color
+	entry["faces"] = faces
+	entry["normals"] = normals
+	entry["colors"] = colors
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = faces
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	if not colors.is_empty():
+		arrays[Mesh.ARRAY_COLOR] = colors
+	var mesh := mesh_node.mesh as ArrayMesh
+	mesh.clear_surfaces()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 
 
 func _drop(key: Vector3i) -> void:

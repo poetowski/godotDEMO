@@ -22,22 +22,36 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 
 ## Playing
 
-`npm run game` opens the grass field and its sector grid: 20 x 20 sectors of
-10 x 10 m, named A1 to T20. You start in A1 at the south-west corner; letters
-grow east and numbers grow north, ahead of you. The top-left corner shows the
-sector you're in. `npm run game -- --sector=C4` starts you in C4.
+`npm run game` opens the world: R1, one region of 20 x 20 sectors of 10 x 10 m,
+named A1 to T20, rolling gently and otherwise empty. You start in A1 at the
+south-west corner; letters grow east and numbers grow north, ahead of you. The
+top-left corner shows the sector you're in. `npm run game -- --sector=C4` starts
+you in C4.
 
-A1 to A3 are the first designed sectors: a spring, a small stream and a lily
-pond. New sectors are designed with the `/environment-design` skill in Claude
-Code, for example `/environment-design B1, B2: a birch grove around a
-clearing`.
-
-WASD move, Shift sprint, Space jump, E interact, I inventory, mouse look
-(click the window first), wheel zoom. Esc opens the game menu, which pauses
+WASD move, Shift sprint, Space jump, E interact, I inventory, Q quests, mouse
+look (click the window first), wheel zoom. Esc opens the game menu, which pauses
 the game and saves and loads; F5 quicksaves and F9 quickloads. F3 shows the
 performance overlay and F12 takes a screenshot. A gamepad works too.
 
-The earlier castle proof of concept is kept at git tag `poc-castle`.
+## Sculpting the terrain
+
+In `npm run editor`, open `src/world/field/field.tscn`, go to the 3D view and
+press **Sculpt** in its toolbar (or select the Terrain node). Paint with the left
+mouse button; move the view as usual with the right button.
+
+| | |
+|---|---|
+| 1 to 5 | Raise, Lower, Smooth, Flatten (to the height where the stroke starts), Restore (back to what the code makes) |
+| Shift | swaps raising and lowering |
+| Ctrl + wheel, or [ and ] | brush size |
+| Sliders in the panel | size, strength, softness (0 for hard edges and cliffs) |
+| Ctrl + Z | undo a stroke |
+
+Every stroke saves itself into `data/world/sculpt/`; commit those files. The game
+shows the sculpted ground the next time it starts.
+
+The demo built before this is kept at git tag `demo-final`, the earlier castle
+proof of concept at `poc-castle`.
 
 ## Commands
 
@@ -53,11 +67,12 @@ npm run game      play the game (-- --hour=21 to start at night; F7
 npm run import    import new assets without the editor
 npm run bake      bake the sector designs for streaming (game, shot and
                   test do it when needed)
-npm run models    rebuild the Blender-made models (the hero, assets) and import them
+npm run models    rebuild the Blender-made models (the hero, any assets) and import them
 npm run asset-preview -- <slug>   render an asset next to a 1.8 m figure
 npm run blender   open Blender for the Blender MCP tools
 npm run strings   collect the player-facing text into locale/messages.pot
-npm run perf      benchmark the world (2 km)
+npm run perf      benchmark the world
+npm run sculpt-check   drive the sculpting plugin in the real editor
 npm run props     freeze a sector design's props into the scene to edit by hand
 npm run api       dump the engine class reference to .godot-api/
 ```

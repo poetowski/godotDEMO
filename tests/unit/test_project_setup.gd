@@ -12,6 +12,9 @@ func test_every_input_action_exists() -> void:
 
 
 func test_every_sector_design_is_in_the_field() -> void:
+	assert_true(FileAccess.file_exists(FIELD))
+	if not DirAccess.dir_exists_absolute(SECTORS):
+		return
 	var field := FileAccess.get_file_as_string(FIELD)
 	for folder in DirAccess.get_directories_at(SECTORS):
 		var script := "%s/%s/%s.gd" % [SECTORS, folder, folder]

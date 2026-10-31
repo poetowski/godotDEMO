@@ -17,6 +17,8 @@ var _design: Plateau
 
 ## An L of B2, C2 and B3, so C3 touches it only at an inner corner.
 func before_each() -> void:
+	RegionMap.configure(1, 1)
+	WorldShape.configure(0.0)
 	_design = Plateau.new()
 	_design.sectors = PackedStringArray(["B2", "C2", "B3"])
 	add_child_autofree(_design)

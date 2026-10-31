@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[sub_resource type="SphereMesh" id="Mesh_pebble"]
+radius = 0.1
+height = 0.14
+
+[node name="Pebble" type="MeshInstance3D"]
+mesh = SubResource("Mesh_pebble")

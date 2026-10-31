@@ -4,7 +4,8 @@ extends RefCounted
 ## The lay of the land under every sector, in layers that add up: rolling
 ## hills from Perlin noise, the landforms of region designs (Landforms:
 ## mountains, ridges, valleys...), and a little small-scale detail; easing
-## back to flat near the world's border. The hills and the detail stay off
+## back to flat near the world's border; and last what was sculpted by hand in
+## the editor (TerrainSculpt). The hills and the detail stay off
 ## in the home area (R1) where the world is built by hand; landforms go
 ## wherever region designs put them. Designs add their own shapes on
 ## top, and the ground between them follows it, so hills run across sector
@@ -42,14 +43,20 @@ static func configure(hill_height: float, hill_frequency: float = 0.02, hill_see
 	_detail_noise.frequency = 0.09
 	_detail_noise.fractal_octaves = 2
 	Landforms.load_all()
+	TerrainSculpt.load_all()
 
 
 static func is_flat() -> bool:
-	return amplitude == 0.0 and Landforms.sets().is_empty()
+	return amplitude == 0.0 and Landforms.sets().is_empty() and TerrainSculpt.is_empty()
 
 
 ## The height of the land at a world x and z.
 static func height(xz: Vector2) -> float:
+	return base_height(xz) + TerrainSculpt.height(xz)
+
+
+## The height of the land before anything sculpted by hand.
+static func base_height(xz: Vector2) -> float:
 	if _noise == null:
 		return 0.0
 	var grid := Vector2(xz.x - SectorMap.ORIGIN.x, SectorMap.ORIGIN.z - xz.y)

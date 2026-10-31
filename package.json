@@ -8,6 +8,7 @@
   },
   "scripts": {
     "editor": "node tools/dev.mjs editor",
+    "sculpt-check": "node tools/dev.mjs sculpt-check",
     "game": "node tools/dev.mjs game",
     "bake": "node tools/dev.mjs bake",
     "strings": "node tools/dev.mjs strings",

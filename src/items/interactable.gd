@@ -1,7 +1,7 @@
 class_name Interactable
 extends Node3D
 ## Something in the world the player can use with the interact key: take a
-## sword, pick up an item. It offers itself to a player who comes within its
+## key, pick up an item. It offers itself to a player who comes within its
 ## area, with a prompt, and acts when the player interacts.
 
 

@@ -367,6 +367,34 @@ func add_content(node: Node) -> void:
 	_building.add_child(node)
 
 
+## Remakes the ground of the owned sectors under an area of samples (x, north)
+## after the land under them was sculpted. Only for the editor, where the
+## content is built live. Props and water stay as they are.
+func reshape_ground(area: Rect2i) -> void:
+	if not _sampled or _content == null:
+		return
+	var body := part("GroundBody")
+	for cell in _cells:
+		var corner := SectorMap.corner_of(cell)
+		var sector := Rect2i(int(corner.x) - 1, int(-corner.z) - 1, int(SectorMap.SIZE) + 2, int(SectorMap.SIZE) + 2)
+		if not sector.intersects(area):
+			continue
+		var heights := PackedFloat32Array()
+		heights.resize(SAMPLES * SAMPLES)
+		for j in SAMPLES:
+			for i in SAMPLES:
+				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
+				heights[j * SAMPLES + i] = WorldShape.height(xz) + _ground(xz) * edge_weight(xz)
+		_heights[cell] = heights
+		var built := _ground_of(cell)
+		var ground_mesh := part("Ground" + SectorMap.node_name(cell)) as MeshInstance3D
+		if ground_mesh:
+			ground_mesh.mesh = built[0]
+		var collision := body.get_node_or_null(SectorMap.node_name(cell)) as CollisionShape3D if body else null
+		if collision:
+			collision.shape = built[1]
+
+
 ## The batch merging `group` props in the sector under a point, so each
 ## sector's rocks, say, are one mesh. `commit_merged` turns the batches into
 ## meshes.
@@ -605,50 +633,56 @@ func _build_ground() -> void:
 	body.name = "GroundBody"
 	add_content(body)
 	for cell in _cells:
-		var heights := _heights[cell]
-		var corner := SectorMap.corner_of(cell)
-		var vertices := PackedVector3Array()
-		var normals := PackedVector3Array()
-		for j in SAMPLES:
-			for i in SAMPLES:
-				var k := j * SAMPLES + i
-				var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
-				vertices.append(Vector3(xz.x, heights[k], xz.y))
-				# Row j + 1 lies to the north. Border samples look across into
-				# the next sector, so normals match at the seam.
-				var east_slope: float
-				var south_slope: float
-				if i > 0 and i < SAMPLES - 1 and j > 0 and j < SAMPLES - 1:
-					east_slope = heights[k + 1] - heights[k - 1]
-					south_slope = heights[k - SAMPLES] - heights[k + SAMPLES]
-				else:
-					east_slope = height_at(xz + Vector2(RESOLUTION, 0.0)) - height_at(xz - Vector2(RESOLUTION, 0.0))
-					south_slope = height_at(xz + Vector2(0.0, RESOLUTION)) - height_at(xz - Vector2(0.0, RESOLUTION))
-				normals.append(Vector3(-east_slope, 2.0 * RESOLUTION, -south_slope).normalized())
-		var indices := PackedInt32Array()
-		var faces := PackedVector3Array()
-		for j in SAMPLES - 1:
-			for i in SAMPLES - 1:
-				var south_west := j * SAMPLES + i
-				var north_west := south_west + SAMPLES
-				for index: int in [south_west, north_west, south_west + 1, south_west + 1, north_west, north_west + 1]:
-					indices.append(index)
-					faces.append(vertices[index])
-		var arrays := []
-		arrays.resize(Mesh.ARRAY_MAX)
-		arrays[Mesh.ARRAY_VERTEX] = vertices
-		arrays[Mesh.ARRAY_NORMAL] = normals
-		arrays[Mesh.ARRAY_COLOR] = _tints[cell]
-		arrays[Mesh.ARRAY_INDEX] = indices
-		var mesh := ArrayMesh.new()
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-		add_mesh("Ground" + SectorMap.node_name(cell), mesh, FieldTerrain.ground_material())
-		var shape := ConcavePolygonShape3D.new()
-		shape.set_faces(faces)
+		var built := _ground_of(cell)
+		add_mesh("Ground" + SectorMap.node_name(cell), built[0], FieldTerrain.ground_material())
 		var collision := CollisionShape3D.new()
 		collision.name = SectorMap.node_name(cell)
-		collision.shape = shape
+		collision.shape = built[1]
 		body.add_child(collision)
+
+
+## An owned sector's ground from its sampled heights: [mesh, collision shape].
+func _ground_of(cell: Vector2i) -> Array:
+	var heights := _heights[cell]
+	var corner := SectorMap.corner_of(cell)
+	var vertices := PackedVector3Array()
+	var normals := PackedVector3Array()
+	for j in SAMPLES:
+		for i in SAMPLES:
+			var k := j * SAMPLES + i
+			var xz := Vector2(corner.x + i * RESOLUTION, corner.z - j * RESOLUTION)
+			vertices.append(Vector3(xz.x, heights[k], xz.y))
+			# Row j + 1 lies to the north. Border samples look across into
+			# the next sector, so normals match at the seam.
+			var east_slope: float
+			var south_slope: float
+			if i > 0 and i < SAMPLES - 1 and j > 0 and j < SAMPLES - 1:
+				east_slope = heights[k + 1] - heights[k - 1]
+				south_slope = heights[k - SAMPLES] - heights[k + SAMPLES]
+			else:
+				east_slope = height_at(xz + Vector2(RESOLUTION, 0.0)) - height_at(xz - Vector2(RESOLUTION, 0.0))
+				south_slope = height_at(xz + Vector2(0.0, RESOLUTION)) - height_at(xz - Vector2(0.0, RESOLUTION))
+			normals.append(Vector3(-east_slope, 2.0 * RESOLUTION, -south_slope).normalized())
+	var indices := PackedInt32Array()
+	var faces := PackedVector3Array()
+	for j in SAMPLES - 1:
+		for i in SAMPLES - 1:
+			var south_west := j * SAMPLES + i
+			var north_west := south_west + SAMPLES
+			for index: int in [south_west, north_west, south_west + 1, south_west + 1, north_west, north_west + 1]:
+				indices.append(index)
+				faces.append(vertices[index])
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_COLOR] = _tints[cell]
+	arrays[Mesh.ARRAY_INDEX] = indices
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var shape := ConcavePolygonShape3D.new()
+	shape.set_faces(faces)
+	return [mesh, shape]
 
 
 ## The water surface: a quad on every grid square where water stands above

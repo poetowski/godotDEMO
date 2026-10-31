@@ -35,8 +35,9 @@ working title and the game's design is not decided yet.
 | `npm run strings` | Collects every player-facing English string into `locale/messages.pot`. Run it after changing any text; a test fails while the file is out of date. |
 | `npm run api` | Dumps the 4.7.2 class reference to `.godot-api/doc/classes/*.xml`. |
 | `npm run editor` | Opens the editor, which the MCP tools need. |
-| `npm run game -- --regions=20` | The world at 20 x 20 regions (4 km) instead of 10 x 10, for testing. |
-| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Vegetation/FarForest]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
+| `npm run sculpt-check` | Drives the sculpting plugin inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png`. Leaves the project's sculpted ground alone. Close the editor first. |
+| `npm run game -- --regions=5` | The world at 5 x 5 regions instead of R1 alone, for testing. |
+| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
@@ -104,6 +105,25 @@ scene; anything worth keeping goes into a script in `tools/blender/`.
 - `map_project` starts a visualizer on port 6510 that listens on all network
   interfaces. Use it only on a trusted network.
 
+## Sculpting terrain by hand
+
+The author sculpts the ground in the editor with the Terrain Sculpt plugin
+(`addons/terrain_sculpt/`, ours, not vendored): select the Terrain node and
+paint in the 3D view. It lives in `src/world/land/` (`TerrainSculpt`,
+`SculptBrush`) and `data/world/sculpt/`, one `.res` per 100 m tile, saved after
+every stroke.
+
+- The tiles in `data/world/sculpt/` are the author's work: commit them, and never
+  overwrite or delete them.
+- Ask `WorldShape.height` for the land, sculpts included;
+  `WorldShape.base_height` is what code makes without them.
+- Sculpting moves the ground, not what stands on it: hand-placed `Prop` nodes
+  and a design's water stay where they are.
+- Tests start with `TerrainSculpt.start_empty()` (`tests/pre_run.gd`) so they
+  don't depend on sculpts, and baked content counts as stale then.
+- GDScript classes have a built-in `reload()`: never name a static function
+  that.
+
 ## Sectors
 
 The world is built sector by sector. Sectors are 10 x 10 m, named A1 to T20:
@@ -113,6 +133,7 @@ numbers north (-Z). Use `SectorMap` for all sector maths and names, and
 sector gets content, record what was decided for it in
 `docs/DESIGN_DECISIONS.md`, under its name.
 
+There are no sector designs right now; the demo's are at git tag `demo-final`.
 Sector content is built with the `/environment-design <sectors> <brief>`
 skill (`.claude/skills/environment-design/`). Each design is a `SectorDesign`
 in `src/world/field/sectors/<slug>/`, registered under the field's `Sectors`
@@ -153,10 +174,10 @@ heights, water and flow stay known everywhere. So:
   first.
 
 - The world is regions of 20 x 20 sectors (200 m) named R1, R2... from the
-  south-west, east along each row, then north. In a world of several
-  regions every sector name carries its region (`R45:J10`); a name without
-  one means R1, so the main field's `A1`...`T20` still work.
-- Never loop over the whole world's sectors: at 2 km that's 40,000. Work per
+  south-west, east along each row, then north. Right now it is R1 alone
+  (`FieldWorld`). In a world of several regions every sector name carries its
+  region (`R45:J10`); a name without one means R1, so `A1`...`T20` still work.
+- Never loop over the whole world's sectors: at 2 km it would be 40,000. Work per
   region (SectorGrid, the streaming map) or per streamed chunk.
 - Anything slow that a region change triggers runs on a worker thread
   (`WorkerThreadPool`) and is swapped in when ready; check with
@@ -211,7 +232,7 @@ first.
 ```
 src/autoload/    global singletons (DevTools; MCPRuntime comes from the add-on)
 src/shared/      reusable code, components and shaders; nature/ holds the rocks, plants, water and stream kit
-src/world/       levels; field/ is the one world (the sector grid and the open world around it)
+src/world/       levels; field/ is the one world (the sector grid and the ground); land/ holds the land's layers
 src/world/field/sectors/   one folder per sector design
 src/world/streaming/ streaming: SectorStreamer, baked files, WorldState
 src/audio/       sound made in code: footsteps, the world's ambience
@@ -220,16 +241,16 @@ locale/          messages.pot, generated by npm run strings
 baked/           generated by npm run bake; not committed
 src/player/      the player character and HeroBody, the animated body
 src/npc/         NPCs (villagers with daily programs)
-src/items/       items such as the sword
+src/items/       carrying and picking up items
 src/ui/          HUD and menus
-data/            game data as Resources (.tres)
+data/            game data as Resources (.tres); world/sculpt/ holds the hand-sculpted ground
 assets/          imported art and audio: models/ textures/ materials/ audio/ fonts/; models/ holds .glb built by tools/blender/
 tests/unit/      logic tests
 tests/smoke/     scene loading and wiring tests
-tests/fixtures/  frozen inputs, such as saves in every old format
+tests/fixtures/  frozen inputs, such as saves in every old format, and a design and items only tests use
 tools/           dev.mjs (the npm commands), check_project.gd
 docs/            DESIGN_DECISIONS.md (the author's record), ARCHITECTURE.md
-addons/          vendored third-party code; read addons/README.md before touching it
+addons/          vendored third-party code, read addons/README.md before touching it; terrain_sculpt/ is ours
 ```
 
 Organise by feature: a scene, its scripts and its local resources live in one

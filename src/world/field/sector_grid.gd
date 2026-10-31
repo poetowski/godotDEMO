@@ -42,6 +42,7 @@ var _result: Dictionary = {}
 
 
 func _ready() -> void:
+	add_to_group(&"sector_grids")
 	_show_region(_focus_region())
 
 
@@ -69,10 +70,18 @@ func region() -> Vector2i:
 	return _region
 
 
+## Stands the grid on the ground again, once the ground changed.
+func refresh() -> void:
+	_region = RegionMap.NONE
+
+
 func _focus_region() -> Vector2i:
-	if focus == null or not focus.is_inside_tree():
+	var follow := focus
+	if terrain and terrain.view_focus():
+		follow = terrain.view_focus()
+	if follow == null or not follow.is_inside_tree():
 		return Vector2i.ZERO
-	return RegionMap.at(focus.global_position)
+	return RegionMap.at(follow.global_position)
 
 
 func _show_region(shown: Vector2i) -> void:

@@ -12,7 +12,7 @@ sits on that land and blends into it at its edges.
 
 Build one area of the field from a brief: shape its ground, add water and
 place props inside the given sectors, and leave everything else as it was.
-`src/world/field/sectors/a1_a3_stream/` is a finished example, made with this
+`src/world/field/sectors/a1_a3_stream/` at git tag `demo-final` is a finished example, made with this
 skill: a spring, a stream, a lily pond, bushes, rocks and grass over three
 sectors.
 
@@ -67,7 +67,7 @@ sectors.
    only while `props_frozen` is false (`if not props_frozen:` around the
    placing code). Once the design is done (step 6b of the workflow) they're
    frozen into the scene as Prop nodes the author edits by hand. Grass,
-   flowers, lilies and other masses stay scattered in code. See the A1-A3
+   flowers, lilies and other masses stay scattered in code. See the A1-A3 (`demo-final`)
    stream.
 7. **The player can always start.** Props stay clear of every owned sector's
    start point (`crowds_start`), and A1's start point stays dry ground.
@@ -112,7 +112,7 @@ sectors.
    elements: water where asked, plants on the right ground, each sector
    populated. Call `load_all_now()` on the field's `Streamer` in
    `before_all`, and read the content with `design.part("Name")`. See
-   `tests/smoke/test_a1_a3_stream.gd`.
+   `tests/smoke/test_a1_a3_stream.gd` at git tag `demo-final`.
    `tests/smoke/test_sector_designs.gd` already checks every design for the
    invariants: nothing outside its sectors, no step at the edges, no sector
    claimed twice, A1's start dry. Run `npm run verify`.
@@ -147,7 +147,7 @@ the base calls them on a 0.25 m grid over the owned sectors.
 | Hook | Return |
 |---|---|
 | `_setup()` | Build noise, paths and anything else the hooks need. Runs before sampling. |
-| `_ground(xz)` | Height in metres before edge easing. 0 is the flat field. |
+| `_ground(xz)` | Height in metres before edge easing, above the land (`WorldShape`). 0 is the land as it lies, which isn't flat. |
 | `_water_level(xz)` | The water surface height, or `NO_WATER`. Water shows where it's above the ground. |
 | `_flow(xz)` | Water flow, m/s along x and z, drawn by the water shader. |
 | `_ground_tint(xz)` | `GRASS`, or an sRGB colour whose alpha is how much grass still shows (mud = alpha 0). |

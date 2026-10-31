@@ -2,6 +2,7 @@
 // Dev commands for this Godot project, run through npm (see package.json):
 //
 //   npm run editor               open the project in the Godot editor
+//   npm run sculpt-check         drive the sculpting plugin in the real editor
 //   npm run game [-- <scene>] [--sector=C4] [--hour=21.5]
 //                                play the game, or one scene, in a window;
 //                                --sector starts the player in that sector,
@@ -226,6 +227,14 @@ const commands = {
   import: importAssets,
 
   bake,
+
+  // Drives the sculpting plugin inside the real editor and screenshots it into
+  // .shots/. Leaves the project's sculpted ground alone. Close the editor first.
+  async ['sculpt-check']() {
+    if (!(await ensureImported())) return false;
+    const args = ['--path', ROOT, '--editor', 'res://src/world/field/field.tscn', '--', '--sculpt-check'];
+    return report('sculpt-check', await godot(args, { timeoutMs: 3 * 60_000 }));
+  },
 
   // Builds every model, or only the named assets: npm run models -- <slug>.
   async models(argv) {

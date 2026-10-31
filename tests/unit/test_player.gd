@@ -1,7 +1,6 @@
 extends GutTest
 
 const PLAYER_SCENE := preload("res://src/player/player.tscn")
-const STONE_SCENE := preload("res://src/items/sword/sword_stone.tscn")
 
 
 func after_each() -> void:
@@ -20,19 +19,23 @@ func test_cannot_swing_without_a_sword() -> void:
 	assert_false(player.is_swinging)
 
 
-func test_takes_the_sword_from_the_stone() -> void:
+func test_holds_a_sword_in_the_hand() -> void:
 	var player := _spawn_player()
-	var stone := STONE_SCENE.instantiate() as SwordStone
-	add_child_autofree(stone)
 	watch_signals(player)
-	player.offer_pickup(stone)
-	assert_signal_emitted_with_parameters(player, "prompt_changed", [stone.prompt()])
-	player.interact()
+	player.equip_sword(Node3D.new())
 	assert_true(player.has_sword)
-	assert_false(stone.has_sword())
 	assert_not_null(player.sword(), "in hand")
 	assert_eq(player.sword().get_parent(), player.body().hand())
 	assert_signal_emitted(player, "sword_equipped")
+
+
+func test_the_hero_keeps_his_animations_without_praying_or_crying() -> void:
+	var player := _spawn_player()
+	var animations := player.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
+	for animation: StringName in [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"swing", &"swim"]:
+		assert_true(animations.has_animation(animation), animation)
+	assert_false(animations.has_animation(&"pray"))
+	assert_false(animations.has_animation(&"cry"))
 
 
 func test_interact_does_nothing_with_nothing_on_offer() -> void:
@@ -58,37 +61,3 @@ func test_walks_where_the_camera_faces() -> void:
 	await wait_physics_frames(20)
 	assert_lt(player.velocity.z, -0.5)
 	assert_almost_eq(player.velocity.x, 0.0, 0.01)
-
-
-func test_praying_kneels_for_its_time_then_stands() -> void:
-	var player := _spawn_player()
-	watch_signals(player)
-	player.perform(&"pray", 1.5)
-	assert_true(player.is_performing())
-	assert_eq(player.gesture(), &"pray")
-	var standing := player.body().bone_height("Head")
-	await wait_seconds(0.8)
-	assert_lt(player.body().bone_height("Head"), standing - 0.25, "kneeling")
-	await wait_seconds(1.2)
-	assert_false(player.is_performing())
-	assert_signal_emitted_with_parameters(player, "gesture_finished", [&"pray"])
-	assert_almost_eq(player.body().bone_height("Head"), standing, 0.05, "standing again")
-
-
-func test_crying_sheds_tears_then_stops() -> void:
-	var player := _spawn_player()
-	player.perform(&"cry", 1.5)
-	var tears := player.body().eyes()[0].get_node("Tears") as GPUParticles3D
-	assert_true(tears.emitting)
-	await wait_seconds(1.8)
-	assert_false(player.is_performing())
-	assert_false(tears.emitting)
-
-
-func test_the_hero_stands_still_while_performing() -> void:
-	var player := _spawn_player()
-	player.perform(&"pray", 1.0)
-	Input.action_press("move_forward")
-	await wait_physics_frames(20)
-	Input.action_release("move_forward")
-	assert_almost_eq(Vector2(player.velocity.x, player.velocity.z).length(), 0.0, 0.01)

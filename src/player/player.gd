@@ -1,7 +1,7 @@
 class_name Player
 extends CharacterBody3D
 ## Third-person hero: camera-relative movement, sprinting and jumping, taking
-## the sword and swinging it, and gestures. The body is a skinned model with
+## holding a sword and swinging it. The body is a skinned model with
 ## animations (HeroBody, built in Blender by tools/blender/build_hero.py).
 ## Look and tuning are placeholders.
 ##
@@ -16,12 +16,7 @@ signal swung
 signal choice_requested(title: String, labels: PackedStringArray, on_chosen: Callable, body: String)
 ## The player started talking to someone; the HUD runs the conversation.
 signal talk_requested(talk: Talk)
-signal gesture_finished(gesture: StringName)
 
-## Gestures the hero can perform with perform().
-const GESTURES: Array[StringName] = [&"pray", &"cry"]
-## Seconds a gesture takes to blend in and out.
-const GESTURE_BLEND := 0.6
 ## Share of a swing at which the blade strikes and the trail shows.
 const SWING_STRIKE := 0.3
 
@@ -66,10 +61,6 @@ var _yaw: float = 0.0
 var _pitch: float = 0.0
 var _hand: Node3D
 var _swoosh_material: StandardMaterial3D
-var _gesture: StringName = &""
-var _gesture_time: float = 0.0
-var _gesture_length: float = 0.0
-var _tears: Array[GPUParticles3D] = []
 
 @onready var _model: Node3D = $Model
 @onready var _camera_pivot: Node3D = $CameraPivot
@@ -93,14 +84,10 @@ func _ready() -> void:
 	_swoosh.material_override = _swoosh_material
 	_swoosh.visible = false
 	_hand = _body.hand()
-	for eye in _body.eyes():
-		var tears := _build_tears()
-		eye.add_child(tears)
-		_tears.append(tears)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not input_enabled or is_performing():
+	if not input_enabled:
 		return
 	var button := event as InputEventMouseButton
 	if button and button.pressed:
@@ -129,7 +116,7 @@ func _notification(what: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var free := input_enabled and not is_performing()
+	var free := input_enabled
 	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down") if free else Vector2.ZERO
 	if look != Vector2.ZERO:
 		_turn_camera(-look.x * stick_look_speed * delta, -look.y * stick_look_speed * delta)
@@ -159,13 +146,7 @@ func _physics_process(delta: float) -> void:
 	if direction.length_squared() > 0.01:
 		var facing := atan2(-direction.x, -direction.z)
 		_model.rotation.y = lerp_angle(_model.rotation.y, facing, 1.0 - exp(-turn_speed * delta))
-	if is_performing():
-		_gesture_time += delta
-		_pose_gesture()
-		if _gesture_time >= _gesture_length:
-			_finish_gesture()
-	else:
-		_animate(delta)
+	_animate(delta)
 
 
 ## Points the camera (and the hero) at a world position, e.g. when spawning.
@@ -185,30 +166,6 @@ func ask(title: String, labels: PackedStringArray, on_chosen: Callable, body: St
 ## Starts a conversation with someone.
 func talk(with: Talk) -> void:
 	talk_requested.emit(with)
-
-
-## Performs a gesture for some seconds, standing still meanwhile: &"pray"
-## kneels with hands together, &"cry" covers the face and sobs with tears.
-## Emits gesture_finished when done.
-func perform(gesture: StringName, seconds: float) -> void:
-	if gesture not in GESTURES:
-		push_error("Player: no gesture named %s" % gesture)
-		return
-	_gesture = gesture
-	_gesture_time = 0.0
-	_gesture_length = maxf(seconds, GESTURE_BLEND * 2.0)
-	velocity = Vector3(0.0, velocity.y, 0.0)
-	for tears in _tears:
-		tears.emitting = gesture == &"cry"
-
-
-func is_performing() -> bool:
-	return _gesture != &""
-
-
-## The gesture being performed, or &"".
-func gesture() -> StringName:
-	return _gesture
 
 
 ## Puts an interactable on offer: its prompt shows until the player uses it
@@ -318,53 +275,6 @@ func _update_swimming() -> float:
 	var depth := level - terrain.height_at(xz)
 	is_swimming = depth >= (swim_depth - 0.15 if is_swimming else swim_depth)
 	return level
-
-
-## Blends the body into the gesture at its start and back out at its end.
-func _pose_gesture() -> void:
-	var t := _gesture_time
-	var weight := minf(smoothstep(0.0, GESTURE_BLEND, t), 1.0 - smoothstep(_gesture_length - GESTURE_BLEND, _gesture_length, t))
-	_body.gesture(_gesture, weight)
-	_body.move(0.0, false, has_sword, get_physics_process_delta_time())
-
-
-func _finish_gesture() -> void:
-	var done := _gesture
-	_gesture = &""
-	_body.gesture(done, 0.0)
-	for tears in _tears:
-		tears.emitting = false
-	gesture_finished.emit(done)
-
-
-## Small drops falling from an eye while crying.
-func _build_tears() -> GPUParticles3D:
-	var process := ParticleProcessMaterial.new()
-	process.direction = Vector3(0.0, -1.0, -0.4)
-	process.spread = 15.0
-	process.initial_velocity_min = 0.1
-	process.initial_velocity_max = 0.25
-	process.gravity = Vector3(0.0, -4.0, 0.0)
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.albedo_color = Color(0.7, 0.85, 1.0, 0.85)
-	var drop := SphereMesh.new()
-	drop.radius = 0.008
-	drop.height = 0.02
-	drop.radial_segments = 6
-	drop.rings = 3
-	drop.material = material
-	var tears := GPUParticles3D.new()
-	tears.name = "Tears"
-	tears.amount = 10
-	tears.lifetime = 0.6
-	tears.local_coords = false
-	tears.emitting = false
-	tears.process_material = process
-	tears.draw_pass_1 = drop
-	tears.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	return tears
 
 
 func _flash_swoosh() -> void:
