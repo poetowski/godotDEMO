@@ -40,6 +40,11 @@ white birches, warm-coloured field maples and small apple trees. All in
 
 ## Buildings and objects
 
+The farms round Aiwyk (`tools/blender/homestead.py`) keep the village's logs, hay, shingles and turf.
+The farmhouse's doors really open on a room with a hearth, and the barn's on stacked hay. The fence's
+broken lengths come in three states, and the sign's letters are straight knife cuts drawn in the
+script, not from a font.
+
 The village keeps the farmhouse's logs, planks, hay and stone (`tools/blender/village.py`), with turf
 roofs and tarred shingles besides. The church is a stave church of dark tarred wood with steep roofs
 stepping to a spire, dragon heads on its gables and a sun wheel, no cross, gone over with moss and

@@ -60,6 +60,22 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "the name of this village in region R1 is Aywik. remember that in our design
+documents and md files. you can even design a sign Welcome to Aiwik and place it before entrance to
+village from the bridge site road." and "Aiwyk is correct, not Aiwik." **The village in the middle of
+R1 is named Aiwyk.** The sign (`aiwyk_sign`) stands in I8, beside the road in from the bridge.
+**Placeholder:** the sign's look and where it stands.
+
+Request (2026-11-01): "put farm house in H9 rotated with open doors to south. then design a farm space
+by fences at H8 and maybe a bit to G8 and G9. further new farms can be with broken fence or even
+somewhere without fence. generate new assets in blender. will emoty places around with rocks, foliage
+etc. create new assets in blender with variations if needed. also use paint yourself on ground more
+often if ytou find it more realistic." Built in `src/world/field/sectors/r1_farms/`, with the
+`homestead` Blender family, on the ways and dry grass the author painted in `32982f9`, which
+`tools/paint_farms.gd` adds to and never paints over. The land wasn't reshaped. **Placeholder:** the
+barn, the farm in F9 and the croft in H11 and where they stand, the yard's layout, the kinds and
+number of rocks and weeds, and all the paint added.
+
 Request (2026-11-01): "in the middle of R1 i just painted some new roads and different terrain
 in several sectors in the middle. create assets of village houses in blender, also create one
 overgrown church, not christian but little nordic. put some decorations around the village, like

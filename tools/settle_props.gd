@@ -15,7 +15,7 @@ const SINK := 0.05
 const FOOTPRINT := 0.6
 const MOST_REACH := 0.7
 ## What stands on the ground right across, not at a foot in the middle.
-const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse", "village_house", "village_loft", "village_smithy", "nordic_church", "farm_shed"]
+const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse", "village_house", "village_loft", "village_smithy", "nordic_church", "farm_shed", "farm_barn", "croft_cottage"]
 const SIDES := 8
 const FENCE_SINK := 0.02
 

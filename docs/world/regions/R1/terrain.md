@@ -66,9 +66,9 @@ They change neither the land, the water nor the paint.
   when content is built, thick on the verges and thinning away from them, and they keep off
   anything painted bare. Boulders, stumps and shrubs are props to move by hand.
 
-## The village
+## Aiwyk, the village
 
-The author painted two plazas, a ring road and a junction in the middle of R1, with a hill for the
+The village in the middle of R1 is named Aiwyk. The author painted two plazas, a ring road and a junction in the middle of R1, with a hill for the
 church. The blocks `R1VillageI7`, `R1VillageK12` and `R1ForestN7` under `Sectors` in `field.tscn`
 build on it, from `src/world/field/sectors/r1_village/`.
 
@@ -88,6 +88,26 @@ build on it, from `src/world/field/sectors/r1_village/`.
   round both, open at the gate on the road.
 - **Forest:** in N and O, rows 7 to 12, climbing the rise. Spruce and pine, hornbeam, ash, beech,
   maple and birch in stands. Worked out from the land at each bake.
+
+## The farms round Aiwyk
+
+The blocks `R1FarmH8`, `R1FarmB9` and `R1FarmG13` under `Sectors` in `field.tscn` build on the land
+as it was, from `src/world/field/sectors/r1_farms/`. G8 and H8 moved to them from `R1RoadsideE4`.
+
+- **The working farm:** the house in H9, its doors open to the south, and a barn in G9 beside it, the
+  two closing the north of a yard fenced across H8, G8 and G9. Gates stand where the author's painted
+  ways come through, on the west and in the south-east. Barley, hay stacks and a rack, a coop, a
+  garden, and worn ground at the doors. **Placeholder:** where each stands.
+- **The poor farm:** in F9, where the author's way west ends, a house with a hole in its roof behind a
+  fence mostly fallen, with nettles and docks taking the yard.
+- **The croft:** in H11, a low stone house under turf with no fence, its barley field in G10 and H10
+  marked by heaps of cleared stone at the corners, and a track from the village's ring road.
+- **The sign:** "Welcome to Aiwyk" in I8, beside the road in from the bridge. It's a prop in
+  `R1VillageI7`.
+- **The fields between:** rows 9 to 13 from B to H, and I and J 12 to 13. `tools/paint_farms.gd` lays
+  drifts of dry and lush grass and stony patches, and rocks stand on the stony ones. Bushes gather in
+  thickets, with weeds, grass and small stands of trees, all worked out at each bake or frozen as
+  props. **Placeholder:** all of it.
 
 ## High ground
 

@@ -45,6 +45,14 @@ const FEET: Dictionary[String, float] = {
 	"farm_fence_a": 0.4,
 	"farm_fence_b": 0.4,
 	"farm_fence_c": 0.4,
+	"farm_fence_down_a": 0.4,
+	"farm_fence_down_b": 0.4,
+	"farm_fence_stubs": 0.4,
+	"farm_fence_gate": 0.4,
+	"hay_rack": 0.5,
+	"elder_bush": 0.6,
+	"bramble_thicket": 0.9,
+	"aiwyk_sign": 1.0,
 }
 ## Whether a new prop of each kind is solid unless set otherwise.
 const SOLID: Array[bool] = [false, true, true, true, true]

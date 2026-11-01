@@ -1,7 +1,7 @@
 @tool
 class_name R1Village
 extends "res://src/world/field/sectors/r8_forest/r8_forest.gd"
-## The village in the middle of R1, on the author's paint: houses in K10, K11, L9 and M9 round
+## Aiwyk, the village in the middle of R1, on the author's paint: houses in K10, K11, L9 and M9 round
 ## a square with a well, the overgrown stave church on its hill in M11 among pines, a farm in
 ## J8 with its fences running down into J7, and a forest climbing the rise in N and O. The
 ## places below are in metres (x east, y north), and tools/shape_village_land.gd and
@@ -61,6 +61,8 @@ const THINGS: Array[Array] = [
 	["water_trough", Vector2(98.8, 76.4), 1.5],
 	["hand_cart", Vector2(92.6, 75.8), 0.8],
 	["firewood_pile", Vector2(95.4, 69.4), 3.1],
+	# On the road in from the bridge, facing whoever comes up it.
+	["aiwyk_sign", Vector2(83.4, 77.4), -0.53],
 	["rune_stone", Vector2(118.9, 100.4), 0.8],
 	["rune_stone", Vector2(121.9, 97.7), 0.8],
 	["mossy_boulder_a", Vector2(116.8, 104.4), 1.0],
