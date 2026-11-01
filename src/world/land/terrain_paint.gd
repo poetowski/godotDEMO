@@ -18,6 +18,10 @@ const SWATCHES: Array[Color] = [
 	Color(0.68, 0.62, 0.33), Color(0.2, 0.42, 0.14), Color(0.46, 0.45, 0.43), Color(0.6, 0.57, 0.5),
 ]
 const FIRST_PAVING := 6
+## The surfaces nothing grows on: all but the two grasses.
+const BARE: Array[int] = [0, 1, 2, 3, 6, 7]
+## The surfaces of a road: gravel, sand, cobblestone and flagstones.
+const ROADS: Array[int] = [2, 3, 6, 7]
 const LAYERS := 8
 const TILE := TerrainSculpt.TILE
 ## Bytes in a saved tile.
@@ -96,6 +100,23 @@ static func share(i: int, j: int, surface: int) -> float:
 static func paving_at(xz: Vector2) -> float:
 	var total := 0.0
 	for surface in range(FIRST_PAVING, LAYERS):
+		total += share(roundi(xz.x), roundi(-xz.y), surface)
+	return total
+
+
+## How much bare ground lies at the sample nearest a world x and z, 0 to 1.
+static func bare_at(xz: Vector2) -> float:
+	return _total_at(xz, BARE)
+
+
+## How much road lies at the sample nearest a world x and z, 0 to 1.
+static func road_at(xz: Vector2) -> float:
+	return _total_at(xz, ROADS)
+
+
+static func _total_at(xz: Vector2, surfaces: Array[int]) -> float:
+	var total := 0.0
+	for surface in surfaces:
 		total += share(roundi(xz.x), roundi(-xz.y), surface)
 	return total
 

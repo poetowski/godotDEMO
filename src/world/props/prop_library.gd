@@ -29,6 +29,19 @@ const NIGHT_LIGHTS: Dictionary[String, Vector3] = {
 const SPANS: Dictionary[String, Vector2] = {
 	"wooden_bridge": Vector2(1.5, 11.0),
 }
+## Metres of room at the foot of assets much wider above it or longer than they're
+## thick, so grass grows under a big tree's crown and up to a fence.
+const FEET: Dictionary[String, float] = {
+	"big_oak": 1.6,
+	"tall_beech": 1.0,
+	"tall_pine": 0.9,
+	"white_birch": 0.5,
+	"field_maple": 1.0,
+	"apple_tree": 0.6,
+	"farm_fence_a": 0.4,
+	"farm_fence_b": 0.4,
+	"farm_fence_c": 0.4,
+}
 ## Whether a new prop of each kind is solid unless set otherwise.
 const SOLID: Array[bool] = [false, true, true, true, true]
 
@@ -117,6 +130,8 @@ static func room(kind: Kind, where: Transform3D, asset: PackedScene = null) -> f
 	if kind == Kind.ASSET:
 		if asset and SPANS.has(slug_of(asset)):
 			return 0.0
+		if asset and FEET.has(slug_of(asset)):
+			return FEET[slug_of(asset)] * where.basis.get_scale().x
 		return asset_room(asset) * where.basis.get_scale().x
 	return ROOM[kind] * where.basis.get_scale().x
 

@@ -33,7 +33,17 @@ blue flag iris and marsh marigold on the banks; willow shrubs and a few young
 weeping willows above them. On the lake's far shores (R4, R5, R6), full-grown alders
 standing back from the water, and alders fallen into it.
 
+Along the roads, tufts of meadow grass with drifts of white daisies, blue cornflowers and red
+poppies, and low cushions of moss. Trees of several kinds: old oaks, tall beeches and pines,
+white birches, warm-coloured field maples and small apple trees. All in
+`tools/blender/woodland.py` and `tools/blender/farmstead.py`.
+
 ## Buildings and objects
+
+A small log farmhouse in D5: logs crossing at the corners, a stone footing, every window
+shuttered, and an old hay roof with grass and moss growing in it. Low fences of sapling rails and
+woven hurdles, with an old length here and there.
+
 
 No buildings. Mossy boulders, river stones, pebbles, driftwood and old stumps. One old
 log bridge with gaps in its deck and fences, and lanterns of dark iron, wood and stone

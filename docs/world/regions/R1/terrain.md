@@ -43,6 +43,29 @@ They change neither the land nor the water.
   is sculpted again. Add more from `src/world/props/assets/`.
 - The deep middle of the lake is left open.
 
+## The roads and the farm
+
+The author painted the roads and the farmyard (`data/world/paint/`). The blocks `R1Roadside*`
+under `Sectors` in `field.tscn` decorate them, from `src/world/field/sectors/r1_roadside/`.
+They change neither the land, the water nor the paint.
+
+- **Roads:** from the bridge's north end through D4's crossroad, west through C4 to B3, and
+  north-east to the long east-west road along row 5's south edge. From E5's crossroad a loop runs
+  through F5, F6 and G6 and back down G5, and a road runs north through E6 and E7.
+- **Farm:** the house stands in D5, facing south over the dirt of its yard, with a hay stack and
+  an apple tree beside it. Fences run along its east and north sides and round the west of the
+  yard, leaving it open to the road in the south-east and to the path behind the house.
+  **Placeholder:** where the house and fences stand.
+- **Lanterns:** a matching pair at each crossroad: hanging lanterns at D4, posts at E5 and low
+  stone ones at the bend on G4's north edge, which is the nearest junction to G4 as G4 itself
+  has no paint. Singles carry on along those roads: posts in E6 and E7, a stone one in G5.
+  **Placeholder:** which design goes where.
+- **Trees:** a big oak behind the farm and another inside the loop, an orchard of apple trees
+  west of the fence, and stands of pine, beech and birch. **Placeholder:** where they stand.
+- **Plants and stones:** grass, flowers, moss and stones are worked out from the land and paint
+  when content is built, thick on the verges and thinning away from them, and they keep off
+  anything painted bare. Boulders, stumps and shrubs are props to move by hand.
+
 ## High ground
 
 ## By sector

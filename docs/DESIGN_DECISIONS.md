@@ -27,6 +27,21 @@ properly see what is too much behind." **Placeholder:** water levels, the tarn, 
 the new assets and their layout, and the abyss's depth, the fog's line and look. See
 `docs/world/regions/R8/terrain.md`.
 
+Request (2026-10-31): "put two lanterns at D4 crossroad. also put two lanterns at E5 and G4
+crossroads i painted. also put one in E6 near road and G5 near road. one in E7 near road. in
+D5 and surroundings i put some dirt and i created some road / pavement around. this place his
+for  a farm house small from wood with closed widows and some grass and hay on roof. and some
+low medieval wooden primitive fences. prepare these assets in blender using skill and then
+place them there. aldo you can decorate sectors with basic grass, rocks and some assets in
+sectors where i painted some pavement or pseudostreets. create few more assets to diversify,
+like some flowers ambient. or moss or some big boulder." and "also generate some new trees
+variations and some bigger trees maybe as well." Built in `src/world/field/sectors/r1_roadside/`,
+with the `farmstead` and `woodland` Blender families. G4 itself has no paint, so its pair
+stands either side of the bend on its north edge, one in G4 and one in G5. **Placeholder:**
+which lantern goes where, the house's place and look, the fences' lines, the kinds of tree and
+where they stand, and every plant's density. The hay stack, apple trees and firewood weren't
+asked for.
+
 Request (2026-10-31): "regarding different lanterns, i ment you can use different in eadh
 segment, not opposite. opposite must be same of course so it makes sense and in this case
 brudge should have been covered just by 1 design" **Rule:** things facing each other match;

@@ -14,6 +14,8 @@ const SINK := 0.05
 ## how far that reaches for anything but bedrock: a tree's branches overhang.
 const FOOTPRINT := 0.6
 const MOST_REACH := 0.7
+## What stands on the ground right across, not at a foot in the middle.
+const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse"]
 const SIDES := 8
 
 
@@ -54,7 +56,7 @@ static func standing_height(prop: Prop) -> float:
 		return prop.position.y
 	var xz := Vector2(prop.position.x, prop.position.z)
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
-	if not prop.asset.resource_path.contains("outcrop"):
+	if not WHOLE_FOOTPRINT.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
 		reach = minf(reach, MOST_REACH)
 	var lowest := WorldShape.height(xz)
 	for k in SIDES:

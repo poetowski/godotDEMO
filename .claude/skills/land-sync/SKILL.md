@@ -1,6 +1,6 @@
 ---
 name: land-sync
-description: Bring everything standing on the land back in line after the author sculpts terrain or changes water - detect floating, buried or drowned props, water cut off or missing, undecorated shores, borders that no longer fit, and propose lowering objects, placing new ones or generating new assets. Use whenever the author says they changed, remodeled or sculpted the terrain, asks to redecorate or fix flying objects, or whenever the land-changed hook reports uncommitted land.
+description: Bring everything standing on the land back in line after the author sculpts terrain, paints roads or changes water - detect floating, buried or drowned props, water cut off or missing, undecorated shores, borders that no longer fit, and propose lowering objects, placing new ones or generating new assets. Use whenever the author says they changed, remodeled or sculpted the terrain, asks to redecorate or fix flying objects, or whenever the land-changed hook reports uncommitted land.
 argument-hint: "[what the author wants done, if anything]"
 ---
 
@@ -11,7 +11,7 @@ possible, and fixes or proposes it. It sits on the other skills: new decoration 
 `/environment-design` (rule 9, `decorates_land`), new objects follow `/asset-design`.
 
 **Noticing a change:** at the start of work on the world, run `git status --short data/world`.
-Uncommitted files in `data/world/sculpt/` or `data/world/water/` mean the land changed.
+Uncommitted files in `data/world/sculpt/`, `water/` or `paint/` mean the land changed.
 `tools/land_changed.mjs` does the same check, for use as a `UserPromptSubmit` hook; the
 author decides whether to turn it on in `.claude/settings.json`, and it only runs in a
 Claude session started in this project.
@@ -50,6 +50,7 @@ Claude session started in this project.
 
    | The report says | What to do |
    |---|---|
+   | standing on a painted road | Move it aside; masses keep off the roads on their own at the next bake |
    | floating, buried | `npm run settle`; if it stands on a floor or a deck, set its `keep_height` first |
    | drowned | Delete it if code placed it; a prop the author placed is theirs to decide |
    | stranded from the water | Move it back to the shore, or remove it |
@@ -73,7 +74,7 @@ Claude session started in this project.
    their own from the land at the next bake, so only frozen props need help. Keep props'
    reach inside their block (`fits(xz, room * 1.7)`), and nothing below the ravine's mist.
 7. **Check.** Run `npm run land-check` again, then `npm run verify`, and read the totals. Walk
-   the area with `npm run perf -- --seconds=25 --heading=<radians>` if much was added, and
+   the area with `npm run perf -- --seconds=25 --heading=<degrees from north>` if much was added, and
    shoot it again.
 8. **Record.** Update the region's `terrain.md`, `docs/DESIGN_DECISIONS.md` for new
    requests (word for word), and mark your choices **Placeholder:**.

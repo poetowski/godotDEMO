@@ -36,6 +36,12 @@ const MASSES: Dictionary[String, Array] = {
 	"rapid_stone_b": [0.0, 0.0, 90.0],
 	"gravel_bar": [0.0, 0.0, 90.0],
 	"spray_moss": [0.0, 0.0, 70.0],
+	"meadow_grass_a": [0.05, 0.0, 55.0],
+	"meadow_grass_b": [0.07, 0.0, 60.0],
+	"wild_flowers_a": [0.05, 0.0, 55.0],
+	"wild_flowers_b": [0.05, 0.0, 55.0],
+	"wild_flowers_c": [0.05, 0.0, 55.0],
+	"moss_patch": [0.0, 0.0, 50.0],
 }
 ## Metres of room each mass takes.
 const ROOM: Dictionary[String, float] = {
@@ -58,6 +64,12 @@ const ROOM: Dictionary[String, float] = {
 	"rapid_stone_b": 0.45,
 	"gravel_bar": 1.4,
 	"spray_moss": 0.6,
+	"meadow_grass_a": 0.34,
+	"meadow_grass_b": 0.34,
+	"wild_flowers_a": 0.34,
+	"wild_flowers_b": 0.36,
+	"wild_flowers_c": 0.36,
+	"moss_patch": 0.98,
 }
 
 ## Places tried per sector for masses, and for props.
@@ -87,6 +99,7 @@ func _setup() -> void:
 
 
 func _populate() -> void:
+	TerrainPaint.load_all()
 	_copies.clear()
 	_copy_tints.clear()
 	_read_shore()
@@ -226,7 +239,7 @@ func _any_stone() -> String:
 
 
 func _try_mass(xz: Vector2) -> void:
-	if TerrainPaint.paving_at(xz) > 0.3:
+	if TerrainPaint.bare_at(xz) > 0.3:
 		return
 	var shore := _shore_at(xz)
 	var ground := height_at(xz)
@@ -268,7 +281,7 @@ func _place_props() -> void:
 				break
 			var xz := Vector2(corner.x + rng.randf() * SectorMap.SIZE, corner.z - rng.randf() * SectorMap.SIZE)
 			var shore := _shore_at(xz)
-			if shore < -0.8 or shore > 7.5:
+			if shore < -0.8 or shore > 7.5 or TerrainPaint.bare_at(xz) > 0.2:
 				continue
 			var slug := _choose_prop(xz, shore, willows)
 			if slug.is_empty():

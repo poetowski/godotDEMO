@@ -12,6 +12,8 @@ and a prop scene lets anyone place it in the world. The alchemist's column
 (`tools/blender/assets/alchemist_column.py` at git tag `demo-final`) is a finished example.
 Assets that belong together share a family: `tools/blender/riverside.py` holds R1's
 waterside palette and shapes, and each asset's script only names which to build.
+`tools/blender/farmstead.py` is the farm and road family, and `tools/blender/woodland.py`
+the trees, both on the same palette.
 New assets for a region use its family, and its `docs/world/regions/<region>/art.md`.
 
 The design skills at their scales:
@@ -92,6 +94,7 @@ in the brief are rules. If the description is missing, ask for it.
 | `.cylinder(bottom, top, r_bottom, r_top, mat, segments)` | posts, legs, pipes, cones |
 | `.sphere(centre, radius, mat, scale)` | balls, domes, blobs |
 | `.box(centre, size, mat, rotation_z)` | planks, blocks |
+| `.slab(corners, thick, mat)` | a block under four corners, for sloping things: roof bundles, boards |
 | `.lathe(profile, mat, segments, centre)` | anything round turned from (radius, height) points: flasks, vases, bowls, columns |
 | `.tube(points, radius, mat)` | a pipe along a polyline |
 | `.rock(centre, radius, mat, rng, scale, subdivisions)` | a lumpy stone, or a mound of leaves or moss |

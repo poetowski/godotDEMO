@@ -48,7 +48,7 @@ working title and the game's design is not decided yet.
 | `npm run settle` | Sets props under sector designs back on the ground after sculpting; only their height changes. Close the editor first. |
 | `npm run sculpt-check` | Drives the Sculpt and Paint tabs inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png` and `paint_*.png`. Leaves the project's sculpted and painted ground alone. Close the editor first. |
 | `npm run game -- --regions=5` | A test world of 5 x 5 regions instead of the starting zone. |
-| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--regions=20] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
+| `npm run perf -- [scene] [--seconds=60] [--speed=12] [--heading=45] [--regions=20] [--hour=22] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. It travels in a straight line from the spawn point, `--heading` degrees from north toward east, so aim it at what you mean to measure. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
 Godot lives in `%LOCALAPPDATA%\Programs\Godot\4.7.2\`, pinned in
@@ -179,8 +179,9 @@ every stroke.
 - A new surface needs a name and swatch in `TerrainPaint` and a block in the shader.
   All eight places in the two textures are in use; a ninth surface needs a third.
 - Tests start with `TerrainPaint.start_empty()` (`tests/pre_run.gd`).
-- `TerrainPaint.paving_at` says where paving lies. R1's waterside plants keep off it
-  the next time content is baked.
+- `TerrainPaint.bare_at` says where painted ground is bare, `road_at` where it's a road and
+  `paving_at` where it's paved. R1's plants keep off bare ground the next time content is
+  baked, and `npm run land-check` lists props left standing on a road.
 
 ## Sectors
 

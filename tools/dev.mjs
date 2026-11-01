@@ -19,7 +19,7 @@
 //                                render an asset in Godot from three sides
 //                                into .shots/assets/
 //   npm run blender              open Blender (for the MCP tools)
-//   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20]
+//   npm run perf [-- <scene>] [--seconds=60] [--speed=12] [--regions=20] [--hour=22]
 //                                benchmark a world (default: the field)
 //                                in a window; writes .perf/<world>.json
 //   npm run props -- <Design>    freeze a sector design's code-placed props
@@ -290,9 +290,15 @@ const commands = {
     const scene = positional[0] ? toResPath(positional[0]) : 'res://src/world/field/field.tscn';
     const seconds = Number(options.seconds ?? 60);
     if (!(await ensureImported()) || !(await ensureBaked())) return false;
-    const passed = ['seconds', 'speed', 'heading', 'regions', 'without'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
+    const passed = ['seconds', 'speed', 'heading', 'regions', 'without', 'hour'].filter((name) => options[name]).map((name) => `--${name}=${options[name]}`);
     const args = ['--path', ROOT, '--resolution', options.size ?? '1280x720', '--script', 'res://tools/perf.gd', '--', `--scene=${scene}`, ...passed];
-    return report('perf', await godot(args, { timeoutMs: (seconds + 180) * 1000 }));
+    const result = await godot(args, { timeoutMs: (seconds + 180) * 1000 });
+    const ok = report('perf', result);
+    if (!result.output.includes('[perf] wrote')) {
+      console.error('[dev] perf stopped before writing a report: .perf/ still holds an older run.');
+      return false;
+    }
+    return ok;
   },
 
   // Freezes a sector design's code-placed props into field.tscn as Prop

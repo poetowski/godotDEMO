@@ -84,7 +84,10 @@ sectors.
    `_ground`, `_water_level` and `_flow` aren't used. `height_at`, `water_level_at`
    and `flow_at` still answer, from the land. Cover a wide area with several designs
    of about 5 x 5 sectors sharing a script, since a design streams as one unit.
-   `src/world/field/sectors/r1_waterside/` is a finished example.
+   `src/world/field/sectors/r1_waterside/` is a finished example, and
+   `src/world/field/sectors/r1_roadside/` is one that decorates along painted roads.
+   Assets much wider above than at the foot go in `PropLibrary.FEET`, or nothing grows under
+   them. A turned model's box is wider than the model: keep it inside the block.
 
 10. **More than one level.** `height_at`, `is_dry`, `claim` and `is_clear` are about the
    land. For a building, a bridge or a cave, see "Levels" in `docs/world/README.md`: floors

@@ -12,6 +12,8 @@ const DROWNED := 0.8
 ## Metres from the water at which something that lies at the waterline is stranded.
 const STRANDED := 8
 const WATERLINE_PROPS: Array[String] = ["driftwood_log", "driftwood_branch", "fallen_alder", "shore_slab"]
+## How much road under a prop counts as standing on it.
+const ROAD_SHARE := 0.6
 ## Metres from the water within which a sector wants decorating.
 const SHORE := 7
 ## Metres from the water within which a decoration block has something to do.
@@ -41,6 +43,7 @@ var _border: ZoneBorder
 
 func _initialize() -> void:
 	FieldWorld.configure()
+	TerrainPaint.load_all()
 	var world := (load(SCENE) as PackedScene).instantiate()
 	_border = world.get_node("ZoneBorder") as ZoneBorder
 	_border.rebuild()
@@ -126,6 +129,7 @@ func _report_props(world: Node) -> void:
 	var buried := PackedStringArray()
 	var drowned := PackedStringArray()
 	var stranded := PackedStringArray()
+	var on_roads := PackedStringArray()
 	var used := {}
 	var total := 0
 	for design in world.get_node("Sectors").get_children():
@@ -149,6 +153,8 @@ func _report_props(world: Node) -> void:
 			var level := WaterField.level_at(xz)
 			if not prop.stands_on_ground():
 				continue
+			if TerrainPaint.road_at(xz) > ROAD_SHARE and not slug.begins_with("lantern") and not slug.begins_with("farm_fence"):
+				on_roads.append(line)
 			if level != SectorDesign.NO_WATER and level - WorldShape.height(xz) > DROWNED:
 				drowned.append("%s, %.2f m under" % [line, level - WorldShape.height(xz)])
 			elif slug in WATERLINE_PROPS and _distance_at(xz) > STRANDED:
@@ -158,6 +164,7 @@ func _report_props(world: Node) -> void:
 	_list("buried (npm run settle raises them)", buried)
 	_list("drowned (settling won't help: move or remove)", drowned)
 	_list("stranded from the water (move or remove)", stranded)
+	_list("standing on a painted road (move it aside)", on_roads)
 	var unused := PackedStringArray()
 	for file in DirAccess.get_files_at("res://src/world/props/assets"):
 		if file.ends_with(".tscn") and not used.has(file.get_basename()):

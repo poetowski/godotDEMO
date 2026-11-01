@@ -93,6 +93,18 @@ class Model:
         made = bmesh.ops.create_cube(self.bm, size=1.0, matrix=matrix)
         self._paint(made["verts"], mat)
 
+    def slab(self, corners, thick, mat):
+        """A block under four corners given anticlockwise from above, `thick` straight
+        down from them: roof bundles, sloping boards."""
+        top = [self.bm.verts.new(corner) for corner in corners]
+        low = [self.bm.verts.new((corner[0], corner[1], corner[2] - thick)) for corner in corners]
+        self.bm.faces.new(top)
+        self.bm.faces.new(list(reversed(low)))
+        for k in range(4):
+            after = (k + 1) % 4
+            self.bm.faces.new((top[k], low[k], low[after], top[after]))
+        self._paint(top + low, mat)
+
     def lathe(self, profile, mat, segments=12, centre=(0, 0, 0)):
         """A round shape turned from a profile of (radius, height) points,
         bottom to top: flasks, bowls, vases."""

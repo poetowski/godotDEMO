@@ -11,6 +11,7 @@ extends SceneTree
 ##   --speed=12           metres per second
 ##   --heading=45         degrees from north toward east
 ##   --regions=10         passed on to the field (20 makes 4 km)
+##   --hour=22            passed on to the field, to measure the night's lights
 ##   --without=A,B        switch off these nodes (paths from the world's
 ##                        root, such as Waters), to measure
 ##                        what they cost
