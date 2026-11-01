@@ -1,4 +1,5 @@
 @tool
+class_name R1Waterside
 extends SectorDesign
 ## R1's waterside: the riverside assets (tools/blender/riverside.py) growing and
 ## lying along the lake and its two rivers, a block of sectors per design so they
@@ -47,6 +48,11 @@ const MASSES: Dictionary[String, Array] = {
 	"forest_mushrooms": [0.0, 0.0, 22.0],
 	"fallen_twigs": [0.0, 0.0, 28.0],
 	"crop_patch": [0.09, 0.0, 60.0],
+	"mud_rushes": [0.05, 0.0, 55.0],
+	"butterbur": [0.03, 0.0, 50.0],
+	"sunk_stones": [0.0, 0.0, 40.0],
+	"flotsam_line": [0.0, 0.0, 28.0],
+	"wet_puddle": [0.0, 0.0, 45.0],
 	"thistle_patch": [0.05, 0.0, 55.0],
 	"nettle_patch": [0.05, 0.0, 50.0],
 	"dock_weeds": [0.05, 0.0, 55.0],
@@ -83,10 +89,24 @@ const ROOM: Dictionary[String, float] = {
 	"forest_mushrooms": 0.2,
 	"fallen_twigs": 0.35,
 	"crop_patch": 0.3,
+	"mud_rushes": 0.2,
+	"butterbur": 0.42,
+	"sunk_stones": 0.4,
+	"flotsam_line": 0.7,
+	"wet_puddle": 0.9,
 	"thistle_patch": 0.3,
 	"nettle_patch": 0.36,
 	"dock_weeds": 0.34,
 }
+
+## The sectors the author asked to have wet dirt, painted by tools/paint_wet_ground.gd, what grows
+## and lies on it, how many places it's tried at per sector, and metres above the water that
+## count as the very edge.
+const WET_SECTORS: Array[String] = ["A2", "B2", "C2", "C3", "D3", "F3", "F5", "H4", "H5", "I6", "J5", "J6"]
+const WET_PLANTS: Array[String] = ["mud_rushes", "butterbur", "sunk_stones", "flotsam_line", "wet_puddle"]
+const WET_TRIES := 170
+const WET_EDGE := 0.9
+const WET_FLATTEST := 0.25
 
 ## Places tried per sector for masses, and for props.
 @export var mass_tries: int = 900
@@ -138,7 +158,64 @@ func _populate() -> void:
 
 ## For what must take its ground before the masses do.
 func _before_masses() -> void:
-	pass
+	_plant_wet_ground()
+
+
+## Rushes, butterbur, sunk stones, puddles and the river's wrack on the wet dirt. They come first
+## and from a seed of their own, so they leave everything else as it would have grown.
+func _plant_wet_ground() -> void:
+	var transforms: Dictionary[String, Array] = {}
+	var tints: Dictionary[String, PackedColorArray] = {}
+	var state := rng.state
+	TerrainPaint.load_all()
+	for sector: String in WET_SECTORS:
+		var cell := SectorMap.cell_named(sector)
+		if not owns_cell(cell):
+			continue
+		rng.seed = hash(Vector3i(design_seed + 11, cell.x, cell.y))
+		var corner := SectorMap.corner_of(cell)
+		for attempt in WET_TRIES:
+			var xz := Vector2(corner.x + rng.randf() * SectorMap.SIZE, corner.z - rng.randf() * SectorMap.SIZE)
+			if TerrainPaint.share(roundi(xz.x), roundi(-xz.y), 1) < 0.3 or height_at(xz) < water_level_at(xz) + 0.04:
+				continue
+			var slug := _wet_thing(height_at(xz) - water_level_at(xz) < WET_EDGE)
+			if slug.is_empty() or (slug == "wet_puddle" and _slope(xz) > WET_FLATTEST) or not is_clear(xz, ROOM[slug], 0.8):
+				continue
+			if not transforms.has(slug):
+				transforms[slug] = []
+				tints[slug] = PackedColorArray()
+			var size := rng.randf_range(0.8, 1.25)
+			(transforms[slug] as Array).append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * size), Vector3(xz.x, height_at(xz) - 0.02, xz.y)))
+			var shade := rng.randf_range(0.86, 1.08)
+			var tint: PackedColorArray = tints[slug]
+			tint.append(Color(shade, shade, shade))
+			tints[slug] = tint
+			claim(xz, ROOM[slug])
+	for slug: String in transforms:
+		var placed: Array[Transform3D] = []
+		placed.assign(transforms[slug])
+		var look: Array = MASSES[slug]
+		add_multimesh(slug.to_pascal_case(), PropLibrary.mass_mesh(slug, look[0], look[1]), null, placed, tints[slug], look[2])
+	rng.state = state
+
+
+func _wet_thing(by_the_water: bool) -> String:
+	var roll := rng.randf()
+	if by_the_water:
+		if roll < 0.32:
+			return "mud_rushes"
+		if roll < 0.46:
+			return "flotsam_line"
+		if roll < 0.6:
+			return "sunk_stones"
+		return "wet_puddle" if roll < 0.66 else ""
+	if roll < 0.2:
+		return "mud_rushes"
+	if roll < 0.34:
+		return "butterbur"
+	if roll < 0.44:
+		return "sunk_stones"
+	return "wet_puddle" if roll < 0.49 else ""
 
 
 ## True where masses are tried.

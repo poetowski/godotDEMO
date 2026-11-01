@@ -40,6 +40,10 @@ white birches, warm-coloured field maples and small apple trees. All in
 
 ## Buildings and objects
 
+The ships and fishing things (`tools/blender/shoreside.py`) are the village's wood, tar and dragon heads,
+gone grey where the river's had them. Planks run long in one tone with the odd mended one, and rocks
+by the water are darker and wetter than those in the fields, with weed at their feet.
+
 The farms round Aiwyk (`tools/blender/homestead.py`) keep the village's logs, hay, shingles and turf.
 The farmhouse's doors really open on a room with a hearth, and the barn's on stacked hay. The fence's
 broken lengths come in three states, and the sign's letters are straight knife cuts drawn in the

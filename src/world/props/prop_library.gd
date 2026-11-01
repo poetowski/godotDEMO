@@ -29,6 +29,7 @@ const NIGHT_LIGHTS: Dictionary[String, Vector3] = {
 ## They claim this strip instead of a circle, and keep the height they were given.
 const SPANS: Dictionary[String, Vector2] = {
 	"wooden_bridge": Vector2(1.5, 11.0),
+	"fishing_jetty": Vector2(1.0, 5.0),
 }
 ## Metres of room at the foot of assets much wider above it or longer than they're
 ## thick, so grass grows under a big tree's crown and up to a fence.
@@ -50,6 +51,10 @@ const FEET: Dictionary[String, float] = {
 	"farm_fence_stubs": 0.4,
 	"farm_fence_gate": 0.4,
 	"hay_rack": 0.5,
+	"fish_rack": 0.5,
+	"net_rack": 0.5,
+	"wreck_ribs": 1.0,
+	"ship_on_boulders": 3.0,
 	"elder_bush": 0.6,
 	"bramble_thicket": 0.9,
 	"aiwyk_sign": 1.0,

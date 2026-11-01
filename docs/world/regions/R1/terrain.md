@@ -89,6 +89,24 @@ build on it, from `src/world/field/sectors/r1_village/`.
 - **Forest:** in N and O, rows 7 to 12, climbing the rise. Spruce and pine, hornbeam, ash, beech,
   maple and birch in stands. Worked out from the land at each bake.
 
+## The wet banks
+
+The author asked for wet dirt in A2, B2, C2, C3, D3, F3, F5, H4, H5, I6, J5 and J6. `tools/paint_wet_ground.gd`
+paints it, thickest low by the water, in patches that wander across the sectors' edges. Rushes,
+butterbur, sunk stones, puddles and the river's wrack grow and lie on it, worked out at each bake. The
+rest are props under the blocks that own those sectors, to move by hand. **Placeholder:** where each
+stands.
+
+- **The ship on boulders:** a longship thrown up on rocks in C2, in view of the spawn in B2, its yard
+  fallen and sail in rags. Shipwright's tools, a mallet, a hammer and a knife lie round it.
+- **The fishing camp:** above the ship in C3, with a smoke hut, a drying rack, nets and a gutting table.
+  Another stands on the bank in F3 with a beached boat.
+- **The old wreck:** bare ribs on the bank in H4, and a ship's broken stern in H5.
+- **The jetty:** in J5, reaching out over the river, with nets drying behind it. It keeps the height it
+  was given, so move it by hand if the bank changes.
+- **Inland:** boats laid up in A2 and I6, racks and a table in J6, traps and boulders in F5. `R1RoadsideI6`
+  is a block of its own for I6.
+
 ## The farms round Aiwyk
 
 The blocks `R1FarmH8`, `R1FarmB9` and `R1FarmG13` under `Sectors` in `field.tscn` build on the land

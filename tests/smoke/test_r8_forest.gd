@@ -53,7 +53,8 @@ func _trees() -> Array[Vector3]:
 
 func test_the_forest_is_thick_and_reaches_the_cliff() -> void:
 	var trees := _trees()
-	assert_gt(trees.size(), 100, "a forest, not a few trees")
+	# Trees give way to the author's painted ways, which took this from over 100 at 9af959e.
+	assert_gt(trees.size(), 80, "a forest, not a few trees")
 	var west := 0.0
 	for tree in trees:
 		west = minf(west, tree.x)

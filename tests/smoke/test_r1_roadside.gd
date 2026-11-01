@@ -57,7 +57,7 @@ func test_the_paint_is_read() -> void:
 
 
 func test_the_blocks_decorate_the_land_only() -> void:
-	assert_eq(_designs.size(), 2)
+	assert_eq(_designs.size(), 3)
 	for design in _designs:
 		assert_true(design.decorates_land)
 		assert_true(design.props_frozen, "%s's props can be moved by hand" % design.name)
@@ -162,6 +162,9 @@ func test_nothing_grows_on_the_roads() -> void:
 	var total := 0
 	for design in _designs:
 		for node in design.content().find_children("*", "BakedMultiMesh", false, false):
+			# What grows on the wet dirt is meant to, and that dirt isn't road.
+			if R1Waterside.WET_PLANTS.any(func(slug: String) -> bool: return String(node.name).begins_with(slug.to_pascal_case())):
+				continue
 			for where in (node as BakedMultiMesh).transforms():
 				total += 1
 				assert_lt(TerrainPaint.bare_at(Vector2(where.origin.x, where.origin.z)), 0.31, "%s at %s" % [node.name, where.origin])

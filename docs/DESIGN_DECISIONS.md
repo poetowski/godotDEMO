@@ -60,6 +60,16 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "in region R1 in sectors A2 B2 C2 C3 D3 F3 F5 H4 H5 I6 j5 j6 add some wet dirt
+as ground. generate new assets in blender to fill this like near side items. you can put some fishing
+stuff there and nearby. stay consistent and creative, also put some rocks there and maybe some
+shipwreck or something and ship on boulders, some knife and hammers on ground. be crative and
+consistent like always." `tools/paint_wet_ground.gd` paints the mud, the `shoreside` Blender family
+makes the things, and R1Waterside plants what grows on the mud. The land wasn't reshaped. The
+author's sculpt and paint before this are `9af959e`. **Placeholder:** where everything stands, what
+kinds there are, and how much mud, all beyond the sectors, the fishing things, the rocks, the ship on
+boulders, the wreck, and the knives and hammers they asked for.
+
 Request (2026-11-01): "the name of this village in region R1 is Aywik. remember that in our design
 documents and md files. you can even design a sign Welcome to Aiwik and place it before entrance to
 village from the bridge site road." and "Aiwyk is correct, not Aiwik." **The village in the middle of
