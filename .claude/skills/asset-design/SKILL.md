@@ -12,7 +12,7 @@ and a prop scene lets anyone place it in the world. The alchemist's column
 (`tools/blender/assets/alchemist_column.py` at git tag `demo-final`) is a finished example.
 Assets that belong together share a family: `tools/blender/riverside.py` holds R1's
 waterside palette and shapes, and each asset's script only names which to build.
-`tools/blender/farmstead.py` is the farm and road family, and `tools/blender/woodland.py`
+`tools/blender/wildwood.py` is R8's forest and camp, `tools/blender/farmstead.py` the farm and road family, and `tools/blender/woodland.py`
 the trees, both on the same palette.
 New assets for a region use its family, and its `docs/world/regions/<region>/art.md`.
 

@@ -124,7 +124,9 @@ func _boxes(design: SectorDesign, node: Node) -> Array[AABB]:
 
 
 func _inside(design: SectorDesign, box: AABB) -> bool:
-	var inner := box.grow(-0.01)
+	# What it may reach past its sectors, but never more than from its own middle.
+	var reach := Vector3(minf(design.overhang, box.size.x * 0.5 - 0.02), 0.0, minf(design.overhang, box.size.z * 0.5 - 0.02)).max(Vector3.ZERO)
+	var inner := AABB(box.position + reach, box.size - reach * 2.0).grow(-0.01)
 	for corner: Vector2 in [Vector2(inner.position.x, inner.position.z), Vector2(inner.end.x, inner.position.z), Vector2(inner.position.x, inner.end.z), Vector2(inner.end.x, inner.end.z)]:
 		if not design.owns(corner):
 			return false

@@ -42,6 +42,10 @@ const MASSES: Dictionary[String, Array] = {
 	"wild_flowers_b": [0.05, 0.0, 55.0],
 	"wild_flowers_c": [0.05, 0.0, 55.0],
 	"moss_patch": [0.0, 0.0, 50.0],
+	"bracken": [0.07, 0.0, 50.0],
+	"leaf_litter": [0.0, 0.0, 40.0],
+	"forest_mushrooms": [0.0, 0.0, 22.0],
+	"fallen_twigs": [0.0, 0.0, 28.0],
 }
 ## Metres of room each mass takes.
 const ROOM: Dictionary[String, float] = {
@@ -70,6 +74,10 @@ const ROOM: Dictionary[String, float] = {
 	"wild_flowers_b": 0.36,
 	"wild_flowers_c": 0.36,
 	"moss_patch": 0.98,
+	"bracken": 0.42,
+	"leaf_litter": 0.55,
+	"forest_mushrooms": 0.2,
+	"fallen_twigs": 0.35,
 }
 
 ## Places tried per sector for masses, and for props.
@@ -105,6 +113,7 @@ func _populate() -> void:
 	_read_shore()
 	if not props_frozen:
 		_place_props()
+	_before_masses()
 	for cell in cells():
 		rng.seed = hash(Vector3i(design_seed, cell.x, cell.y))
 		var corner := SectorMap.corner_of(cell)
@@ -117,6 +126,11 @@ func _populate() -> void:
 		var transforms: Array[Transform3D] = []
 		transforms.assign(_copies[slug])
 		add_multimesh(slug.to_pascal_case(), PropLibrary.mass_mesh(slug, look[0], look[1]), null, transforms, _copy_tints[slug], look[2])
+
+
+## For what must take its ground before the masses do.
+func _before_masses() -> void:
+	pass
 
 
 ## True where masses are tried.

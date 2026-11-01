@@ -42,6 +42,24 @@ which lantern goes where, the house's place and look, the fences' lines, the kin
 where they stand, and every plant's density. The hay stack, apple trees and firewood weren't
 asked for.
 
+Request (2026-11-01): "i adjusted terrain, please move assets accordingly. then generate
+forest in R8 west from orchard, i painted some terrain pavement dirt etc which is a way from
+orchard to the west into forest, i want you to generate more trees in blender and place them in
+R8 up to western cliff, put there some rocks. in R8 sector R3 and R2 i want to have semi
+abandoned camp with campfire, generate assets in blender and then place them there. also check
+all terrain painted by me and maybe stick to their positions where i painted them, but maybe
+repaint with better brush and texture so it looks more realistic." and "you can also redesign
+terrain hills and slops to make it more realistic". Built in
+`src/world/field/sectors/r8_forest/`, with the `wildwood` Blender family. The paint files are
+unchanged: `grass_grid.gdshader` draws them better, wherever they lie. `tools/relax_hills.gd`
+smoothed the sculpted hills once over R8 and R1's west, up to about 2.5 m, leaving the river,
+banks and cliff as they were; the author's sculpt before that is commit `c5d801c`. R8:R2 moved
+from `RiverDelta` to the block `R8CampR2`, with the two props standing in it.
+**Placeholder:** the kinds of tree and how thick they stand, where the forest ends, every camp
+object's place and look, how the paint's surfaces look, how far the hills were smoothed, and
+that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
+fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
+
 Request (2026-11-01): "make spawn point region r1, sector B2." New games and respawns
 start there.
 

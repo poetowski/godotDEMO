@@ -52,6 +52,9 @@ const CLAIM_BUCKET := 2.0
 ## True once the design's props are placed in the scene, as Prop nodes under
 ## its `Props` node, editable by hand (npm run props -- <Design> freezes the
 ## ones its code places). Its code then stops placing them.
+## Metres that what a design builds may reach past its sectors, such as tree crowns over a
+## neighbouring block. Set by the design's script.
+var overhang: float = 0.0
 @export var props_frozen: bool = false
 ## Adds content only: its sectors keep the open ground and the water poured into
 ## the land (WaterField), and its hooks for ground and water aren't used.

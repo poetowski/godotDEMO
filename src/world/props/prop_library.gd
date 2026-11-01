@@ -23,6 +23,7 @@ const NIGHT_LIGHTS: Dictionary[String, Vector3] = {
 	"lantern_post": Vector3(0.0, 1.9, 0.0),
 	"lantern_hook": Vector3(0.5, 1.72, 0.0),
 	"lantern_stone": Vector3(0.0, 0.54, 0.0),
+	"campfire": Vector3(0.0, 0.32, 0.0),
 }
 ## Half the width and length of what's kept clear under each asset that spans ground.
 ## They claim this strip instead of a circle, and keep the height they were given.
@@ -38,6 +39,9 @@ const FEET: Dictionary[String, float] = {
 	"white_birch": 0.5,
 	"field_maple": 1.0,
 	"apple_tree": 0.6,
+	"forest_spruce_b": 1.0,
+	"forest_ash": 0.7,
+	"fallen_trunk": 1.0,
 	"farm_fence_a": 0.4,
 	"farm_fence_b": 0.4,
 	"farm_fence_c": 0.4,

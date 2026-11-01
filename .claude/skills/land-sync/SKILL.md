@@ -28,8 +28,10 @@ Claude session started in this project.
 
 ## Rules
 
-1. **The land is theirs.** Sculpt tiles are never changed or overwritten. Commit them
-   first, in a commit of their own, so your work can be told from theirs.
+1. **The land is theirs.** Sculpt tiles are never changed or overwritten unless the author
+   asks for that land to be reshaped. Commit them first, in a commit of their own, so your work
+   can be told from theirs, and commit any reshaping apart too. `tools/relax_hills.gd` is how
+   hills were smoothed once.
 2. **Close the editor first.** Check `tasklist` for Godot before touching `field.tscn`;
    an open editor overwrites it. If it's open, say so and wait. Never kill it.
 3. **Their scene edits stay.** Before changing `field.tscn`, compare it with the last

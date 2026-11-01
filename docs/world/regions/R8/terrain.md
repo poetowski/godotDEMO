@@ -11,6 +11,23 @@ filled).
 
 ## By sector
 
+## The forest and the camp
+
+The author painted a way from R1's orchard west to about R8:R2 (`data/world/paint/`). The blocks
+`R8Forest*` and `R8CampR2` under `Sectors` in `field.tscn` decorate from there, from
+`src/world/field/sectors/r8_forest/`, in columns K to T and rows 3 to 12.
+
+- **Hills:** smoothed once by `tools/relax_hills.gd` into long rolling slopes, x -85 to 45 and up
+  to 140 m north. Low ground, banks and the cliff stayed as they were. **Placeholder:** how far.
+- **Forest:** spruces in the west and on high ground, hornbeams and ashes further east, thinning
+  out toward R1 from x -14 and toward the north from 92 m. Worked out from the land at each
+  bake, so it keeps off the way, the water and the drop on its own. **Placeholder:** all of it.
+- **Rocks:** crags and rocks along the cliff, more through the forest, with fallen trunks, stumps
+  and big trees by the way. These are props to move by hand.
+- **Camp:** the fire at about x -25.6, 16 m north, on the flattest ground by the way's end, seats
+  and stores in R2, tents and the drying rack in R3. Things lie with the slope. Moved by hand they
+  stay put. **Placeholder:** where each stands.
+
 ## The ravine, the delta and the fall
 
 The author carved a huge drop through the west of the starting zone, in R7, R8 and

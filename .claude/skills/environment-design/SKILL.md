@@ -87,7 +87,10 @@ sectors.
    `src/world/field/sectors/r1_waterside/` is a finished example, and
    `src/world/field/sectors/r1_roadside/` is one that decorates along painted roads.
    Assets much wider above than at the foot go in `PropLibrary.FEET`, or nothing grows under
-   them. A turned model's box is wider than the model: keep it inside the block.
+   them. A turned model's box is wider than the model: keep it inside the block, or for a forest
+   set `overhang` in the script's `_init` so crowns may reach over the next block.
+   `src/world/field/sectors/r8_forest/` plants whole forests as masses, before the floor's plants
+   (`_before_masses`), or they'd find their ground taken.
 
 10. **More than one level.** `height_at`, `is_dry`, `claim` and `is_clear` are about the
    land. For a building, a bridge or a cave, see "Levels" in `docs/world/README.md`: floors

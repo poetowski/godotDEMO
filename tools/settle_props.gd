@@ -17,6 +17,7 @@ const MOST_REACH := 0.7
 ## What stands on the ground right across, not at a foot in the middle.
 const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse"]
 const SIDES := 8
+const FENCE_SINK := 0.02
 
 
 func _initialize() -> void:
@@ -55,6 +56,9 @@ static func standing_height(prop: Prop) -> float:
 	if not prop.stands_on_ground():
 		return prop.position.y
 	var xz := Vector2(prop.position.x, prop.position.z)
+	# A length of fence lies along the ground, its middle on it.
+	if prop.asset.resource_path.contains("farm_fence"):
+		return WorldShape.height(xz) - FENCE_SINK
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
 	if not WHOLE_FOOTPRINT.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
 		reach = minf(reach, MOST_REACH)
