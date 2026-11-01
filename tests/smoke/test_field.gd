@@ -126,3 +126,16 @@ func test_c_opens_the_character_panel() -> void:
 	panel.close()
 	assert_true(player.input_enabled)
 
+
+func test_g_hides_and_shows_every_border() -> void:
+	var grid := _world.get_node("SectorGrid") as Node3D
+	assert_true(grid.visible, "shown to start with")
+	var press := InputEventAction.new()
+	press.action = "toggle_borders"
+	press.pressed = true
+	_world.call("_unhandled_input", press)
+	assert_false(grid.visible, "curtains and names hidden")
+	assert_false(FieldTerrain.ground_material().get_shader_parameter(&"show_lines"), "and the lines on the ground")
+	_world.call("_unhandled_input", press)
+	assert_true(grid.visible)
+	assert_true(FieldTerrain.ground_material().get_shader_parameter(&"show_lines"))

@@ -49,6 +49,7 @@ func _ready() -> void:
 	if start == SectorMap.NONE:
 		start = Vector2i.ZERO
 	_spawn = start
+	_grid().set_marks_shown(true)
 	teleport(start)
 	var hour := requested_hour(OS.get_cmdline_user_args())
 	if hour >= 0.0:
@@ -58,6 +59,17 @@ func _ready() -> void:
 	_hud.track(_player)
 	_player.died.connect(_on_player_died)
 	_wake_residents()
+
+
+## G shows or hides the sector and region borders, in any build, for testing and for play.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_borders"):
+		_grid().set_marks_shown(not _grid().marks_shown())
+		get_viewport().set_input_as_handled()
+
+
+func _grid() -> Node:
+	return get_node("SectorGrid")
 
 
 ## The villagers living in the field (under `Residents`): they follow their

@@ -147,3 +147,12 @@ func test_buildings_stand_on_level_ground() -> void:
 			lowest = minf(lowest, height)
 			highest = maxf(highest, height)
 		assert_lt(highest - lowest, 0.7, "%s's pad" % building[0])
+
+
+func test_trees_round_the_church_keep_their_feet_out_of_the_ground() -> void:
+	for tree in _trees(false):
+		var ground := WorldShape.height(Vector2(tree.x, tree.z))
+		assert_gt(tree.y, ground - 0.4, "a tree at %s" % tree)
+	for slug: String in ["tall_pine", "forest_spruce", "big_oak"]:
+		for prop in _props(slug):
+			assert_gt(prop.position.y, WorldShape.height(_xz(prop)) - 0.4, "%s" % prop.name)

@@ -86,6 +86,17 @@ func _exit_tree() -> void:
 		_task = -1
 
 
+## Shows or hides every mark at once: sector and region curtains, names, the red limit and the
+## lines on the ground. Only the look changes; the limit still holds.
+func set_marks_shown(shown: bool) -> void:
+	visible = shown
+	FieldTerrain.ground_material().set_shader_parameter(&"show_lines", shown)
+
+
+func marks_shown() -> bool:
+	return visible
+
+
 ## The region whose grid is shown.
 func region() -> Vector2i:
 	return _region

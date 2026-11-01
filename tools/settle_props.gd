@@ -16,6 +16,9 @@ const FOOTPRINT := 0.6
 const MOST_REACH := 0.7
 ## What stands on the ground right across, not at a foot in the middle.
 const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse", "village_house", "village_loft", "village_smithy", "nordic_church", "farm_shed", "farm_barn", "croft_cottage"]
+## Trees stand on the ground at the trunk (TREE_FOOT in r1_roadside.gd), not across their width.
+const TREE_FOOT := 0.2
+const TREES: Array[String] = ["tall_pine", "forest_spruce", "young_fir", "dead_pine", "forest_hornbeam", "forest_ash", "tall_beech", "white_birch", "field_maple", "big_oak", "apple_tree", "lake_alder", "young_willow"]
 const SIDES := 8
 const FENCE_SINK := 0.02
 
@@ -62,6 +65,8 @@ static func standing_height(prop: Prop) -> float:
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
 	if not WHOLE_FOOTPRINT.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
 		reach = minf(reach, MOST_REACH)
+	if TREES.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
+		reach = TREE_FOOT
 	var lowest := WorldShape.height(xz)
 	for k in SIDES:
 		var angle := TAU * k / SIDES

@@ -225,7 +225,7 @@ kind = 4
 asset = ExtResource("61_asset")
 
 [node name="Asset7" type="Node3D" parent="Sectors/R1WatersideA1/Props" unique_id=2044091132]
-transform = Transform3D(1.06834, 0, 0.0537639, 0, 1.0696919, 0, -0.0537639, 0, 1.06834, 36.478355, -0.8635, -18.94736)
+transform = Transform3D(1.06834, 0, 0.0537639, 0, 1.0696919, 0, -0.0537639, 0, 1.06834, 36.478355, -0.5525, -18.94736)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -973,7 +973,7 @@ solid = true
 asset = ExtResource("66_asset")
 
 [node name="Asset6" type="Node3D" parent="Sectors/R1WatersideP11/Props" unique_id=2070015056]
-transform = Transform3D(-0.23535766, 0, -1.0012021, 0, 1.0284935, 0, 1.0012021, 0, -0.23535766, 191.0307, 0.3175, -135.82085)
+transform = Transform3D(-0.23535766, 0, -1.0012021, 0, 1.0284935, 0, 1.0012021, 0, -0.23535766, 191.0307, 0.5676, -135.82085)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -1068,7 +1068,7 @@ decorates_land = true
 [node name="Props" type="Node3D" parent="Sectors/RiverRim" unique_id=1162717701]
 
 [node name="Asset2" type="Node3D" parent="Sectors/RiverRim/Props" unique_id=1984913316]
-transform = Transform3D(-0.8803805, 0, 0.49760818, 0, 1.0112783, 0, -0.49760818, 0, -0.8803805, -59.54698, -4.0257, 3.7280183)
+transform = Transform3D(-0.8803805, 0, 0.49760818, 0, 1.0112783, 0, -0.49760818, 0, -0.8803805, -59.54698, -3.7487, 3.7280183)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -2075,7 +2075,7 @@ solid = true
 asset = ExtResource("63_asset")
 
 [node name="DeltaAsset5" type="Node3D" parent="Sectors/R8CampR2/Props" unique_id=1273283155]
-transform = Transform3D(-0.37774184, 0, 1.091488, 0, 1.1550043, 0, -1.091488, 0, -0.37774184, -28.520699, 1.153, -13.958147)
+transform = Transform3D(-0.37774184, 0, 1.091488, 0, 1.1550043, 0, -1.091488, 0, -0.37774184, -28.520699, 1.3374, -13.958147)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -2566,7 +2566,7 @@ solid = true
 asset = ExtResource("80_asset")
 
 [node name="Asset69" type="Node3D" parent="Sectors/R1VillageI7/Props" unique_id=1513122908]
-transform = Transform3D(-0.2687006, 0, -0.8064118, 0, 0.85, 0, 0.8064118, 0, -0.2687006, 116.2, 2.8827133, -102.2)
+transform = Transform3D(-0.2687006, 0, -0.8064118, 0, 0.85, 0, 0.8064118, 0, -0.2687006, 116.2, 3.0846, -102.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -2626,14 +2626,14 @@ kind = 4
 asset = ExtResource("61_asset")
 
 [node name="Asset4" type="Node3D" parent="Sectors/R1VillageK12/Props" unique_id=36085444]
-transform = Transform3D(-0.12281421, 0, -0.9924297, 0, 1, 0, 0.9924297, 0, -0.12281421, 109, 2.3667905, -115.2)
+transform = Transform3D(-0.12281421, 0, -0.9924297, 0, 1, 0, 0.9924297, 0, -0.12281421, 109, 2.5458, -115.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
 asset = ExtResource("79_asset")
 
 [node name="Asset5" type="Node3D" parent="Sectors/R1VillageK12/Props" unique_id=297377521]
-transform = Transform3D(0.53642017, 0, -0.9603403, 0, 1.1, 0, 0.9603403, 0, 0.53642017, 116.5, 2.9665172, -110.2)
+transform = Transform3D(0.53642017, 0, -0.9603403, 0, 1.1, 0, 0.9603403, 0, 0.53642017, 116.5, 3.1401, -110.2)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -4058,14 +4058,14 @@ solid = true
 asset = ExtResource("81_asset")
 
 [node name="Asset25" type="Node3D" parent="Sectors/R1RoadsideB3/Props" unique_id=377510506]
-transform = Transform3D(-0.79133123, 0, -0.42871302, 0, 0.9, 0, 0.42871302, 0, -0.79133123, 16.5, 3.4544, -71.5)
+transform = Transform3D(-0.79133123, 0, -0.42871302, 0, 0.9, 0, 0.42871302, 0, -0.79133123, 16.5, 3.7097, -71.5)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
 asset = ExtResource("81_asset")
 
 [node name="Asset26" type="Node3D" parent="Sectors/R1RoadsideB3/Props" unique_id=1171555986]
-transform = Transform3D(0.78517073, 0, 0.6192794, 0, 1, 0, -0.6192794, 0, 0.78517073, 25, 0.7458, -35.5)
+transform = Transform3D(0.78517073, 0, 0.6192794, 0, 1, 0, -0.6192794, 0, 0.78517073, 25, 0.9083, -35.5)
 script = ExtResource("50_prop")
 kind = 4
 solid = true
@@ -4333,7 +4333,7 @@ solid = true
 asset = ExtResource("80_asset")
 
 [node name="Asset11" type="Node3D" parent="Sectors/R1RoadsideE4/Props" unique_id=1038375513]
-transform = Transform3D(0.12199072, 0, 1.0932146, 0, 1.1, 0, -1.0932146, 0, 0.12199072, 54.6, 1.9051, -67.5)
+transform = Transform3D(0.12199072, 0, 1.0932146, 0, 1.1, 0, -1.0932146, 0, 0.12199072, 54.6, 2.0729, -67.5)
 script = ExtResource("50_prop")
 kind = 4
 solid = true

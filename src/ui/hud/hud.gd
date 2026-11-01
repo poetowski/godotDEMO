@@ -48,7 +48,7 @@ func _ready() -> void:
 	_prompt.offset_top = -230.0
 	_prompt.offset_bottom = -170.0
 	_controls = _label(24, Color(1.0, 1.0, 1.0, 0.85))
-	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    C character    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load")
+	_controls.text = tr("WASD move    Shift sprint    Space jump    E interact    I inventory    Q quests    C character    Left click swing    Wheel zoom    Esc menu    F5 save    F9 load    G borders")
 	_controls.anchor_top = 1.0
 	_controls.anchor_bottom = 1.0
 	_controls.anchor_right = 1.0

@@ -60,6 +60,12 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "fix the forest around the nordic church because now some trees are under ground.
+then implement some way ingame to show and thhem hide all sector and region border. this is for
+develomental purpose and real play/testing." Trees now stand on the ground at the trunk (`TREE_FOOT`),
+everywhere, not on the lowest ground across their width. G shows or hides every grid mark in any build,
+starting shown. **Placeholder:** the key.
+
 Request (2026-11-01): "change startin point to region R1 , sector E1. in the iddle pf bridge and sector
 F1, but" (the message ended there). New games and respawns start at `Field.START_POINT` in E1, on the
 south bank by R1's southern edge, between the bridge's foot and F1; the author moved it back from the river. **Placeholder:** the exact spot.

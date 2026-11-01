@@ -75,6 +75,9 @@ const TREES: Array[Array] = [
 	["field_maple", Vector2(66.0, 36.4), 0.9],
 	["lake_alder", Vector2(67.0, 54.0), 0.9],
 ]
+## Metres round a trunk whose lowest ground it stands on. Any wider and a tree on a slope sinks into
+## the bank, up its trunk and into its low branches.
+const TREE_FOOT := 0.2
 ## Places tried per sector for boulders and shrubs, and the most a sector gets.
 const WILD_TRIES := 14
 const WILD_MOST := 2
@@ -239,7 +242,7 @@ func _place_tree(slug: String, at: Vector2, size: float) -> void:
 		return
 	rng.seed = hash(at)
 	var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * size)
-	_place(slug, Transform3D(basis, Vector3(xz.x, lowest_ground(xz, 0.6) - 0.05, xz.y)))
+	_place(slug, Transform3D(basis, Vector3(xz.x, lowest_ground(xz, TREE_FOOT) - 0.05, xz.y)))
 
 
 ## Boulders, stumps and shrubs among the grass, off the roads.

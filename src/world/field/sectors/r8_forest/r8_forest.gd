@@ -157,7 +157,7 @@ func _plant_forest() -> void:
 				if not transforms.has(slug):
 					transforms[slug] = []
 					tints[slug] = PackedColorArray()
-				var foot := Vector3(xz.x, lowest_ground(xz, 0.5) - 0.06, xz.y)
+				var foot := Vector3(xz.x, lowest_ground(xz, TREE_FOOT) - 0.05, xz.y)
 				(transforms[slug] as Array).append(Transform3D(basis, foot))
 				var shade := rng.randf_range(0.82, 1.08)
 				var tint: PackedColorArray = tints[slug]

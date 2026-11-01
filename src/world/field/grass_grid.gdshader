@@ -16,6 +16,8 @@ uniform float line_width = 0.14;
 // Region borders: wider, and never thinner than a pixel or two at any distance.
 uniform vec3 region_line_color : source_color = vec3(1.0, 0.72, 0.28);
 uniform float region_line_width = 0.5;
+// Off hides both kinds of line, from the G key (SectorGrid.set_marks_shown).
+uniform bool show_lines = true;
 uniform float region_sectors = 20.0;
 // World x and z of A1's south-west corner; the grid runs east and north from it.
 uniform vec2 grid_origin = vec2(0.0, 0.0);
@@ -254,12 +256,12 @@ void fragment() {
 	on_line *= clamp(line_width / per_pixel, 0.0, 1.0);
 	float inside_x = step(-line_width, grid.x) * step(grid.x, extent.x + line_width);
 	float inside_y = step(-line_width, grid.y) * step(grid.y, extent.y + line_width);
-	float line = max(on_line.x, on_line.y) * inside_x * inside_y * grassiness * (1.0 - painted);
+	float line = max(on_line.x, on_line.y) * inside_x * inside_y * grassiness * (1.0 - painted) * float(show_lines);
 
 	vec2 to_region = abs(grid - sector_size * region_sectors * round(grid / (sector_size * region_sectors)));
 	vec2 region_half = max(vec2(region_line_width * 0.5), per_pixel);
 	vec2 on_region = clamp((region_half + per_pixel * 0.5 - to_region) / per_pixel, 0.0, 1.0);
-	float region_line = max(on_region.x, on_region.y) * inside_x * inside_y;
+	float region_line = max(on_region.x, on_region.y) * inside_x * inside_y * float(show_lines);
 
 	ALBEDO = mix(mix(ground, line_color * 0.5, line), region_line_color * 0.5, region_line);
 	EMISSION = mix(line_color * line_energy * line, region_line_color * line_energy, region_line);
