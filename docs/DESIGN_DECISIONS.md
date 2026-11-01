@@ -62,7 +62,7 @@ fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked f
 
 Request (2026-11-01): "change startin point to region R1 , sector E1. in the iddle pf bridge and sector
 F1, but" (the message ended there). New games and respawns start at `Field.START_POINT` in E1, on the
-south bank, midway between the bridge's foot and F1. **Placeholder:** the exact spot.
+south bank by R1's southern edge, between the bridge's foot and F1; the author moved it back from the river. **Placeholder:** the exact spot.
 
 Request (2026-11-01): "in region R1 in sectors A2 B2 C2 C3 D3 F3 F5 H4 H5 I6 j5 j6 add some wet dirt
 as ground. generate new assets in blender to fill this like near side items. you can put some fishing

@@ -10,10 +10,10 @@ extends Node3D
 ## inside the rim of the western ravine: crossing it gives a warning, and walking on
 ## takes them back to the spawn point.
 
-## Where the game starts and respawns, in metres (x east, y north): on the south bank, midway
-## between the bridge's foot and F1, clear of the bridge's lantern and the boulder. A sector's
+## Where the game starts and respawns, in metres (x east, y north): up on the south bank by R1's edge,
+## between the bridge's foot and F1, back from the river and clear of the bridge's lantern. A sector's
 ## usual start point would stand against that lantern.
-const START_POINT := Vector2(46.2, 3.4)
+const START_POINT := Vector2(46.8, 0.8)
 
 ## The sector the player starts in unless `--sector=` names another.
 var start_sector: String = "E1"
