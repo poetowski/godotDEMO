@@ -22,12 +22,14 @@ const FOREST_TREES: Dictionary[String, Array] = {
 	"dead_pine": [0.0, 0.34],
 	"tall_pine": [0.0004, 0.4],
 	"tall_beech": [0.0006, 0.4],
+	"white_birch": [0.001, 0.2],
+	"field_maple": [0.0008, 0.36],
 }
 ## From how far the body's trees show.
 const TREE_DISTANCE := 230.0
-## Metres between the places a tree is tried, and the most it's moved off them.
+## Metres between the places a tree is tried, and the most it's moved off them, as a share.
 const TREE_STEP := 5.0
-const TREE_JITTER := 2.2
+const TREE_JITTER := 0.44
 ## Metres a trunk keeps from the way, and ground lower than this is the cliff's.
 const WAY_CLEAR := 2.6
 const RIM_LEVEL := -2.5
@@ -94,6 +96,10 @@ func _before_masses() -> void:
 	_plant_forest()
 
 
+func _tree_step() -> float:
+	return TREE_STEP
+
+
 ## How much of the forest stands at a point, 0 to 1.
 func _thickness(xz: Vector2) -> float:
 	var east := 1.0 - smoothstep(THIN_EAST, GONE_EAST, xz.x)
@@ -134,12 +140,14 @@ func _plant_forest() -> void:
 	var trunks := []
 	for cell in cells():
 		var corner := SectorMap.corner_of(cell)
-		var across := int(SectorMap.SIZE / TREE_STEP)
+		var step := _tree_step()
+		var across := int(SectorMap.SIZE / step)
 		for j in across:
 			for i in across:
 				rng.seed = hash(Vector4i(design_seed, cell.x * across + i, cell.y * across + j, 7))
-				var xz := Vector2(corner.x + (i + 0.5) * TREE_STEP, corner.z - (j + 0.5) * TREE_STEP)
-				xz += Vector2(rng.randf_range(-TREE_JITTER, TREE_JITTER), rng.randf_range(-TREE_JITTER, TREE_JITTER))
+				var xz := Vector2(corner.x + (i + 0.5) * step, corner.z - (j + 0.5) * step)
+				var jitter := step * TREE_JITTER
+				xz += Vector2(rng.randf_range(-jitter, jitter), rng.randf_range(-jitter, jitter))
 				var thick := _thickness(xz) * (0.84 if _gaps.get_noise_2d(xz.x, xz.y) > -0.18 else 0.28)
 				if rng.randf() > thick or not _tree_ground(xz) or crowds_start(xz, 1.0) or not is_clear(xz, 1.0, 0.9):
 					continue

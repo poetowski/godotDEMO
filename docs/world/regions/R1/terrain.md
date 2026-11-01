@@ -66,6 +66,29 @@ They change neither the land, the water nor the paint.
   when content is built, thick on the verges and thinning away from them, and they keep off
   anything painted bare. Boulders, stumps and shrubs are props to move by hand.
 
+## The village
+
+The author painted two plazas, a ring road and a junction in the middle of R1, with a hill for the
+church. The blocks `R1VillageI7`, `R1VillageK12` and `R1ForestN7` under `Sectors` in `field.tscn`
+build on it, from `src/world/field/sectors/r1_village/`.
+
+- **Land:** smoothed, the church's terrace at 3 m on long easy slopes, a rise of about
+  4.5 m for the forest east of the village, and level terraces under the buildings and the square,
+  by `tools/shape_village_land.gd`. **Placeholder:** how far.
+- **Paint:** cobbles on the square and the middle of the street up to the church's way, flagstones to
+  its door, dirt at the street's edges and before doors, and a gravel wagon track where the author's
+  ring road ran, by `tools/localize_village_paint.gd`. Their plazas are trodden dry grass now.
+- **Buildings:** a long thatched house in K10, a turf-roofed cottage and a raised storehouse in K11,
+  a smithy in L9, a thatched cottage and a turf-roofed cottage in M9. **Placeholder:** where each is.
+- **Square:** in L10 with a well, a market stall and benches. Matching lanterns stand where the street
+  comes in, on the way up to the church, on the way out east and at the farm's gate.
+- **Church:** in M11 on its hill, facing the village, with rune stones either side of its way and pines
+  round the rest of it.
+- **Farm:** a farmhouse and shed in J8, a hay stack and a trough, barley in strips in J7 and fences
+  round both, open at the gate on the road.
+- **Forest:** in N and O, rows 7 to 12, climbing the rise. Spruce and pine, hornbeam, ash, beech,
+  maple and birch in stands. Worked out from the land at each bake.
+
 ## High ground
 
 ## By sector

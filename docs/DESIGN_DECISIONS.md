@@ -60,6 +60,23 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "in the middle of R1 i just painted some new roads and different terrain
+in several sectors in the middle. create assets of village houses in blender, also create one
+overgrown church, not christian but little nordic. put some decorations around the village, like
+trees and rocks and some foliage and grass. so we can have buildings of village in sectors of
+r1: k10, k11, l9, m9. nordic church wooden on m11 surrounded by pine trees. put a farm with fences
+and small shed in J8 with fences going to J7 as well. sectors O-N 7-12 can be another forest with
+trees. you can also adjust terrain painting, make pavement more realisticaly localized. you can
+also redesign hills and terrains around if you find it to be creative. stay very consistent in
+visuals. be creative. go". Built in `src/world/field/sectors/r1_village/`, with the `village`
+Blender family. `tools/shape_village_land.gd` smoothed the land, lifted the church's hill, raised a
+rise for the forest and levelled terraces under the buildings; `tools/localize_village_paint.gd`
+repainted x 88 to 140, 60 to 116 m north. The author's sculpt and paint before that are commit
+`50784c2`. **Placeholder:** where every building, lane and thing stands, how far the land changed,
+the church's dragons and sun wheel, and the forest's kinds and thickness. The well, stall, carts,
+gardens, benches, clothes lines, rune stones, lanterns, smithy, storehouse, trough and barley
+weren't asked for by name.
+
 Request (2026-11-01): "make spawn point region r1, sector B2." New games and respawns
 start there.
 

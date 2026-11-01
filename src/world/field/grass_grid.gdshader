@@ -170,10 +170,10 @@ void fragment() {
 		float share = torn(first.r, grit, fine);
 		vec2 where;
 		vec2 pebble = stones(p * 17.0, where);
-		float speck = smoothstep(0.82, 0.92, pebble.y) * smoothstep(0.02, 0.14, pebble.x) * detail(0.1, pixel);
+		float speck = smoothstep(0.9, 0.96, pebble.y) * smoothstep(0.02, 0.14, pebble.x) * detail(0.1, pixel);
 		float damp = smoothstep(0.42, 0.7, value_noise(p * 0.73 + 11.0));
 		vec3 dirt = srgb_to_linear(DIRT) * (0.74 + 0.3 * patches + 0.34 * grit * detail(0.2, pixel)) * (1.0 - 0.3 * damp);
-		dirt = mix(dirt, srgb_to_linear(GRAVEL) * (0.6 + 0.5 * pebble.y), speck);
+		dirt = mix(dirt, srgb_to_linear(GRAVEL) * (0.45 + 0.4 * pebble.y), speck);
 		paint_over(ground, roughness, dirt, share, 0.98 - 0.2 * damp);
 		painted = max(painted, share);
 	}

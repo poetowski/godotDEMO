@@ -46,6 +46,7 @@ const MASSES: Dictionary[String, Array] = {
 	"leaf_litter": [0.0, 0.0, 40.0],
 	"forest_mushrooms": [0.0, 0.0, 22.0],
 	"fallen_twigs": [0.0, 0.0, 28.0],
+	"crop_patch": [0.09, 0.0, 60.0],
 }
 ## Metres of room each mass takes.
 const ROOM: Dictionary[String, float] = {
@@ -78,6 +79,7 @@ const ROOM: Dictionary[String, float] = {
 	"leaf_litter": 0.55,
 	"forest_mushrooms": 0.2,
 	"fallen_twigs": 0.35,
+	"crop_patch": 0.3,
 }
 
 ## Places tried per sector for masses, and for props.

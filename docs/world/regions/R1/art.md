@@ -40,6 +40,11 @@ white birches, warm-coloured field maples and small apple trees. All in
 
 ## Buildings and objects
 
+The village keeps the farmhouse's logs, planks, hay and stone (`tools/blender/village.py`), with turf
+roofs and tarred shingles besides. The church is a stave church of dark tarred wood with steep roofs
+stepping to a spire, dragon heads on its gables and a sun wheel, no cross, gone over with moss and
+creeper, a sapling in its lower roof and one dragon sagging.
+
 A small log farmhouse in D5: logs crossing at the corners, a stone footing, every window
 shuttered, and an old hay roof with grass and moss growing in it. Low fences of sapling rails and
 woven hurdles, with an old length here and there.

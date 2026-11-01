@@ -203,7 +203,7 @@ func test_no_prop_stands_on_a_road_or_floats() -> void:
 			var xz := _xz(prop)
 			assert_lt(prop.position.y - WorldShape.height(xz), 0.6, "%s/%s floats" % [design.name, prop.name])
 			var fence := PropLibrary.slug_of(prop.asset).begins_with("farm_fence")
-			if not fence and not prop.name.begins_with("Lantern"):
+			if not fence and PropLibrary.slug_of(prop.asset) != "village_well" and not PropLibrary.slug_of(prop.asset).begins_with("lantern"):
 				assert_lt(TerrainPaint.road_at(xz), 0.6, "%s/%s stands on a road" % [design.name, prop.name])
 
 

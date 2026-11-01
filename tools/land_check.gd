@@ -153,7 +153,7 @@ func _report_props(world: Node) -> void:
 			var level := WaterField.level_at(xz)
 			if not prop.stands_on_ground():
 				continue
-			if TerrainPaint.road_at(xz) > ROAD_SHARE and not slug.begins_with("lantern") and not slug.begins_with("farm_fence"):
+			if TerrainPaint.road_at(xz) > ROAD_SHARE and not slug.begins_with("lantern") and not slug.begins_with("farm_fence") and slug != "village_well":
 				on_roads.append(line)
 			if level != SectorDesign.NO_WATER and level - WorldShape.height(xz) > DROWNED:
 				drowned.append("%s, %.2f m under" % [line, level - WorldShape.height(xz)])
