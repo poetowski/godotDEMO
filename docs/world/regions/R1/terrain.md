@@ -97,7 +97,7 @@ butterbur, sunk stones, puddles and the river's wrack grow and lie on it, worked
 rest are props under the blocks that own those sectors, to move by hand. **Placeholder:** where each
 stands.
 
-- **The ship on boulders:** a longship thrown up on rocks in C2, in view of the spawn in B2, its yard
+- **The ship on boulders:** a longship thrown up on rocks in C2, across the river from the start, its yard
   fallen and sail in rags. Shipwright's tools, a mallet, a hammer and a knife lie round it.
 - **The fishing camp:** above the ship in C3, with a smoke hut, a drying rack, nets and a gutting table.
   Another stands on the bank in F3 with a beached boat.

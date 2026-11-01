@@ -22,12 +22,12 @@ func test_player_starts_on_the_ground_in_a1() -> void:
 	var player := _world.get_node("Player") as Player
 	await wait_until(player.is_on_floor, 5.0)
 	assert_true(player.is_on_floor())
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "R1:B2")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "R1:E1")
 
 
 func test_hud_names_the_current_sector() -> void:
 	await wait_process_frames(2)
-	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector R1:B2")
+	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector R1:E1")
 
 
 func test_every_sector_has_a_painted_name() -> void:
@@ -68,7 +68,7 @@ func test_past_the_line_warns_and_going_on_returns_to_the_spawn_point() -> void:
 	assert_eq(hud.toast_text(), "I should not be here...")
 	player.global_position = Vector3(-76.0, 5.0, 5.0)
 	await wait_process_frames(2)
-	assert_eq(SectorMap.cell_at(player.global_position), SectorMap.cell_named("B2"), "back at the spawn point")
+	assert_eq(SectorMap.cell_at(player.global_position), SectorMap.cell_named("E1"), "back at the spawn point")
 
 
 func test_the_border_leaves_the_land_to_the_south_and_north_alone() -> void:
@@ -109,7 +109,7 @@ func test_a_long_fall_kills_and_respawns() -> void:
 	await wait_seconds(2.4)
 	assert_signal_emitted(player, "died")
 	assert_eq(player.hp, player.max_hp, "alive again")
-	assert_eq(SectorMap.cell_at(player.global_position), SectorMap.cell_named("B2"), "at the spawn point")
+	assert_eq(SectorMap.cell_at(player.global_position), SectorMap.cell_named("E1"), "at the spawn point")
 
 
 func test_c_opens_the_character_panel() -> void:

@@ -10,8 +10,13 @@ extends Node3D
 ## inside the rim of the western ravine: crossing it gives a warning, and walking on
 ## takes them back to the spawn point.
 
+## Where the game starts and respawns, in metres (x east, y north): on the south bank, midway
+## between the bridge's foot and F1, clear of the bridge's lantern and the boulder. A sector's
+## usual start point would stand against that lantern.
+const START_POINT := Vector2(46.2, 3.4)
+
 ## The sector the player starts in unless `--sector=` names another.
-var start_sector: String = "B2"
+var start_sector: String = "E1"
 
 var _sector := Vector2i(-2, -2)
 var _place_name := ""
@@ -126,7 +131,10 @@ func terrain() -> FieldTerrain:
 ## sectors around it.
 func teleport(cell: Vector2i) -> void:
 	var point := SectorMap.start_of(cell)
-	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
+	var wanted := Vector2(point.x, point.z)
+	if SectorMap.cell_at(Vector3(START_POINT.x, 0.0, -START_POINT.y)) == cell:
+		wanted = Vector2(START_POINT.x, -START_POINT.y)
+	var spot := _terrain.find_dry_spot(wanted)
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.velocity = Vector3.ZERO
 	_player.face(0.0)

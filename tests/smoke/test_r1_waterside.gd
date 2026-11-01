@@ -128,9 +128,14 @@ func test_the_landmarks_are_placed_and_near_the_water() -> void:
 
 
 func test_the_start_stays_clear_and_dry() -> void:
-	var start := SectorMap.start_of(SectorMap.cell_named("B2"))
-	var spot := _terrain.find_dry_spot(Vector2(start.x, start.z))
-	assert_true(_terrain.is_dry(spot))
+	var point: Vector2 = preload("res://src/world/field/field.gd").START_POINT
+	var start := Vector2(point.x, -point.y)
+	assert_true(_terrain.is_dry(start, 0.1), "the start point is dry as it stands")
+	for design in _terrain.designs():
+		for prop in design.scene_props():
+			if prop.solid:
+				var reach := minf(PropLibrary.asset_room(prop.asset), 2.0) * 0.5 + 0.3
+				assert_gt(Vector2(prop.position.x, prop.position.z).distance_to(start), reach, "%s stands clear of it" % prop.name)
 
 
 func test_the_lake_runs_on_into_r4_and_its_tips() -> void:

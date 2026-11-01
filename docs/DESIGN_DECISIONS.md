@@ -60,6 +60,10 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "change startin point to region R1 , sector E1. in the iddle pf bridge and sector
+F1, but" (the message ended there). New games and respawns start at `Field.START_POINT` in E1, on the
+south bank, midway between the bridge's foot and F1. **Placeholder:** the exact spot.
+
 Request (2026-11-01): "in region R1 in sectors A2 B2 C2 C3 D3 F3 F5 H4 H5 I6 j5 j6 add some wet dirt
 as ground. generate new assets in blender to fill this like near side items. you can put some fishing
 stuff there and nearby. stay consistent and creative, also put some rocks there and maybe some

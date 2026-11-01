@@ -58,7 +58,7 @@ func test_wet_dirt_keeps_to_those_sectors() -> void:
 	assert_lt(_mud_share("G8"), 0.05)
 
 
-func test_a_ship_lies_on_its_boulders_by_the_water_near_the_start() -> void:
+func test_a_ship_lies_on_its_boulders_by_the_water() -> void:
 	var ships := _props("ship_on_boulders")
 	assert_eq(ships.size(), 1)
 	assert_eq(SectorMap.name_of(SectorMap.cell_at(ships[0].position)), "R1:C2")
