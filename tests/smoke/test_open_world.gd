@@ -27,7 +27,7 @@ func test_the_world_is_the_starting_zone_with_classic_sectors() -> void:
 	assert_eq(SectorMap.COLUMNS, 20)
 	assert_eq(SectorMap.ROWS, 20)
 	assert_eq(SectorMap.extent(), Vector2(600.0, 600.0))
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "R1:A1", "the start")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(_player.global_position)), "R1:B2", "the start")
 
 
 func test_there_is_nothing_in_it_yet() -> void:

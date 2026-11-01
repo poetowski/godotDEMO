@@ -128,7 +128,7 @@ func test_the_landmarks_are_placed_and_near_the_water() -> void:
 
 
 func test_the_start_stays_clear_and_dry() -> void:
-	var start := SectorMap.start_of(SectorMap.cell_named("A1"))
+	var start := SectorMap.start_of(SectorMap.cell_named("B2"))
 	var spot := _terrain.find_dry_spot(Vector2(start.x, start.z))
 	assert_true(_terrain.is_dry(spot))
 

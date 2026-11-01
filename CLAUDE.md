@@ -186,7 +186,7 @@ every stroke.
 ## Sectors
 
 The world is built sector by sector. Sectors are 10 x 10 m, named A1 to T20:
-A1 is the south-west corner sector and the start, letters grow east (+X) and
+A1 is the south-west corner sector, B2 is the start, letters grow east (+X) and
 numbers north (-Z). Use `SectorMap` for all sector maths and names, and
 `--sector=<name>` with `npm run game` or `npm run shot` to start there. When a
 sector gets content, record what was decided for it in

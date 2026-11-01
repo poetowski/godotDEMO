@@ -2,7 +2,7 @@ extends Node3D
 ## The sector-grid field: grass everywhere, the grid of 10 m sectors with their
 ## light curtains and names, the sector designs under `Sectors` shaping the
 ## sectors they own and streamed in around the player by `Streamer`, and the
-## player starting in A1 facing north, and the time of day (Clock, with
+## player starting in R1's B2 facing north, and the time of day (Clock, with
 ## DayNight lighting the world by it), and the villagers living in it
 ## (`Residents`, none yet). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at
@@ -11,7 +11,7 @@ extends Node3D
 ## takes them back to the spawn point.
 
 ## The sector the player starts in unless `--sector=` names another.
-var start_sector: String = "A1"
+var start_sector: String = "B2"
 
 var _sector := Vector2i(-2, -2)
 var _place_name := ""

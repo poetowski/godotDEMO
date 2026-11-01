@@ -42,6 +42,9 @@ which lantern goes where, the house's place and look, the fences' lines, the kin
 where they stand, and every plant's density. The hay stack, apple trees and firewood weren't
 asked for.
 
+Request (2026-11-01): "make spawn point region r1, sector B2." New games and respawns
+start there.
+
 Request (2026-10-31): "regarding different lanterns, i ment you can use different in eadh
 segment, not opposite. opposite must be same of course so it makes sense and in this case
 brudge should have been covered just by 1 design" **Rule:** things facing each other match;
