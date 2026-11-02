@@ -40,6 +40,10 @@
 //                                with --camera or --frame, shoot from there;
 //                                --player puts the hero there, --hold keeps
 //                                an input action pressed (move_forward)
+//   npm run gallery [-- world|models|pdf] [--only=r1_,time]
+//                                photograph the world and every model without
+//                                borders or HUD, and build build/godotDEMO-gallery.pdf;
+//                                the shots and text are in tools/gallery/gallery.json
 //   npm run api                  dump the engine's class reference to .godot-api/
 //   npm run where                print the Godot binary in use
 //
@@ -387,6 +391,25 @@ const commands = {
     }
     console.log(`[dev] screenshot: ${out}`);
     return ok;
+  },
+
+  async gallery(argv) {
+    const { options, positional } = parseOptions(argv);
+    const steps = positional.length > 0 ? positional : ['world', 'models', 'pdf'];
+    if (steps.some((step) => step !== 'pdf') && (!(await ensureImported()) || !(await ensureBaked()))) return false;
+    const base = ['--path', ROOT, '--script', 'res://tools/gallery.gd'];
+    if (steps.includes('world')) {
+      const only = options.only ? [`--only=${options.only}`] : [];
+      const args = [...base.slice(0, 2), '--resolution', '1920x1080', ...base.slice(2), '--', ...only];
+      if (!report('gallery world', await godot(args, { timeoutMs: 30 * 60_000 }))) return false;
+    }
+    if (steps.includes('models')) {
+      const args = [...base.slice(0, 2), '--resolution', '960x640', ...base.slice(2), '--', '--models'];
+      if (!report('gallery models', await godot(args, { timeoutMs: 30 * 60_000 }))) return false;
+    }
+    if (!steps.includes('pdf')) return true;
+    const python = process.env.PYTHON ?? 'python';
+    return spawnSync(python, [path.join(ROOT, 'tools', 'gallery', 'gallery_pdf.py')], { cwd: ROOT, stdio: 'inherit' }).status === 0;
   },
 
   async api() {

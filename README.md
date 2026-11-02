@@ -62,6 +62,8 @@ npm run verify    check + test
 npm run shot      play the main scene, save .shots/main.png, quit
                   (add -- --camera=x,y,z --look=x,y,z for any viewpoint,
                   or -- --frame=A1:A3 to frame sectors from above)
+npm run gallery   photograph the world and models, build the shareable
+                  build/godotDEMO-gallery.pdf (see tools/gallery/gallery.json)
 npm run game      play the game (-- --hour=21 to start at night; F7
                   runs time fast in dev builds)
 npm run import    import new assets without the editor

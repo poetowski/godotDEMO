@@ -1,0 +1,194 @@
+{
+  "title": "godotDEMO",
+  "subtitle": "A look around the starting zone",
+  "note": "Working title. A 3D RPG in progress: everything shown here is unfinished and may change.",
+  "about": [
+    "The starting zone is nine regions of open country, each 200 by 200 metres, with R1 in the middle. Most of what has been built so far stands in and around R1, and the rest is open land waiting its turn.",
+    "The land is sculpted and painted by hand, stroke by stroke. Every model is made inside the project in Blender and carries its colour in simple flat-shaded materials, with no textures and nothing bought or borrowed.",
+    "These pictures are taken in the game itself, with the interface and the map grid switched off."
+  ],
+  "cover": [
+    { "id": "cover", "from": [97, 74, 15], "look": [122, 102, 6], "hour": 17.5, "fov": 50 }
+  ],
+  "regions": [
+    {
+      "id": "R1",
+      "origin": [
+        0,
+        0
+      ],
+      "status": "The heart of the zone",
+      "intro": "Where the game begins. A river runs out of a lake in the south-east, past wet banks with ships and fishing camps, under a log bridge. North of it the road climbs past farms to Aiwyk, the village, with its old stave church on the hill.",
+      "shots": [
+        { "id": "r1_bridge", "from": [60, 3, 6], "look": [42, 12, 1], "hour": 9.5, "layout": "full", "title": "The log bridge", "caption": "The game starts on the hill at its south end. The road crosses the river here, with a matching pair of post lanterns at each end." },
+        { "id": "r1_ship", "from": [37, 6, 3], "look": [25, 15, 2.5], "hour": 10.5, "layout": "half", "title": "The ship on the boulders", "caption": "A longship thrown up on the rocks, its yard fallen and its sail in rags. Shipwright's tools lie round it." },
+        { "id": "r1_camp", "from": [12, 31, 2.6], "look": [25, 24, 1.2], "hour": 11, "layout": "half", "title": "The fishing camp", "caption": "A smoke hut, a drying rack, nets and a gutting table above the wet ground of the bank." },
+        { "id": "r1_wreck", "from": [83, 31, 2.5], "look": [75, 38, 1], "hour": 16, "layout": "half", "title": "The old wreck", "caption": "Bare ribs on the bank, and a ship's broken stern a little way upriver.", "fov": 50 },
+        { "id": "r1_jetty", "from": [107, 32, 3], "look": [95, 40, 1], "hour": 8, "layout": "half", "title": "The jetty", "caption": "Reaching out over the river below the village, with nets drying behind it." },
+        { "id": "r1_sign", "from": [78.5, 72.5, 1.7], "look": [84.5, 78.5, 1.5], "hour": 10, "layout": "half", "title": "Welcome to Aiwyk", "caption": "The sign beside the road in from the bridge. Its letters are straight knife cuts." },
+        { "id": "r1_farm", "from": [76, 73, 3], "look": [74, 88, 2], "hour": 10, "layout": "half", "title": "The working farm", "caption": "A farmhouse with its doors open to the south, a barn beside it, and a fenced yard." },
+        { "id": "r1_aiwyk", "from": [140, 74, 18], "look": [112, 98, 2], "hour": 15, "layout": "full", "title": "Aiwyk", "caption": "The village in the middle of R1: thatched and turf-roofed houses, a square with a well, and the church above." },
+        { "id": "r1_square", "from": [108, 90, 2.4], "look": [118, 93, 2], "hour": 11, "layout": "half", "title": "The square", "caption": "A well, a market stall and benches, on cobbles painted by hand." },
+        { "id": "r1_smithy", "from": [116.5, 91.5, 2.2], "look": [113.4, 85, 2.2], "hour": 13, "layout": "half", "title": "The smithy", "caption": "The forge under its lean-to roof, on the street beside the square." },
+        { "id": "r1_church", "from": [118, 96.5, 1.8], "look": [124.4, 106.8, 7], "hour": 18, "layout": "full", "title": "The stave church", "caption": "Dark tarred wood and steep roofs stepping up to a spire, dragon heads on the gables, gone over with moss and creeper.", "fov": 66 },
+        { "id": "r1_poor", "from": [42, 78, 3], "look": [53, 88, 2], "hour": 12, "layout": "half", "title": "The poor farm", "caption": "A house with a hole in its roof, where the way west ends, behind broken fences.", "fov": 52 },
+        { "id": "r1_croft", "from": [80, 96, 2.5], "look": [73, 107, 1.8], "hour": 14, "layout": "half", "title": "The croft", "caption": "A low stone house under turf, with no fence, beside its strips of barley." },
+        { "id": "r1_lake", "from": [148, 26, 4], "look": [185, 22, 0], "hour": 7.5, "layout": "full", "title": "The lake", "caption": "Still water in the south-east, carved by hand as lowered ground and then filled. It runs on across the border into R4." }
+      ]
+    },
+    {
+      "id": "R2",
+      "origin": [
+        0,
+        200
+      ],
+      "status": "Open land, not built yet",
+      "intro": "North of R1. Rolling grassland with nothing on it so far. From here you can see back to the trees above Aiwyk.",
+      "shots": [
+        { "id": "r2_land", "from": [105, 212, 7], "look": [115, 100, 3], "hour": 16, "layout": "full", "title": "Looking south", "caption": "The open meadows of R2, with Aiwyk's forest on the far side of the border." }
+      ]
+    },
+    {
+      "id": "R3",
+      "origin": [
+        200,
+        200
+      ],
+      "status": "Open land, not built yet",
+      "intro": "North-east of R1. Empty rolling land, the blank page of the zone.",
+      "shots": [
+        { "id": "r3_land", "from": [300, 300, 3], "look": [240, 260, 2], "hour": 18.5, "layout": "full", "title": "Evening over R3", "caption": "No sculpting or decoration here yet, just the base land under the day and night cycle." }
+      ]
+    },
+    {
+      "id": "R4",
+      "origin": [
+        200,
+        0
+      ],
+      "status": "The lake's far shore",
+      "intro": "East of R1. The lake runs on across the border to its east shore, with lilies on the still water and full-grown alders standing back from it. Beyond the shore the land is still open.",
+      "shots": [
+        { "id": "r4_lilies", "from": [226, 8, 2.5], "look": [207, 24, 0], "hour": 10, "layout": "half", "title": "Lilies on the lake", "caption": "White and pink water lilies across the eastern half of the lake." },
+        { "id": "r4_inflow", "from": [214, 78, 3], "look": [198, 108, 0], "hour": 15, "layout": "half", "title": "The river in", "caption": "The bank of the river flowing down to the lake, with a side channel dug by hand." }
+      ]
+    },
+    {
+      "id": "R5",
+      "origin": [
+        200,
+        -200
+      ],
+      "status": "The lake's southern tip",
+      "intro": "South-east of R1. The tip of the lake reaches into its corner, ringed by alders. The rest is open land.",
+      "shots": [
+        { "id": "r5_shore", "from": [245, -30, 3], "look": [215, -8, 1], "hour": 17, "layout": "full", "title": "The southern tip", "caption": "Alders and flat shore stones where the lake ends." }
+      ]
+    },
+    {
+      "id": "R6",
+      "origin": [
+        0,
+        -200
+      ],
+      "status": "The south bank, the lake and the ravine",
+      "intro": "South of R1, over the bridge. Tall poplars and thick bushes, a stand of white poplars, and a medieval army's camp with its tent, banners and weapon rack. In the far south, the ravine bites into the land.",
+      "shots": [
+        { "id": "r6_camp", "from": [48, -15, 3.5], "look": [35, -15, 2], "hour": 11, "layout": "full", "title": "The army's camp", "caption": "A campaign tent of dun canvas with an oiled dark roof and sewn patches, red war banners either side of the door, and a cook fire." },
+        { "id": "r6_poplars", "from": [38, -24, 3], "look": [57, -12, 7], "hour": 9, "layout": "half", "title": "Tall poplars", "caption": "Poplars over hazel, dog rose, elder and bramble, along the road south of the bridge.", "fov": 60 },
+        { "id": "r6_white", "from": [35, 9, 3], "look": [29, -5, 3.5], "hour": 15.5, "layout": "half", "title": "White poplars", "caption": "Pale trunks with dark diamond scars and silver leaves, with foxgloves and cow parsley below." },
+        { "id": "r6_ring", "from": [50, -19, 2], "look": [45, -25, 1.2], "hour": 19, "layout": "half", "title": "The ring of stones", "caption": "An old carved post in a ring of stones, up the hill from the camp." },
+        { "id": "r6_shore", "from": [175, -28, 2.5], "look": [192, -6, 2], "hour": 16.5, "layout": "half", "title": "The lake's south shore", "caption": "Full-grown alders standing back from the water, where the lake reaches into R6." }
+      ]
+    },
+    {
+      "id": "R7",
+      "origin": [
+        -200,
+        -200
+      ],
+      "status": "The western drop",
+      "intro": "South-west of R1. Most of it lies past the edge of the world: the ravine, filled with mist. Only its eastern side is land.",
+      "shots": [
+        { "id": "r7_edge", "from": [-100, -85, -5, "abs"], "look": [-55, -90, -3, "abs"], "hour": 17.5, "layout": "full", "title": "The edge of the world", "caption": "Walk far enough west and a warning says: \"I should not be here...\". The mist hides how far down it goes." }
+      ]
+    },
+    {
+      "id": "R8",
+      "origin": [
+        -200,
+        0
+      ],
+      "status": "The old forest and the camp",
+      "intro": "West of R1. A painted way runs out of R1's orchard into an old forest of spruce, hornbeam and ash on the hill, ending at a half abandoned camp. In its south, the river goes over the cliff into the ravine.",
+      "shots": [
+        { "id": "r8_forest", "from": [-22, 60, 2], "look": [-45, 75, 7], "hour": 9, "layout": "full", "title": "The old forest", "caption": "Spruces of up to 22 metres and tall ashes on long rolling slopes, with fallen trunks, stumps and rocks between them." },
+        { "id": "r8_camp", "from": [-17, 14, 2.2], "look": [-25, 21, 1], "hour": 18, "layout": "half", "title": "The half abandoned camp", "caption": "A patched canvas tent, one that has come down, a bedroll, and a fire burnt down to embers." },
+        { "id": "r8_falls", "from": [-92, -12, -6, "abs"], "look": [-68, -10, -6, "abs"], "hour": 13, "layout": "half", "title": "The waterfall", "caption": "The river runs off the cliff and drops into the ravine." }
+      ]
+    },
+    {
+      "id": "R9",
+      "origin": [
+        -200,
+        200
+      ],
+      "status": "The cliff, otherwise open",
+      "intro": "North-west of R1. The ravine's cliff runs down its west side in grey bands. East of the rim, open land.",
+      "shots": [
+        { "id": "r9_cliff", "from": [-172, 300, 2, "abs"], "look": [-130, 290, -2, "abs"], "hour": 15, "layout": "full", "title": "The cliff", "caption": "Bare rock falling away from the grass at the north-western end of the zone.", "fov": 70 }
+      ]
+    }
+  ],
+  "extra": [
+    {
+      "id": "time",
+      "title": "One place, one day",
+      "text": "The world runs on a clock, with sun, moon and lanterns that light themselves at night. The same view of Aiwyk's square through a day.",
+      "shots": [
+        { "id": "time_a", "from": [108, 90, 2.4], "look": [118, 93, 2], "hour": 6.5, "label": "Dawn" },
+        { "id": "time_b", "from": [108, 90, 2.4], "look": [118, 93, 2], "hour": 12, "label": "Noon" },
+        { "id": "time_c", "from": [108, 90, 2.4], "look": [118, 93, 2], "hour": 19.5, "label": "Dusk" },
+        { "id": "time_d", "from": [108, 90, 2.4], "look": [118, 93, 2], "hour": 22, "label": "Night" }
+      ]
+    }
+  ],
+  "families": {
+    "hero": {
+      "title": "The hero",
+      "text": "The playable character."
+    },
+    "riverside": {
+      "title": "The waterside",
+      "text": "Lilies, reeds, stones and driftwood: the first family, whose palette the others grew from."
+    },
+    "farmstead": {
+      "title": "Farm and roadside",
+      "text": "The small farm by the river, and what grows along the roads."
+    },
+    "woodland": {
+      "title": "Woodland",
+      "text": "Trees of several kinds: oak, beech, pine, birch, maple and apple."
+    },
+    "wildwood": {
+      "title": "The wildwood",
+      "text": "The old forest of R8 and its half abandoned camp."
+    },
+    "village": {
+      "title": "The village",
+      "text": "Aiwyk's houses and its old stave church, in logs, planks, hay and stone."
+    },
+    "homestead": {
+      "title": "The farms round Aiwyk",
+      "text": "A working farm, a poor one and a croft, and the fields between them."
+    },
+    "shoreside": {
+      "title": "The wet banks",
+      "text": "Ships, wrecks and everything a fishing village leaves on its river."
+    },
+    "south bank": {
+      "title": "The south bank",
+      "text": "Poplars, hedge bushes, an army's camp and small finds near rivers and forests."
+    }
+  }
+}

@@ -36,6 +36,7 @@ working title and the game's design is not decided yet.
 | `npm run shot -- --frame=A1:C3 --out=.shots/area.png` | The same, from a camera framing those sectors from above. |
 | `npm run shot -- --player=x,y,z --hold=move_forward --press=interact,1,quests` | Puts the hero somewhere, holds an input action, and presses actions or digit keys (dialogue answers) in turn before the shot. |
 | `npm run shot -- --hour=0 --out=.shots/night.png` | Any shot at a time of day: the world is lit by the clock, so check designs by night too. |
+| `npm run gallery [-- world\|models\|pdf] [--only=r1_,time]` | Photographs the world and every model without borders or HUD, and builds `build/godotDEMO-gallery.pdf` to share. Shots and words are in `tools/gallery/gallery.json`; see `/gallery-pdf`. |
 | `npm run import` | Headless import, after adding or changing assets outside the editor. |
 | `npm run bake` | Generates every sector design's content into `baked/sectors/` (not committed). `game`, `shot` and `test` run it first whenever the baked files are older than `src/`, `data/` or the bake tool. |
 | `npm run asset-preview -- <slug>` | Renders an asset in Godot from three sides next to a 1.8 m figure, into `.shots/assets/`. |

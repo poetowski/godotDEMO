@@ -24,6 +24,7 @@
     "test": "node tools/dev.mjs test",
     "verify": "node tools/dev.mjs check && node tools/dev.mjs test",
     "shot": "node tools/dev.mjs shot",
+    "gallery": "node tools/dev.mjs gallery",
     "api": "node tools/dev.mjs api",
     "where": "node tools/dev.mjs where"
   }
