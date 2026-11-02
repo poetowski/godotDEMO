@@ -12,7 +12,7 @@ project, so the words are plain and say nothing about tools, sectors or the repo
 
 | Command | What it does |
 |---|---|
-| `npm run gallery` | Everything, about 5 minutes: world shots, model photographs, the PDF. |
+| `npm run gallery` | Everything, in a minute or two: world shots, model photographs, the PDF. |
 | `npm run gallery -- world --only=r1_,time` | Retake only the shots whose id starts with these. |
 | `npm run gallery -- models` | Photograph the models again. |
 | `npm run gallery -- pdf` | Rebuild the PDF from the pictures already in `.shots/gallery/`, after changing words. |
