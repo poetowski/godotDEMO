@@ -29,8 +29,12 @@ def palette():
         "silver_leaf": m("SilverLeaf", (0.60, 0.68, 0.53), roughness=0.75),
         "silver_leaf_pale": m("SilverLeafPale", (0.74, 0.79, 0.68), roughness=0.75),
         "silver_leaf_dark": m("SilverLeafDark", (0.40, 0.50, 0.33), roughness=0.8),
-        "canvas": m("TentCanvas", (0.74, 0.68, 0.53), roughness=1.0),
-        "canvas_dirty": m("TentCanvasDirty", (0.60, 0.54, 0.41), roughness=1.0),
+        "tent_wall": m("TentWall", (0.37, 0.30, 0.21), roughness=1.0),
+        "tent_wall_old": m("TentWallOld", (0.31, 0.25, 0.18), roughness=1.0),
+        "tent_roof": m("TentRoof", (0.25, 0.20, 0.15), roughness=0.9),
+        "tent_roof_old": m("TentRoofOld", (0.20, 0.16, 0.12), roughness=0.9),
+        "tent_patch": m("TentPatch", (0.42, 0.35, 0.25), roughness=1.0),
+        "tent_leather": m("TentLeather", (0.13, 0.10, 0.08), roughness=0.85),
         "war_red": m("WarRed", (0.50, 0.15, 0.12), roughness=0.95),
         "war_red_dark": m("WarRedDark", (0.36, 0.11, 0.10), roughness=0.95),
         "hazel_leaf": m("HazelLeaf", (0.33, 0.47, 0.19), roughness=0.85),
@@ -232,9 +236,10 @@ def berry_patch():
 
 
 def military_tent():
-    """A medieval army's pavilion: a round wall of weathered canvas, a conical roof on a stout pole
-    with a red crown and red seams, a scalloped red valance, its door flaps tied back on the dark, guy ropes to pegs and a
-    pennant on top. About 7 m across and 5.5 m tall. Reads from -Y."""
+    """A medieval army's pavilion on campaign: a round wall of dun canvas, a conical roof on a stout
+    pole, oiled dark against the rain, with sewn patches, a leather cap and a leather-bound hem, its
+    door flaps tied back on the dark, guy ropes to pegs and a dark pennant on top. About 7 m across
+    and 5.5 m tall. Reads from -Y."""
     p = palette()
     rng = random.Random(520)
     model = kit.Model("MilitaryTent")
@@ -251,32 +256,44 @@ def military_tent():
         a0 = start + math.tau * k / segments
         a1 = start + math.tau * (k + 1) / segments
         p0, p1 = (math.cos(a0), math.sin(a0)), (math.cos(a1), math.sin(a1))
-        tone = rng.choice((p["canvas"], p["canvas"], p["canvas_dirty"]))
-        # The roof runs unbroken, a red crown over the canvas; the wall stops at the door.
-        crown = 0.74
+        tone = rng.choice((p["tent_wall"], p["tent_wall"], p["tent_wall_old"]))
+        roof = rng.choice((p["tent_roof"], p["tent_roof"], p["tent_roof_old"]))
+        # The roof runs unbroken up to its leather cap; the wall stops at the door.
+        crown = 0.9
         q0, q1 = (p0[0] * radius * (1 - crown), p0[1] * radius * (1 - crown)), (p1[0] * radius * (1 - crown), p1[1] * radius * (1 - crown))
         high = wall + (peak - wall) * crown
-        shoreside._skin(model, tone, (p0[0] * radius, p0[1] * radius, wall), (p1[0] * radius, p1[1] * radius, wall), (q1[0], q1[1], high), (q0[0], q0[1], high), 0.03, (0.0, 0.0, 0.0))
-        shoreside._skin(model, p["war_red"], (q0[0], q0[1], high), (q1[0], q1[1], high), (0.0, 0.0, peak), (0.0, 0.0, peak), 0.03, (0.0, 0.0, 0.0))
+        shoreside._skin(model, roof, (p0[0] * radius, p0[1] * radius, wall), (p1[0] * radius, p1[1] * radius, wall), (q1[0], q1[1], high), (q0[0], q0[1], high), 0.03, (0.0, 0.0, 0.0))
+        shoreside._skin(model, p["tent_leather"], (q0[0], q0[1], high), (q1[0], q1[1], high), (0.0, 0.0, peak), (0.0, 0.0, peak), 0.03, (0.0, 0.0, 0.0))
         if k % 5 == 0:
-            model.cylinder((p0[0] * radius * 1.01, p0[1] * radius * 1.01, wall + 0.02), (q0[0], q0[1], high + 0.02), 0.03, 0.03, p["war_red_dark"], segments=3)
+            model.cylinder((p0[0] * radius * 1.01, p0[1] * radius * 1.01, wall + 0.02), (q0[0], q0[1], high + 0.02), 0.022, 0.022, p["tent_leather"], segments=3)
         if k >= door and k < segments - door:
             lean = 1.03
             shoreside._skin(model, tone, (p0[0] * radius * lean, p0[1] * radius * lean, 0.0), (p1[0] * radius * lean, p1[1] * radius * lean, 0.0), (p1[0] * radius, p1[1] * radius, wall), (p0[0] * radius, p0[1] * radius, wall), 0.03, (0.0, 0.0, wall / 2))
-        # The valance, a tongue hanging at each panel's eave.
-        mid = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)
+        # The hem, a plain leather binding round the eave.
         out = radius + 0.05
-        shoreside._skin(model, p["war_red"] if k % 2 else p["war_red_dark"], (p0[0] * out, p0[1] * out, wall + 0.03), (p1[0] * out, p1[1] * out, wall + 0.03), (mid[0] * out + 0.001, mid[1] * out, wall - 0.36), (mid[0] * out, mid[1] * out, wall - 0.36), 0.015, (0.0, 0.0, wall))
+        shoreside._skin(model, p["tent_leather"], (p0[0] * out, p0[1] * out, wall + 0.03), (p1[0] * out, p1[1] * out, wall + 0.03), (p1[0] * out, p1[1] * out, wall - 0.14), (p0[0] * out, p0[1] * out, wall - 0.14), 0.015, (0.0, 0.0, wall))
     # The door's flaps tied back to either side, and the posts holding it.
     for side in (-1, 1):
         a = start + side * math.tau * door / segments
         at = (math.cos(a) * radius, math.sin(a) * radius)
         model.cylinder((at[0], at[1], 0), (at[0], at[1], wall), 0.04, 0.035, p["log_dark"], segments=5)
-        shoreside._skin(model, p["canvas_dirty"], (at[0], at[1], wall - 0.05), (at[0] + side * 0.42, at[1] - 0.24, wall * 0.55), (at[0] + side * 0.34, at[1] - 0.2, 0.05), (at[0], at[1], 0.05), 0.02, (at[0], at[1] + 1.0, wall / 2))
-    # The ball, the staff and the pennant at the top.
-    model.sphere((0, 0, peak + 0.02), 0.13, p["iron"], segments=6, rings=4)
-    model.slab([(0.03, -0.012, peak + 0.5), (0.95, -0.012, peak + 0.42), (0.95, 0.012, peak + 0.42), (0.03, 0.012, peak + 0.5)], 0.1, p["war_red"])
-    model.slab([(0.03, -0.012, peak + 0.4), (0.7, -0.012, peak + 0.3), (0.7, 0.012, peak + 0.3), (0.03, 0.012, peak + 0.4)], 0.1, p["war_red_dark"])
+        shoreside._skin(model, p["tent_wall_old"], (at[0], at[1], wall - 0.05), (at[0] + side * 0.42, at[1] - 0.24, wall * 0.55), (at[0] + side * 0.34, at[1] - 0.2, 0.05), (at[0], at[1], 0.05), 0.02, (at[0], at[1] + 1.0, wall / 2))
+    # Sewn patches on the roof and the wall, where it has torn and been mended on campaign.
+    for k, up, wide, high in ((3, 0.2, 0.36, 0.12), (7, 0.5, 0.24, 0.13), (9, 0.16, 0.42, 0.1), (13, 0.42, 0.28, 0.1), (16, 0.26, 0.34, 0.14)):
+        a = start + math.tau * (k + 0.5) / segments
+        ring0, ring1 = radius * (1 - up) + 0.03, radius * (1 - up - high) + 0.03
+        z0, z1 = wall + (peak - wall) * up + 0.03, wall + (peak - wall) * (up + high) + 0.03
+        turn = wide / radius
+        shoreside._skin(model, p["tent_wall_old"], (math.cos(a - turn) * ring0, math.sin(a - turn) * ring0, z0), (math.cos(a + turn) * ring0, math.sin(a + turn) * ring0, z0), (math.cos(a + turn * 0.8) * ring1, math.sin(a + turn * 0.8) * ring1, z1), (math.cos(a - turn * 0.8) * ring1, math.sin(a - turn * 0.8) * ring1, z1), 0.012, (0.0, 0.0, 0.0))
+    for k, z, wide, high in ((5, 0.5, 0.36, 0.42), (12, 0.95, 0.3, 0.36), (15, 0.35, 0.44, 0.34)):
+        a = start + math.tau * (k + 0.5) / segments
+        ring = radius * 1.03
+        turn = wide / radius
+        shoreside._skin(model, p["tent_patch"], (math.cos(a - turn) * ring, math.sin(a - turn) * ring, z), (math.cos(a + turn) * ring, math.sin(a + turn) * ring, z), (math.cos(a + turn) * ring, math.sin(a + turn) * ring, z + high), (math.cos(a - turn) * ring, math.sin(a - turn) * ring, z + high), 0.012, (0.0, 0.0, wall / 2))
+    # The iron cap, the staff and the pennant at the top.
+    model.sphere((0, 0, peak + 0.02), 0.09, p["iron"], segments=6, rings=4)
+    model.slab([(0.03, -0.012, peak + 0.5), (0.95, -0.012, peak + 0.42), (0.95, 0.012, peak + 0.42), (0.03, 0.012, peak + 0.5)], 0.1, p["war_red_dark"])
+    model.slab([(0.03, -0.012, peak + 0.4), (0.7, -0.012, peak + 0.3), (0.7, 0.012, peak + 0.3), (0.03, 0.012, peak + 0.4)], 0.1, p["tent_leather"])
     # Guy ropes from the eave to pegs in the ground.
     for k in range(10):
         a = start + math.tau * (k + 0.5) / 10
@@ -298,7 +315,7 @@ def military_tent():
 
 
 def weapon_rack():
-    """A rack of spears leaning on a rail, round shields painted red and pale hung along it, and an
+    """A rack of spears leaning on a rail, round shields painted red and dun hung along it, and an
     axe stuck in its post. About 3 m long. Reads from -Y."""
     p = palette()
     rng = random.Random(521)
@@ -316,7 +333,7 @@ def weapon_rack():
         tip = (x + rng.uniform(-0.05, 0.05), -0.3, 2.55)
         model.cylinder(foot, tip, 0.017, 0.014, p["wood_drift"], segments=4)
         model.cylinder(tip, (tip[0], tip[1] - 0.04, tip[2] + 0.3), 0.034, 0.003, p["steel"], segments=4)
-    for x, tone, boss in ((-0.8, "war_red", "iron"), (0.8, "canvas", "iron")):
+    for x, tone, boss in ((-0.8, "war_red", "iron"), (0.8, "tent_patch", "iron")):
         model.cylinder((x, -0.08, 0.95), (x, -0.13, 0.95), 0.42, 0.42, p[tone], segments=12)
         model.cylinder((x, -0.13, 0.95), (x, -0.16, 0.95), 0.44, 0.44, p["log_dark"], segments=12, caps=False)
         model.sphere((x, -0.16, 0.95), 0.08, p[boss], scale=(1, 0.6, 1), segments=6, rings=3)
@@ -327,7 +344,7 @@ def weapon_rack():
 
 
 def war_banner():
-    """A tall war banner on a cross-staff, long tails of red with a pale stripe, its foot in a heap
+    """A tall war banner on a cross-staff, long tails of red with a dun stripe, its foot in a heap
     of stones. About 5 m tall. Reads from -Y."""
     p = palette()
     rng = random.Random(522)
@@ -337,7 +354,7 @@ def war_banner():
     model.cylinder((0, 0, 4.9), (0, 0, 5.2), 0.045, 0.002, p["steel"], segments=4)
     for k in range(4):
         x0, x1 = -0.75 + k * 0.375, -0.75 + (k + 1) * 0.375 - 0.015
-        tone = p["canvas"] if k == 1 else p["war_red"]
+        tone = p["tent_patch"] if k == 1 else p["war_red"]
         bottom = 2.25 - abs(k - 1.5) * 0.28
         points = [4.28, 3.3, bottom]
         for n, (top, low) in enumerate(zip(points, points[1:])):

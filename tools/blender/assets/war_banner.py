@@ -1,4 +1,4 @@
-"""WarBanner: A tall war banner on a cross-staff, long tails of red with a pale stripe, its foot in a heap of stones. About 5 m tall. Reads from -Y. Part of the south bank family (tools/blender/southbank.py).
+"""WarBanner: A tall war banner on a cross-staff, long tails of red with a dun stripe, its foot in a heap of stones. About 5 m tall. Reads from -Y. Part of the south bank family (tools/blender/southbank.py).
 Brief: "cover R6 - F20 and F19 with bushes and some tall poplars. also put white poplars on D20 C20. on D19 put a new medieval military tent. put some rocks and foliage around. also on surrounding sectors, f.e. E18. create new assets in blender if needed and for some diversity. you can also create some other decortive assets on ground founable near rivers or forests." Everything beyond that is placeholder.
 Build: npm run models -- war_banner
 

@@ -19,5 +19,5 @@ Where this region differs from `docs/world/art.md`.
 ## The south bank
 
 `tools/blender/southbank.py`. Poplars keep the woodland family's limbed trunks and lumps of leaf. White
-poplars are pale with dark diamond scars and silver leaves. The tent is weathered canvas with a red crown
-and valance, the one strong colour here, kept for the army's things.
+poplars are pale with dark diamond scars and silver leaves. The tent is dun campaign canvas with an oiled dark
+roof, leather and sewn patches; the author read white and red as a circus. Red stays on the banners and shields.
