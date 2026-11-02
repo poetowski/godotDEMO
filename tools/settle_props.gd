@@ -18,7 +18,7 @@ const MOST_REACH := 0.7
 const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse", "village_house", "village_loft", "village_smithy", "nordic_church", "farm_shed", "farm_barn", "croft_cottage"]
 ## Trees stand on the ground at the trunk (TREE_FOOT in r1_roadside.gd), not across their width.
 const TREE_FOOT := 0.2
-const TREES: Array[String] = ["tall_pine", "forest_spruce", "young_fir", "dead_pine", "forest_hornbeam", "forest_ash", "tall_beech", "white_birch", "field_maple", "big_oak", "apple_tree", "lake_alder", "young_willow"]
+const TREES: Array[String] = ["tall_pine", "forest_spruce", "young_fir", "dead_pine", "forest_hornbeam", "forest_ash", "tall_beech", "white_birch", "field_maple", "big_oak", "apple_tree", "lake_alder", "young_willow", "tall_poplar", "white_poplar"]
 const SIDES := 8
 const FENCE_SINK := 0.02
 

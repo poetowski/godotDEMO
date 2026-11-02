@@ -24,6 +24,10 @@ const FOREST_TREES: Dictionary[String, Array] = {
 	"tall_beech": [0.0006, 0.4],
 	"white_birch": [0.001, 0.2],
 	"field_maple": [0.0008, 0.36],
+	"tall_poplar_a": [0.0005, 0.34],
+	"tall_poplar_b": [0.0009, 0.22],
+	"white_poplar_a": [0.0006, 0.42],
+	"white_poplar_b": [0.0009, 0.26],
 }
 ## From how far the body's trees show.
 const TREE_DISTANCE := 230.0
@@ -100,6 +104,11 @@ func _tree_step() -> float:
 	return TREE_STEP
 
 
+## Metres of ground a trunk keeps to itself when it's planted.
+func _tree_room() -> float:
+	return 1.0
+
+
 ## How much of the forest stands at a point, 0 to 1.
 func _thickness(xz: Vector2) -> float:
 	var east := 1.0 - smoothstep(THIN_EAST, GONE_EAST, xz.x)
@@ -149,7 +158,7 @@ func _plant_forest() -> void:
 				var jitter := step * TREE_JITTER
 				xz += Vector2(rng.randf_range(-jitter, jitter), rng.randf_range(-jitter, jitter))
 				var thick := _thickness(xz) * (0.84 if _gaps.get_noise_2d(xz.x, xz.y) > -0.18 else 0.28)
-				if rng.randf() > thick or not _tree_ground(xz) or crowds_start(xz, 1.0) or not is_clear(xz, 1.0, 0.9):
+				if rng.randf() > thick or not _tree_ground(xz) or crowds_start(xz, 1.0) or not is_clear(xz, _tree_room(), 0.9):
 					continue
 				var slug := _tree_at(xz)
 				var size := rng.randf_range(0.82, 1.18)
@@ -163,7 +172,7 @@ func _plant_forest() -> void:
 				var tint: PackedColorArray = tints[slug]
 				tint.append(Color(shade, shade, shade))
 				tints[slug] = tint
-				claim(xz, 1.0)
+				claim(xz, _tree_room())
 				var radius: float = FOREST_TREES[slug][1]
 				if radius > 0.0:
 					trunks.append([foot, radius * size])

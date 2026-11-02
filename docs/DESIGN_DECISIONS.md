@@ -60,6 +60,16 @@ object's place and look, how the paint's surfaces look, how far the hills were s
 that the fire smoulders and lights only at night. The bracken, mushrooms, twigs, leaf litter,
 fallen trunks, crates, barrel, firewood, drying rack and bedroll weren't asked for by name.
 
+Request (2026-11-01): "i painted sectors on other side of bridg, souther side also in region R6. cover
+R6 - F20 and F19 with bushes and some tall poplars. also put white poplars on D20 C20. on D19 put a new
+medieval military tent. put some rocks and foliage around. also on surrounding sectors, f.e. E18. create
+new assets in blender if needed and for some diversity. you can also create some other decortive assets
+on ground founable near rivers or forests. use painting ground if needed, remember this one. go". Built
+in `src/world/field/sectors/r6_south_bank/`, with the `southbank` Blender family and
+`tools/paint_south_bank.gd`, on the author's paint at `10bd197`. The land wasn't reshaped.
+**Placeholder:** the tent's look and colours, the camp beside it, the stone ring and carved post in E18,
+the finds, and how thick everything stands.
+
 Request (2026-11-01): "fix the forest around the nordic church because now some trees are under ground.
 then implement some way ingame to show and thhem hide all sector and region border. this is for
 develomental purpose and real play/testing." Trees now stand on the ground at the trunk (`TREE_FOOT`),
