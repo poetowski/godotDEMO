@@ -92,7 +92,7 @@ func test_designs_meet_the_land_without_a_step() -> void:
 
 func test_the_player_starts_on_dry_ground() -> void:
 	var sector: String = _world.get("start_sector")
-	var start := SectorMap.start_of(SectorMap.cell_named(sector))
+	var start := SectorMap.center_of(SectorMap.cell_named(sector))
 	assert_true(_terrain.is_dry(Vector2(start.x, start.z), 0.1), "%s's start point is dry" % sector)
 
 

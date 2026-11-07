@@ -26,7 +26,7 @@ the content.
 - **Sectors.** Names (`A1 B2`), runs within one column or row (`A1-A3`), or
   rectangles given by opposite corners (`B2:D4`). Resolve each name with
   `SectorMap.cell_named`. Sectors run A to T and 1 to 20, and A1 is the
-  south-west corner; the player starts in E1. Letters grow east (+x) and
+  south-west corner; the player starts in the middle of A1. Letters grow east (+x) and
   numbers grow north (-z).
 - **Description.** What should be there. If the sectors or the description
   are missing, ask for them before doing anything.
@@ -73,7 +73,7 @@ the content.
    at `demo-final`.
 7. **The player can always start.** Props stay clear of every owned sector's
    start point (`crowds_start`), and the start sector's start point
-   (`start_sector` in `field.gd`, E1) stays dry ground.
+   (`start_sector` in `field.gd`, the middle of A1) stays dry ground.
 8. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
    prop group per sector (`merged`/`commit_merged`), and a MultiMesh
    (`add_multimesh`) for anything repeated more than about 50 times. Add

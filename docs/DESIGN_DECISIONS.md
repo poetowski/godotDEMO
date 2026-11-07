@@ -234,3 +234,8 @@ plain start again and remove existing scenes as not relevant anymore."
   keep their daily programs; there are none in the world.
 - **Placeholder:** the start at E1's usual spot, south of its middle (the bank it
   stood on is gone), the grass, the flat land around R1, and the world being empty.
+
+## 2026-11-07: Start in the middle of A1
+
+Request: "make middle of A1 start". New games and respawns start in the middle
+of R1's A1, the south-west corner sector, facing north.

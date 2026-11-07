@@ -23,8 +23,8 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 ## Playing
 
 `npm run game` opens the world: R1, one region of 20 x 20 sectors of 10 x 10 m,
-named A1 to T20, flat and empty. You start in E1 on its southern edge, facing
-north; letters grow east and numbers grow north, ahead of you. The top-left
+named A1 to T20, flat and empty. You start in the middle of A1, the south-west
+corner, facing north; letters grow east and numbers grow north, ahead of you. The top-left
 corner shows the sector you're in. `npm run game -- --sector=C4` starts you in
 C4.
 

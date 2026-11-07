@@ -2,14 +2,14 @@ extends Node3D
 ## The world: R1, one region of 20 x 20 sectors of flat grass, with the grid of
 ## 10 m sectors, their light curtains and names; the sector designs under
 ## `Sectors` (none yet) shaping the sectors they own and streamed in around the
-## player by `Streamer`; the player starting in E1 facing north; the time of
+## player by `Streamer`; the player starting in the middle of A1 facing north; the time of
 ## day (Clock, with DayNight lighting the world by it); and the villagers
 ## living in it (`Residents`, none yet). Pass `--sector=C4` after `--` on the
 ## command line to start in another sector, `--hour=21.5` to start at another
 ## time.
 
 ## The sector the player starts in unless `--sector=` names another.
-var start_sector: String = "E1"
+var start_sector: String = "A1"
 
 var _sector := Vector2i(-2, -2)
 var _place_name := ""
@@ -112,10 +112,10 @@ func terrain() -> FieldTerrain:
 	return _terrain
 
 
-## Puts the player on dry ground in a sector, facing north, and loads the
+## Puts the player on dry ground in the middle of a sector, facing north, and loads the
 ## sectors around it.
 func teleport(cell: Vector2i) -> void:
-	var point := SectorMap.start_of(cell)
+	var point := SectorMap.center_of(cell)
 	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.velocity = Vector3.ZERO
