@@ -184,8 +184,7 @@ sector gets content, record what was decided for it in
 `docs/DESIGN_DECISIONS.md`, under its name.
 
 The world is empty: no sector designs yet. The demo's sector designs are at git tag
-`demo-final`, and the prototype's (R1 to R9, with their Blender assets) at
-`prototype-final`.
+`demo-final`.
 Sector content is built with the `/environment-design <sectors> <brief>`
 skill (`.claude/skills/environment-design/`). Each design is a `SectorDesign`
 in `src/world/field/sectors/<slug>/`, registered under the field's `Sectors`

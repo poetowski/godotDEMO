@@ -81,12 +81,8 @@ children have no owner, so the editor never saves them into the scene file.
 
 The castle proof of concept is kept at git tag `poc-castle`, the whole demo
 (sector designs, landforms, assets, woods, swords, NPC, stress test and big
-world benchmarks) at `demo-final`, and the prototype after it (the starting zone
-of nine regions, its sector designs and Blender assets, the sculpted and painted
-ground, poured water, and the ravine's border and mist, `ZoneBorder` and
-`MistBarrier`) at `prototype-final`. Both hold tests worth restoring once designs
-exist: far models and a design unloaded mid-read at `demo-final`, the decorated
-blocks' tests (`tests/smoke/test_r1_*.gd`) at `prototype-final`.
+world benchmarks) at `demo-final`. `demo-final` also holds tests worth restoring
+once designs exist: far models and a design unloaded mid-read.
 
 Battery note: on battery this laptop caps games at 30 fps (NVIDIA Battery
 Boost or Windows power saving). Measure performance on AC power.

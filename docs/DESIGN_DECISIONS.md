@@ -218,9 +218,6 @@ delivered inventory system, character system and quest system. these should stay
 course, because it is good stuff. cleanup totally all documents and assets so we have
 plain start again and remove existing scenes as not relevant anymore."
 
-- Everything built until now is kept at git tag `prototype-final`, with its full
-  design record. The demo before it is at `demo-final`, and the castle proof of
-  concept at `poc-castle`.
 - Gone: the starting zone (R2 to R9) and everything in it: every sector design, every
   Blender-made asset and its family, the sculpted and painted ground and the poured
   water, the river, lake and falls, the village and its name, the farms, forest and

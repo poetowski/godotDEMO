@@ -54,9 +54,8 @@ shows the sculpted ground the next time it starts.
 Every stroke of paint (the Paint tab beside Sculpt) saves itself into
 `data/world/paint/` the same way.
 
-The prototype built before this fresh start, with its world of nine regions and
-its Blender assets, is kept at git tag `prototype-final`; the demo before it at
-`demo-final`, and the castle proof of concept at `poc-castle`.
+The demo built before is kept at git tag `demo-final`, the castle proof of
+concept at `poc-castle`.
 
 ## Commands
 

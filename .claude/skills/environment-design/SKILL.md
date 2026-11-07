@@ -12,13 +12,11 @@ sits on that land and blends into it at its edges.
 
 Build one area of the field from a brief: shape its ground, add water and
 place props inside the given sectors, and leave everything else as it was.
-The world is empty for now, so the finished examples are in git history:
+The world is empty for now, so the finished example is in git history:
 `src/world/field/sectors/a1_a3_stream/` at tag `demo-final`, made with this
 skill (a spring, a stream, a lily pond, bushes, rocks and grass over three
-sectors), and the designs under `src/world/field/sectors/` at tag
-`prototype-final`. Read them with `git show <tag>:<path>`; their places, names
-and looks belong to worlds that are gone, so take the techniques, not the
-content.
+sectors). Read it with `git show demo-final:<path>`; take the technique, not
+the content.
 
 ## Input
 
@@ -89,15 +87,10 @@ content.
    `_ground`, `_water_level` and `_flow` aren't used. `height_at`, `water_level_at`
    and `flow_at` still answer, from the land. Cover a wide area with several designs
    of about 5 x 5 sectors sharing a script, since a design streams as one unit.
-   At tag `prototype-final`, `src/world/field/sectors/r1_waterside/` is a finished
-   example, and `src/world/field/sectors/r1_roadside/` is one that decorates along
-   painted roads.
    Assets much wider above than at the foot go in `PropLibrary.FEET`, or nothing grows under
    them. A turned model's box is wider than the model: keep it inside the block, or for a forest
    set `overhang` in the script's `_init` so crowns may reach over the next block.
-   At the same tag, `src/world/field/sectors/r1_village/` lays out buildings, lanes, paint and
-   land from one set of constants, and `src/world/field/sectors/r8_forest/` plants whole forests
-   as masses, before the floor's plants (`_before_masses`), or they'd find their ground taken.
+   Plant whole forests as masses before the floor's plants, or they find their ground taken.
 
 10. **More than one level.** `height_at`, `is_dry`, `claim` and `is_clear` are about the
    land. For a building, a bridge or a cave, see "Levels" in `docs/world/README.md`: floors

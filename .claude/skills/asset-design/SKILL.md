@@ -9,11 +9,9 @@ argument-hint: <description>
 Make one object from a brief: a Blender Python script builds it, it's
 exported as `assets/models/props/<slug>/<slug>.glb` with its own collision,
 and a prop scene lets anyone place it in the world. There are no assets yet, so
-the finished examples are in git history: the alchemist's column
-(`tools/blender/assets/alchemist_column.py` at git tag `demo-final`), and at tag
-`prototype-final` the asset scripts in `tools/blender/assets/` with their families
-(`tools/blender/riverside.py`, `village.py`, `wildwood.py`...). Take the techniques,
-not the looks: the game's art direction starts again from `docs/world/art.md`.
+the finished example is in git history: the alchemist's column
+(`tools/blender/assets/alchemist_column.py` at git tag `demo-final`). Take the
+techniques, not the looks: the game's art direction starts again from `docs/world/art.md`.
 
 Assets that belong together share a family: one script in `tools/blender/` (such as
 `tools/blender/<family>.py`) holds their palette and shapes, and each asset's script
