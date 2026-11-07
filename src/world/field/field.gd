@@ -1,19 +1,12 @@
 extends Node3D
-## The sector-grid field: grass everywhere, the grid of 10 m sectors with their
-## light curtains and names, the sector designs under `Sectors` shaping the
-## sectors they own and streamed in around the player by `Streamer`, and the
-## player starting in R1's B2 facing north, and the time of day (Clock, with
-## DayNight lighting the world by it), and the villagers living in it
-## (`Residents`, none yet). Pass `--sector=C4` after `--` on the
-## command line to start in another sector, `--hour=21.5` to start at
-## another time. `ZoneBorder` is the limit of where the player may go, a few metres
-## inside the rim of the western ravine: crossing it gives a warning, and walking on
-## takes them back to the spawn point.
-
-## Where the game starts and respawns, in metres (x east, y north): up on the south bank by R1's edge,
-## between the bridge's foot and F1, back from the river and clear of the bridge's lantern. A sector's
-## usual start point would stand against that lantern.
-const START_POINT := Vector2(46.8, 0.8)
+## The world: R1, one region of 20 x 20 sectors of flat grass, with the grid of
+## 10 m sectors, their light curtains and names; the sector designs under
+## `Sectors` (none yet) shaping the sectors they own and streamed in around the
+## player by `Streamer`; the player starting in E1 facing north; the time of
+## day (Clock, with DayNight lighting the world by it); and the villagers
+## living in it (`Residents`, none yet). Pass `--sector=C4` after `--` on the
+## command line to start in another sector, `--hour=21.5` to start at another
+## time.
 
 ## The sector the player starts in unless `--sector=` names another.
 var start_sector: String = "E1"
@@ -21,14 +14,12 @@ var start_sector: String = "E1"
 var _sector := Vector2i(-2, -2)
 var _place_name := ""
 var _spawn := Vector2i.ZERO
-var _warned := false
 
 @onready var _player: Player = $Player
 @onready var _hud: Hud = $Hud
 @onready var _terrain: FieldTerrain = $Terrain
 @onready var _streamer: SectorStreamer = $Streamer
 @onready var _clock: WorldClock = $Clock
-@onready var _border: ZoneBorder = $ZoneBorder
 @onready var _ambience: Ambience = $Ambience
 
 
@@ -97,30 +88,12 @@ func _process(_delta: float) -> void:
 		_hud.show_sector(SectorMap.name_of(cell), _place_name)
 	_ambience.set_enclosed(place.is_enclosed())
 	_hud.show_clock(_clock.text())
-	_keep_to_the_limit()
 
 
 func _on_player_died() -> void:
 	teleport(_spawn)
 	_player.revive()
 	_hud.notify(tr("You died"))
-
-
-## The warning, and the way back to the spawn point. Only where there are regions
-## to the west of R1, not in test worlds.
-func _keep_to_the_limit() -> void:
-	if not ZoneBorder.applies():
-		return
-	var depth := _border.depth_at(Vector2(_player.global_position.x, _player.global_position.z))
-	if depth >= ZoneBorder.RETURN_METRES:
-		teleport(_spawn)
-		_warned = false
-	elif depth > 0.0:
-		if not _warned:
-			_warned = true
-			_hud.notify(tr("I should not be here..."))
-	else:
-		_warned = false
 
 
 func clock() -> WorldClock:
@@ -143,10 +116,7 @@ func terrain() -> FieldTerrain:
 ## sectors around it.
 func teleport(cell: Vector2i) -> void:
 	var point := SectorMap.start_of(cell)
-	var wanted := Vector2(point.x, point.z)
-	if SectorMap.cell_at(Vector3(START_POINT.x, 0.0, -START_POINT.y)) == cell:
-		wanted = Vector2(START_POINT.x, -START_POINT.y)
-	var spot := _terrain.find_dry_spot(wanted)
+	var spot := _terrain.find_dry_spot(Vector2(point.x, point.z))
 	_player.global_position = Vector3(spot.x, _terrain.height_at(spot) + 0.05, spot.y)
 	_player.velocity = Vector3.ZERO
 	_player.face(0.0)

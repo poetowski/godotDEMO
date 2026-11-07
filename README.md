@@ -23,15 +23,16 @@ A 3D RPG built in Godot 4.7.2 with Claude Code. Working title.
 ## Playing
 
 `npm run game` opens the world: R1, one region of 20 x 20 sectors of 10 x 10 m,
-named A1 to T20, rolling gently and otherwise empty. You start in A1 at the
-south-west corner; letters grow east and numbers grow north, ahead of you. The
-top-left corner shows the sector you're in. `npm run game -- --sector=C4` starts
-you in C4.
+named A1 to T20, flat and empty. You start in E1 on its southern edge, facing
+north; letters grow east and numbers grow north, ahead of you. The top-left
+corner shows the sector you're in. `npm run game -- --sector=C4` starts you in
+C4.
 
-WASD move, Shift sprint, Space jump, E interact, I inventory, Q quests, mouse
-look (click the window first), wheel zoom. Esc opens the game menu, which pauses
-the game and saves and loads; F5 quicksaves and F9 quickloads. F3 shows the
-performance overlay and F12 takes a screenshot. A gamepad works too.
+WASD move, Shift sprint, Space jump, E interact, I inventory, Q quests, C
+character, mouse look (click the window first), wheel zoom, G shows or hides the
+grid. Esc opens the game menu, which pauses the game and saves and loads; F5
+quicksaves and F9 quickloads. F3 shows the performance overlay and F12 takes a
+screenshot. A gamepad works too.
 
 ## Sculpting the terrain
 
@@ -50,8 +51,12 @@ mouse button; move the view as usual with the right button.
 Every stroke saves itself into `data/world/sculpt/`; commit those files. The game
 shows the sculpted ground the next time it starts.
 
-The demo built before this is kept at git tag `demo-final`, the earlier castle
-proof of concept at `poc-castle`.
+Every stroke of paint (the Paint tab beside Sculpt) saves itself into
+`data/world/paint/` the same way.
+
+The prototype built before this fresh start, with its world of nine regions and
+its Blender assets, is kept at git tag `prototype-final`; the demo before it at
+`demo-final`, and the castle proof of concept at `poc-castle`.
 
 ## Commands
 

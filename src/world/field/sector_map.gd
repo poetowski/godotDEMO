@@ -6,9 +6,10 @@ extends RefCounted
 ## of a region. Letters grow to the east (+X) and numbers to the north (-Z),
 ## the way the player faces at the start.
 ##
-## Cells are world cell coordinates: (0, 0) is R1's A1, and they run across
-## every region, negative to the west and south of R1. In a one-region world names are plain ("C4"); with several
-## regions they carry the region ("R45:C4"). A name without a region means R1.
+## Cells are world cell coordinates: (0, 0) is R1's A1, and they run east and
+## north across every region; cells to the west or south of R1 lie outside the
+## world. In a one-region world names are plain ("C4"); with several regions
+## they carry the region ("R45:C4"). A name without a region means R1.
 
 const SIZE := 10.0
 ## Sectors along each side of a region.

@@ -7,7 +7,7 @@ const SECTORS := "res://src/world/field/sectors"
 
 
 func test_every_input_action_exists() -> void:
-	for action: String in ["move_forward", "move_back", "move_left", "move_right", "jump", "sprint", "interact", "attack", "inventory", "quick_save", "quick_load", "dev_screenshot", "dev_overlay"]:
+	for action: String in ["move_forward", "move_back", "move_left", "move_right", "look_left", "look_right", "look_up", "look_down", "jump", "sprint", "interact", "attack", "inventory", "quests", "character", "toggle_borders", "quick_save", "quick_load", "dev_screenshot", "dev_overlay"]:
 		assert_true(InputMap.has_action(action), action)
 
 

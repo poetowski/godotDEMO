@@ -223,7 +223,7 @@ func content_id(local_name: String) -> String:
 
 
 ## A stable id for a scattered thing, from its kind and where it stands to
-## the decimetre, such as "stress_j10/mushroom@928,-931". It doesn't depend
+## the decimetre, such as "c4_meadow/flower@253,-357". It doesn't depend
 ## on the order things were placed in, so retuning a scatter can only make
 ## moved things count as new, never mix two of them up.
 func scatter_id(kind: String, xz: Vector2) -> String:

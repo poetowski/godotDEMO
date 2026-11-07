@@ -1,7 +1,6 @@
 extends GutTest
 ## More than one walkable height at the same x and z: floors over water, caves under
-## it, pools of their own, named places and holes in the ground. The real bridge is
-## walked in test_r1_waterside.gd.
+## it, pools of their own, named places and holes in the ground.
 
 const FixtureDesign := preload("res://tests/fixtures/fixture_design.gd")
 const Settle := preload("res://tools/settle_props.gd")
@@ -295,18 +294,14 @@ func test_a_save_keeps_the_hero_on_their_floor() -> void:
 
 func test_settling_leaves_what_stands_on_a_floor_alone() -> void:
 	var prop := Prop.new()
-	prop.kind = PropLibrary.Kind.ASSET
-	prop.asset = PropLibrary.asset_scene("lantern_post")
+	prop.kind = PropLibrary.Kind.ROCK
 	prop.position = Vector3(DRY.x, 30.0, DRY.y)
 	autofree(prop)
 	assert_true(prop.stands_on_ground())
-	assert_almost_eq(Settle.standing_height(prop), WorldShape.height(DRY) - Settle.SINK, 0.4, "pulled down to the land")
+	assert_almost_eq(Settle.standing_height(prop), WorldShape.height(DRY) - Settle.SINK, 0.01, "pulled down to the land")
 	prop.keep_height = true
 	assert_false(prop.stands_on_ground())
 	assert_eq(Settle.standing_height(prop), 30.0, "kept up on its floor")
-	prop.keep_height = false
-	prop.asset = PropLibrary.asset_scene("wooden_bridge")
-	assert_false(prop.stands_on_ground(), "a bridge never settles")
 
 
 func test_outlines_show_a_whole_box() -> void:

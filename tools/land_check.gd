@@ -1,19 +1,24 @@
 extends SceneTree
 ## What the land as it is now means for what stands on it, for `npm run land-check`,
 ## after the author sculpts: props floating, buried, drowned or left far from the
-## water; water cut short or missing; shores with no decoration; borders that no longer
-## fit the ground; and sculpted land nothing decorates yet. It only reports and changes
-## nothing. /land-sync reads the report and proposes what to do about it.
+## water; water cut short or missing; shores with no decoration; and sculpted land
+## nothing decorates yet. It only reports and changes nothing. /land-sync reads the
+## report and proposes what to do about it.
 
 const SCENE := "res://src/world/field/field.tscn"
+## Where every asset's prop scene lives (/asset-design).
+const ASSET_PROPS := "res://src/world/props/assets"
 const Settle := preload("res://tools/settle_props.gd")
 ## Metres under the water at which a prop has drowned.
 const DROWNED := 0.8
 ## Metres from the water at which something that lies at the waterline is stranded.
 const STRANDED := 8
-const WATERLINE_PROPS: Array[String] = ["driftwood_log", "driftwood_branch", "fallen_alder", "shore_slab"]
+## Assets that lie at the waterline, such as driftwood, by slug: reported when stranded.
+const WATERLINE_PROPS: Array[String] = []
 ## How much road under a prop counts as standing on it.
 const ROAD_SHARE := 0.6
+## Assets that belong on a road, such as lanterns or a well, by the start of their slug.
+const ON_ROADS: Array[String] = []
 ## Metres from the water within which a sector wants decorating.
 const SHORE := 7
 ## Metres from the water within which a decoration block has something to do.
@@ -23,36 +28,27 @@ const BLOCK_REACH := 11
 const DUG := 0.8
 const SMALLEST_HOLLOW := 40
 const HOLDS := 0.5
-## How far down the ground should lie under a border's line, and under the fog's.
-const BORDER_GROUND := Vector2(-12.0, -3.0)
-const FOG_GROUND := Vector2(-30.0, -5.0)
 ## Sectors in a block of decoration, along a side.
 const BLOCK := 5
 ## Rise per metre that counts as steep, and metres above the land that count as high.
 const STEEP := 1.0
 const HIGH := 4.0
 const MOST_LISTED := 40
-## Metres from the border within which land counts as the ravine's rim.
-const RIM_METRES := 25.0
 
 var _area := Rect2i()
 var _wet := PackedByteArray()
 var _distance := PackedInt32Array()
-var _border: ZoneBorder
 
 
 func _initialize() -> void:
 	FieldWorld.configure()
 	TerrainPaint.load_all()
 	var world := (load(SCENE) as PackedScene).instantiate()
-	_border = world.get_node("ZoneBorder") as ZoneBorder
-	_border.rebuild()
 	_read_water()
 	_report_tiles()
 	_report_props(world)
 	_report_water()
 	_report_decoration(world)
-	_report_lines(world)
 	_report_bare_land(world)
 	world.free()
 	quit()
@@ -66,7 +62,8 @@ func _report_tiles() -> void:
 		var corner := Vector2(parts[0].to_int(), parts[1].to_int()) * TerrainSculpt.TILE
 		for offset: Vector2 in [Vector2(1.0, 1.0), Vector2(99.0, 1.0), Vector2(1.0, 99.0), Vector2(99.0, 99.0)]:
 			var at := corner + offset
-			regions[SectorMap.name_of(SectorMap.unbounded_cell_at(Vector2(at.x, -at.y))).get_slice(":", 0)] = true
+			var region := RegionMap.name_of(RegionMap.of_cell(SectorMap.unbounded_cell_at(Vector2(at.x, -at.y))))
+			regions[region if not region.is_empty() else "outside the world"] = true
 	if tiles.is_empty():
 		print("[land] no uncommitted land: checking everything as it stands")
 	else:
@@ -153,7 +150,7 @@ func _report_props(world: Node) -> void:
 			var level := WaterField.level_at(xz)
 			if not prop.stands_on_ground():
 				continue
-			if TerrainPaint.road_at(xz) > ROAD_SHARE and not slug.begins_with("lantern") and not slug.begins_with("farm_fence") and slug != "village_well":
+			if TerrainPaint.road_at(xz) > ROAD_SHARE and not _belongs_on_roads(slug):
 				on_roads.append(line)
 			if level != SectorDesign.NO_WATER and level - WorldShape.height(xz) > DROWNED:
 				drowned.append("%s, %.2f m under" % [line, level - WorldShape.height(xz)])
@@ -166,10 +163,18 @@ func _report_props(world: Node) -> void:
 	_list("stranded from the water (move or remove)", stranded)
 	_list("standing on a painted road (move it aside)", on_roads)
 	var unused := PackedStringArray()
-	for file in DirAccess.get_files_at("res://src/world/props/assets"):
-		if file.ends_with(".tscn") and not used.has(file.get_basename()):
-			unused.append(file.get_basename())
+	if DirAccess.dir_exists_absolute(ASSET_PROPS):
+		for file in DirAccess.get_files_at(ASSET_PROPS):
+			if file.ends_with(".tscn") and not used.has(file.get_basename()):
+				unused.append(file.get_basename())
 	_list("assets placed nowhere by hand (may still be masses)", unused)
+
+
+func _belongs_on_roads(slug: String) -> bool:
+	for start in ON_ROADS:
+		if slug.begins_with(start):
+			return true
+	return false
 
 
 func _report_water() -> void:
@@ -254,7 +259,7 @@ func _is_dug(k: int) -> bool:
 	if _wet[k] == 1:
 		return false
 	var xz := _xz(k % _area.size.x, k / _area.size.x)
-	return TerrainSculpt.height(xz) < -DUG and _border.depth_at(xz) == 0.0
+	return TerrainSculpt.height(xz) < -DUG
 
 
 func _report_decoration(world: Node) -> void:
@@ -273,9 +278,6 @@ func _report_decoration(world: Node) -> void:
 		for north in range(int(bounds.position.y), int(bounds.end.y), int(SectorMap.SIZE)):
 			var cell := SectorMap.unbounded_cell_at(Vector2(x + 1.0, -north - 1.0))
 			if owned.has(cell) or not _is_near_water(cell, SHORE):
-				continue
-			var centre := SectorMap.center_of(cell)
-			if _border.depth_at(Vector2(centre.x, centre.z)) >= ZoneBorder.RETURN_METRES:
 				continue
 			var block := Vector2i(floori(float(cell.x) / BLOCK), floori(float(cell.y) / BLOCK))
 			# Packed arrays inside dictionaries are values: read, change, store back.
@@ -300,21 +302,6 @@ func _is_near_water(cell: Vector2i, metres: int) -> bool:
 	return false
 
 
-func _report_lines(world: Node) -> void:
-	_report_line("ZoneBorder/Line", _border.line(), BORDER_GROUND)
-	_report_line("MistBarrier/FogLine", (world.get_node("MistBarrier") as MistBarrier).line(), FOG_GROUND)
-
-
-## The ends stand at the world's edge, where the land eases flat.
-func _report_line(path: String, line: PackedVector2Array, allowed: Vector2) -> void:
-	var off := PackedStringArray()
-	for k in range(1, line.size() - 1):
-		var ground := WorldShape.height(line[k])
-		if ground < allowed.x or ground > allowed.y:
-			off.append("P%02d in %s, ground %.1f m" % [k + 1, _sector(line[k]), ground])
-	_list("%s points off the drop (ground should be %.0f to %.0f m)" % [path, allowed.x, allowed.y], off)
-
-
 ## Sculpted sectors nothing decorates, with what makes them stand out: where new
 ## props or assets may be worth proposing.
 func _report_bare_land(world: Node) -> void:
@@ -329,8 +316,7 @@ func _report_bare_land(world: Node) -> void:
 	for x in range(int(bounds.position.x), int(bounds.end.x), int(SectorMap.SIZE)):
 		for north in range(int(bounds.position.y), int(bounds.end.y), int(SectorMap.SIZE)):
 			var cell := SectorMap.unbounded_cell_at(Vector2(x + 1.0, -north - 1.0))
-			var centre := SectorMap.center_of(cell)
-			if owned.has(cell) or _near_the_rim(Vector2(centre.x, centre.z)):
+			if owned.has(cell):
 				continue
 			var most := 0.0
 			var deepest := 0.0
@@ -355,17 +341,6 @@ func _report_bare_land(world: Node) -> void:
 	_list("undecorated sculpted land, steep", steep)
 	_list("undecorated sculpted land, raised high", high)
 	_list("undecorated sculpted land, dug deep", low)
-
-
-## Past the border, or close enough to it that steep ground is just the drop.
-func _near_the_rim(xz: Vector2) -> bool:
-	if _border.depth_at(xz) > 0.0:
-		return true
-	var line := _border.line()
-	for k in line.size() - 1:
-		if xz.distance_to(Geometry2D.get_closest_point_to_segment(xz, line[k], line[k + 1])) < RIM_METRES:
-			return true
-	return false
 
 
 func _list(what: String, lines: PackedStringArray) -> void:

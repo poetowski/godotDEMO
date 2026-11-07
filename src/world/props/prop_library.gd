@@ -18,51 +18,18 @@ const GROUPS: Array[String] = ["Bushes", "Rocks", "Trees", "Trees", ""]
 ## Metres of room each kind takes around its foot, at scale 1 (an asset's
 ## comes from its size).
 const ROOM: Array[float] = [0.75, 0.62, 1.4, 1.2, 0.0]
-## Where the flame of each asset that burns at night is, in the model.
-const NIGHT_LIGHTS: Dictionary[String, Vector3] = {
-	"lantern_post": Vector3(0.0, 1.9, 0.0),
-	"lantern_hook": Vector3(0.5, 1.72, 0.0),
-	"lantern_stone": Vector3(0.0, 0.54, 0.0),
-	"campfire": Vector3(0.0, 0.32, 0.0),
-}
-## Half the width and length of what's kept clear under each asset that spans ground.
-## They claim this strip instead of a circle, and keep the height they were given.
-const SPANS: Dictionary[String, Vector2] = {
-	"wooden_bridge": Vector2(1.5, 11.0),
-	"fishing_jetty": Vector2(1.0, 5.0),
-}
-## Metres of room at the foot of assets much wider above it or longer than they're
-## thick, so grass grows under a big tree's crown and up to a fence.
-const FEET: Dictionary[String, float] = {
-	"big_oak": 1.6,
-	"tall_beech": 1.0,
-	"tall_pine": 0.9,
-	"white_birch": 0.5,
-	"field_maple": 1.0,
-	"apple_tree": 0.6,
-	"forest_spruce_b": 1.0,
-	"forest_ash": 0.7,
-	"fallen_trunk": 1.0,
-	"farm_fence_a": 0.4,
-	"farm_fence_b": 0.4,
-	"farm_fence_c": 0.4,
-	"farm_fence_down_a": 0.4,
-	"farm_fence_down_b": 0.4,
-	"farm_fence_stubs": 0.4,
-	"farm_fence_gate": 0.4,
-	"hay_rack": 0.5,
-	"weapon_rack": 0.7,
-	"war_banner": 0.4,
-	"stone_ring": 0.5,
-	"forest_idol": 0.5,
-	"fish_rack": 0.5,
-	"net_rack": 0.5,
-	"wreck_ribs": 1.0,
-	"ship_on_boulders": 3.0,
-	"elder_bush": 0.6,
-	"bramble_thicket": 0.9,
-	"aiwyk_sign": 1.0,
-}
+## Where the flame of each asset that burns at night is, in the model, by the
+## asset's slug, such as "lantern": Vector3(0.0, 1.9, 0.0). SectorDesign adds a
+## NightLight there.
+const NIGHT_LIGHTS: Dictionary[String, Vector3] = {}
+## Half the width and length of what's kept clear under each asset that spans
+## ground, such as a bridge, by slug. They claim this strip instead of a circle,
+## and keep the height they were given.
+const SPANS: Dictionary[String, Vector2] = {}
+## Metres of room at the foot of assets much wider above it or longer than
+## they're thick, by slug, so grass grows under a big tree's crown and up to a
+## fence.
+const FEET: Dictionary[String, float] = {}
 ## Whether a new prop of each kind is solid unless set otherwise.
 const SOLID: Array[bool] = [false, true, true, true, true]
 

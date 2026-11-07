@@ -12,7 +12,7 @@ var _hill_top: float
 func before_all() -> void:
 	TerrainSculpt.start_empty()
 	FieldWorld.configure()
-	# A hill on open ground, in the chunks detailed around the start in A1.
+	# A hill on open ground, in R1's chunks detailed around the start.
 	var brush := SculptBrush.new()
 	brush.radius = 10.0
 	brush.strength = 6.0

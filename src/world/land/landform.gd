@@ -22,15 +22,8 @@ enum Kind { MOUNTAIN, HILL, RIDGE, VALLEY, PLATEAU }
 ## 0 smooth to 1 craggy: ridges and gullies on the slopes and an uneven
 ## outline.
 @export_range(0.0, 1.0) var roughness: float = 0.3
-## How many trees grow on it compared with the woods around, 0 to 1.
-@export_range(0.0, 1.0) var tree_density: float = 1.0
-## Metres above which no trees grow on it (absolute height); 0 for none.
-@export var tree_line: float = 0.0
 ## Metres above which its ground is snow (absolute height); 0 for none.
 @export var snow_line: float = 0.0
-## Palms and broad-leaved jungle trees grow on it instead of the woods'
-## round trees and pines.
-@export var tropical: bool = false
 ## Shapes the noise of its slopes, so twin landforms differ.
 @export var noise_seed: int = 1
 

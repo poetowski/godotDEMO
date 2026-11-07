@@ -8,13 +8,17 @@ argument-hint: <description>
 
 Make one object from a brief: a Blender Python script builds it, it's
 exported as `assets/models/props/<slug>/<slug>.glb` with its own collision,
-and a prop scene lets anyone place it in the world. The alchemist's column
-(`tools/blender/assets/alchemist_column.py` at git tag `demo-final`) is a finished example.
-Assets that belong together share a family: `tools/blender/riverside.py` holds R1's
-waterside palette and shapes, and each asset's script only names which to build.
-`tools/blender/southbank.py` is R6's south bank, its poplars, army tent and small finds, `tools/blender/shoreside.py` the wet banks of R1's river, its ships and fishing things, `tools/blender/homestead.py` the farms round Aiwyk and their fields, `tools/blender/village.py` is Aiwyk, R1's village, and its church, `tools/blender/wildwood.py` R8's forest and camp, `tools/blender/farmstead.py` the farm and road family, and `tools/blender/woodland.py`
-the trees, both on the same palette.
-New assets for a region use its family, and its `docs/world/regions/<region>/art.md`.
+and a prop scene lets anyone place it in the world. There are no assets yet, so
+the finished examples are in git history: the alchemist's column
+(`tools/blender/assets/alchemist_column.py` at git tag `demo-final`), and at tag
+`prototype-final` the asset scripts in `tools/blender/assets/` with their families
+(`tools/blender/riverside.py`, `village.py`, `wildwood.py`...). Take the techniques,
+not the looks: the game's art direction starts again from `docs/world/art.md`.
+
+Assets that belong together share a family: one script in `tools/blender/` (such as
+`tools/blender/<family>.py`) holds their palette and shapes, and each asset's script
+only names which to build. New assets for a region use its family, and its
+`docs/world/regions/<region>/art.md`. The first asset of a new look starts its family.
 
 The design skills at their scales:
 
@@ -37,7 +41,7 @@ in the brief are rules. If the description is missing, ask for it.
    source: the `.glb` is its output, rebuilt with `npm run models -- <slug>`.
    We never use third-party assets: no downloaded models or textures, and
    never Blender MCP's asset services (Poly Haven, Sketchfab, generators).
-2. **The project's look.** Low-poly, flat-shaded, colour from materials
+2. **The project's look,** until `docs/world/art.md` decides another. Low-poly, flat-shaded, colour from materials
    (picked in sRGB with `kit.material`), no textures. Glass is
    `alpha < 1`; things that glow use `emission`. Keep it under about 10,000
    triangles for a 2 m object; repeated things (bottles, leaves) share few
@@ -107,7 +111,7 @@ in the brief are rules. If the description is missing, ask for it.
 ## Gotchas
 
 - Blender is Z-up and the object's front faces -Y; the exported asset is
-  Y-up in Godot, its front toward -Z (checked in game with the weapon rack).
+  Y-up in Godot, its front toward -Z (checked in game with the demo's weapon rack).
   Don't rotate the model to compensate; rotate the placed Prop.
 - A lathe profile must start and end where you want caps: radius 0 makes a
   point, anything else a flat cap.

@@ -12,9 +12,13 @@ sits on that land and blends into it at its edges.
 
 Build one area of the field from a brief: shape its ground, add water and
 place props inside the given sectors, and leave everything else as it was.
-`src/world/field/sectors/a1_a3_stream/` at git tag `demo-final` is a finished example, made with this
-skill: a spring, a stream, a lily pond, bushes, rocks and grass over three
-sectors.
+The world is empty for now, so the finished examples are in git history:
+`src/world/field/sectors/a1_a3_stream/` at tag `demo-final`, made with this
+skill (a spring, a stream, a lily pond, bushes, rocks and grass over three
+sectors), and the designs under `src/world/field/sectors/` at tag
+`prototype-final`. Read them with `git show <tag>:<path>`; their places, names
+and looks belong to worlds that are gone, so take the techniques, not the
+content.
 
 ## Input
 
@@ -24,7 +28,7 @@ sectors.
 - **Sectors.** Names (`A1 B2`), runs within one column or row (`A1-A3`), or
   rectangles given by opposite corners (`B2:D4`). Resolve each name with
   `SectorMap.cell_named`. Sectors run A to T and 1 to 20, and A1 is the
-  south-west corner; the player starts in B2. Letters grow east (+x) and
+  south-west corner; the player starts in E1. Letters grow east (+x) and
   numbers grow north (-z).
 - **Description.** What should be there. If the sectors or the description
   are missing, ask for them before doing anything.
@@ -67,10 +71,11 @@ sectors.
    only while `props_frozen` is false (`if not props_frozen:` around the
    placing code). Once the design is done (step 6b of the workflow) they're
    frozen into the scene as Prop nodes the author edits by hand. Grass,
-   flowers, lilies and other masses stay scattered in code. See the A1-A3 (`demo-final`)
-   stream.
+   flowers, lilies and other masses stay scattered in code. See the A1-A3 stream
+   at `demo-final`.
 7. **The player can always start.** Props stay clear of every owned sector's
-   start point (`crowds_start`), and B2's start point stays dry ground.
+   start point (`crowds_start`), and the start sector's start point
+   (`start_sector` in `field.gd`, E1) stays dry ground.
 8. **Budget per sector:** about 1,500 grass tufts. Use one merged mesh per
    prop group per sector (`merged`/`commit_merged`), and a MultiMesh
    (`add_multimesh`) for anything repeated more than about 50 times. Add
@@ -84,14 +89,15 @@ sectors.
    `_ground`, `_water_level` and `_flow` aren't used. `height_at`, `water_level_at`
    and `flow_at` still answer, from the land. Cover a wide area with several designs
    of about 5 x 5 sectors sharing a script, since a design streams as one unit.
-   `src/world/field/sectors/r1_waterside/` is a finished example, and
-   `src/world/field/sectors/r1_roadside/` is one that decorates along painted roads.
+   At tag `prototype-final`, `src/world/field/sectors/r1_waterside/` is a finished
+   example, and `src/world/field/sectors/r1_roadside/` is one that decorates along
+   painted roads.
    Assets much wider above than at the foot go in `PropLibrary.FEET`, or nothing grows under
    them. A turned model's box is wider than the model: keep it inside the block, or for a forest
    set `overhang` in the script's `_init` so crowns may reach over the next block.
-   `src/world/field/sectors/r1_village/` lays out buildings, lanes, paint and land from one set of
-   constants. `src/world/field/sectors/r8_forest/` plants whole forests as masses, before the floor's plants
-   (`_before_masses`), or they'd find their ground taken.
+   At the same tag, `src/world/field/sectors/r1_village/` lays out buildings, lanes, paint and
+   land from one set of constants, and `src/world/field/sectors/r8_forest/` plants whole forests
+   as masses, before the floor's plants (`_before_masses`), or they'd find their ground taken.
 
 10. **More than one level.** `height_at`, `is_dry`, `claim` and `is_clear` are about the
    land. For a building, a bridge or a cave, see "Levels" in `docs/world/README.md`: floors
@@ -99,9 +105,6 @@ sectors.
    `add_content`, a way through the land is a `GroundOpening` in the scene, frozen props on a
    floor set `keep_height`, and repeated floors put the level in `scatter_id`'s kind. Keep
    masses off a hole yourself: nothing else does.
-
-11. **Opposite things match.** Lanterns and the like facing each other are the same design;
-   vary them between segments, and a bridge is one segment. See `docs/world/art.md`.
 
 ## Workflow
 
@@ -140,7 +143,7 @@ sectors.
    `tests/smoke/test_a1_a3_stream.gd` at git tag `demo-final`.
    `tests/smoke/test_sector_designs.gd` already checks every design for the
    invariants: nothing outside its sectors, no step at the edges, no sector
-   claimed twice, A1's start dry. Run `npm run verify`.
+   claimed twice, the start point dry. Run `npm run verify`.
 6. **Look at it.** Shoot and Read each of these:
    - `npm run shot -- --frame=A1:A3 --out=.shots/<slug>_overview.png` (the
      area from above)
@@ -182,7 +185,7 @@ Helpers to use in `_populate`:
 
 - **Ground and water:** `height_at`, `water_level_at`, `flow_at`, `is_dry(xz, margin)`, `surface(xz)`, and `lowest_ground(xz, r)` to seat wide props without floating.
 - **Placement:** `fits(xz, r)` (inside the owned sectors), `crowds_start(xz, r)`, `claim(xz, r)` and `is_clear(xz, r, spacing)` to keep props apart, `random_point()`, and `cells()`.
-- **Output:** `merged(group, xz)`, which returns a `NatureKit.Batch` per sector, then `commit_merged(group, material)`; `add_multimesh(name, mesh, material, transforms, colors, visible_distance)`, one node per sector, read back with `instance_transforms(name)`; `add_mesh`; `add_collider(shape, transform)`; `add_content(node)` for anything else, such as an `ItemPickup`, a `GestureSpot` or particles.
+- **Output:** `merged(group, xz)`, which returns a `NatureKit.Batch` per sector, then `commit_merged(group, material)`; `add_multimesh(name, mesh, material, transforms, colors, visible_distance)`, one node per sector, read back with `instance_transforms(name)`; `add_mesh`; `add_collider(shape, transform)`; `add_content(node)` for anything else, such as an `ItemPickup` or particles.
 
 **`StreamPath`** (`src/shared/nature/stream_path.gd`). Takes control points
 as `Vector4(x, z, half_width, water_level)` and smooths them into a line.

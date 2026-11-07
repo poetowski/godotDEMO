@@ -39,7 +39,8 @@ PANEL = HexColor("#242820")
 TEXT = HexColor("#efe9da")
 MUTED = HexColor("#aeaa98")
 ACCENT = HexColor("#cfa862")
-GRID = [["R9", "R2", "R3"], ["R8", "R1", "R4"], ["R7", "R6", "R5"]]
+# Metres along a region's side: the regions' origins in gallery.json are multiples of it.
+REGION_SIZE = 200
 # Columns and rows of a page of models, the first that holds a whole family; bigger families run on.
 MODEL_GRIDS = ((3, 2), (4, 3), (5, 3), (6, 3), (6, 4), (7, 4))
 MODEL_RUNNING_ON = (6, 4)
@@ -54,6 +55,14 @@ def fonts():
             pdfmetrics.registerFont(TTFont(font, os.path.join(folder, name)))
         return {"serif": "Serif", "bold": "SerifBold", "italic": "SerifItalic", "sans": "Sans", "sans_bold": "SansBold"}
     return {"serif": "Times-Roman", "bold": "Times-Bold", "italic": "Times-Italic", "sans": "Helvetica", "sans_bold": "Helvetica-Bold"}
+
+
+def region_grid(regions):
+    """The regions as a map, north row first: their ids where they lie, None where none is."""
+    cells = {(round(region["origin"][0] / REGION_SIZE), round(region["origin"][1] / REGION_SIZE)): region["id"] for region in regions}
+    xs = [x for x, _ in cells]
+    ys = [y for _, y in cells]
+    return [[cells.get((x, y)) for x in range(min(xs), max(xs) + 1)] for y in range(max(ys), min(ys) - 1, -1)]
 
 
 def picture(name, pixels, quality, square=False):
@@ -83,6 +92,7 @@ class Book:
         self.c.setTitle(f'{data["title"]}: {data["subtitle"]}')
         self.c.setSubject(data["note"])
         self.c.setAuthor(data["title"])
+        self.grid = region_grid(data["regions"])
         self.number = 0
 
     def page(self, background=PAGE):
@@ -150,13 +160,16 @@ class Book:
 
     def map_page(self):
         self.page()
-        self.mark("map", "The starting zone")
+        self.mark("map", "The world")
         side = HEIGHT - 2 * 26
-        cell = side / 3
+        rows, columns = len(self.grid), len(self.grid[0])
+        cell = side / max(rows, columns)
         left, bottom = 26, 26
-        for r, row in enumerate(GRID):
+        for r, row in enumerate(self.grid):
             for c, name in enumerate(row):
-                x, y = left + c * cell, bottom + (2 - r) * cell
+                if name is None:
+                    continue
+                x, y = left + c * cell, bottom + (rows - 1 - r) * cell
                 self.image(picture(f"aerial_{name}", AERIAL_PIXELS, AERIAL_QUALITY, square=True), x, y, cell, cell)
                 self.c.setFillColor(PAGE)
                 self.c.setFillAlpha(0.62)
@@ -168,14 +181,15 @@ class Book:
                 self.c.linkRect("", f"region_{name}", (x, y, x + cell, y + cell), relative=0, thickness=0)
         self.c.setStrokeColor(PAGE)
         self.c.setLineWidth(1.2)
-        for k in range(1, 3):
-            self.c.line(left + k * cell, bottom, left + k * cell, bottom + side)
-            self.c.line(left, bottom + k * cell, left + side, bottom + k * cell)
+        for k in range(1, columns):
+            self.c.line(left + k * cell, bottom, left + k * cell, bottom + rows * cell)
+        for k in range(1, rows):
+            self.c.line(left, bottom + k * cell, left + columns * cell, bottom + k * cell)
         x = left + side + 28
         width = WIDTH - x - MARGIN
         self.c.setFillColor(TEXT)
         self.c.setFont(self.f["bold"], 25)
-        self.c.drawString(x, HEIGHT - 58, "The starting zone")
+        self.c.drawString(x, HEIGHT - 58, "The world")
         y = HEIGHT - 72
         for paragraph in self.data["about"]:
             y = self.text(paragraph, x, y, width, self.f["sans"], 11, leading=15) - 7
@@ -184,8 +198,8 @@ class Book:
         self.c.setFont(self.f["sans_bold"], 9.5)
         self.c.drawString(x, y, "IN THIS BOOK")
         y -= 16
-        for name in ("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9"):
-            region = next(item for item in self.data["regions"] if item["id"] == name)
+        for region in self.data["regions"]:
+            name = region["id"]
             self.c.setFillColor(TEXT)
             self.c.setFont(self.f["sans_bold"], 10)
             self.c.drawString(x, y, name)
@@ -199,15 +213,19 @@ class Book:
         self.c.drawString(x, y, "+")
         self.c.setFillColor(MUTED)
         self.c.setFont(self.f["sans"], 10)
-        self.c.drawString(x + 24, y, "One day in Aiwyk, and every model")
+        extras = [group["title"] for group in self.data.get("extra", [])]
+        self.c.drawString(x + 24, y, ", ".join(extras + ["every model"]).capitalize())
         self.c.linkRect("", "models", (x, y - 3, x + width, y + 10), relative=0, thickness=0)
 
     def locator(self, name, x, y, cell=15):
-        """The nine regions as a little map, this one lit."""
-        for r, row in enumerate(GRID):
+        """The regions as a little map, this one lit."""
+        rows = len(self.grid)
+        for r, row in enumerate(self.grid):
             for c, other in enumerate(row):
+                if other is None:
+                    continue
                 self.c.setFillColor(ACCENT if other == name else PANEL)
-                self.c.rect(x + c * (cell + 2), y + (2 - r) * (cell + 2), cell, cell, stroke=0, fill=1)
+                self.c.rect(x + c * (cell + 2), y + (rows - 1 - r) * (cell + 2), cell, cell, stroke=0, fill=1)
 
     def region_column(self, region, x, width, top=HEIGHT - 38):
         name = region["id"]
@@ -431,7 +449,8 @@ class Book:
 
     def closing(self):
         self.page()
-        shot = self.data["extra"][0]["shots"][-1]["id"]
+        extra = self.data.get("extra", [])
+        shot = extra[0]["shots"][-1]["id"] if extra else self.data["cover"][0]["id"]
         self.image(picture(shot, SHOT_PIXELS, SHOT_QUALITY), 0, 0, WIDTH, HEIGHT)
         self.c.setFillColor(PAGE)
         self.c.setFillAlpha(0.58)
@@ -467,7 +486,7 @@ def family_of(slug):
             source = file.read()
         found = re.search(r"Part of the (.+?) family", source) or re.search(r"^import (\w+)\s+# noqa", source, re.M) or re.search(r"from (\w+) import", source)
         if found:
-            return "south bank" if found[1] == "southbank" else found[1]
+            return found[1]
     return "other"
 
 

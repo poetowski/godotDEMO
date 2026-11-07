@@ -21,9 +21,17 @@ func after_all() -> void:
 	_world.free()
 
 
+## The field's designs; with none yet, the test passes as there is nothing to break.
+func _designs() -> Array[SectorDesign]:
+	var designs := _terrain.designs()
+	if designs.is_empty():
+		pass_test("no sector designs yet")
+	return designs
+
+
 func test_every_design_has_its_own_stable_id() -> void:
 	var seen: Dictionary[String, String] = {}
-	for design in _terrain.designs():
+	for design in _designs():
 		assert_false(design.design_id.is_empty(), "%s has a design_id" % design.name)
 		assert_eq(design.design_id, design.design_id.to_lower(), "lowercase")
 		assert_false(seen.has(design.design_id), "%s and %s share %s" % [seen.get(design.design_id, ""), design.name, design.design_id])
@@ -32,7 +40,7 @@ func test_every_design_has_its_own_stable_id() -> void:
 
 func test_saved_things_are_named_by_their_design_id() -> void:
 	var count := 0
-	for design in _terrain.designs():
+	for design in _designs():
 		for node in design.content().find_children("*", "", true, false):
 			var id: Variant = node.get("persist_id")
 			if id is String and not (id as String).is_empty():
@@ -42,19 +50,19 @@ func test_saved_things_are_named_by_their_design_id() -> void:
 
 func test_no_sector_is_claimed_twice() -> void:
 	var claimed: Dictionary[Vector2i, String] = {}
-	for design in _terrain.designs():
+	for design in _designs():
 		for cell in design.cells():
 			assert_false(claimed.has(cell), "%s is claimed by %s and %s" % [SectorMap.name_of(cell), claimed.get(cell, ""), design.name])
 			claimed[cell] = design.name
 
 
 func test_designs_sit_at_the_world_origin() -> void:
-	for design in _terrain.designs():
+	for design in _designs():
 		assert_eq(design.global_transform, Transform3D.IDENTITY, design.name)
 
 
 func test_everything_a_design_builds_stays_inside_its_sectors() -> void:
-	for design in _terrain.designs():
+	for design in _designs():
 		var checked := 0
 		for node in _descendants(design):
 			for box in _boxes(design, node):
@@ -66,7 +74,7 @@ func test_everything_a_design_builds_stays_inside_its_sectors() -> void:
 
 
 func test_designs_meet_the_land_without_a_step() -> void:
-	for design in _terrain.designs():
+	for design in _designs():
 		for cell in design.cells():
 			var corner := SectorMap.corner_of(cell)
 			for k in 41:
@@ -82,9 +90,10 @@ func test_designs_meet_the_land_without_a_step() -> void:
 						assert_almost_eq(design.height_at(point), WorldShape.height(point), 0.002, "%s at %s" % [design.name, point])
 
 
-func test_the_player_starts_on_dry_ground_in_a1() -> void:
-	var start := SectorMap.start_of(Vector2i.ZERO)
-	assert_true(_terrain.is_dry(Vector2(start.x, start.z), 0.1), "A1's start point is dry")
+func test_the_player_starts_on_dry_ground() -> void:
+	var sector: String = _world.get("start_sector")
+	var start := SectorMap.start_of(SectorMap.cell_named(sector))
+	assert_true(_terrain.is_dry(Vector2(start.x, start.z), 0.1), "%s's start point is dry" % sector)
 
 
 ## True if a point lies within 0.01 m of a sector the design doesn't own.
@@ -137,7 +146,7 @@ func test_baked_content_matches_what_the_designs_generate() -> void:
 	if not BakedSectors.is_fresh():
 		pass_test("the tests leave out the author's sculpts, so baked content doesn't apply")
 		return
-	for design in _terrain.designs():
+	for design in _designs():
 		var path := BakedSectors.scene_for(design.name)
 		assert_false(path.is_empty(), "%s is baked and fresh" % design.name)
 		if path.is_empty():

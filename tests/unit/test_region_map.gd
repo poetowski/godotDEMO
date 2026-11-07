@@ -53,44 +53,20 @@ func test_a_one_region_world_keeps_plain_names() -> void:
 	assert_eq(SectorMap.cell_named("R2:C4"), SectorMap.NONE)
 
 
-func test_the_starting_zone_runs_clockwise_around_r1_from_the_north() -> void:
-	RegionMap.configure_starting_zone()
-	var expected := {
-		"R1": Vector2i(0, 0), "R2": Vector2i(0, 1), "R3": Vector2i(1, 1), "R4": Vector2i(1, 0),
-		"R5": Vector2i(1, -1), "R6": Vector2i(0, -1), "R7": Vector2i(-1, -1), "R8": Vector2i(-1, 0), "R9": Vector2i(-1, 1),
-	}
-	for region_name: String in expected:
-		assert_eq(RegionMap.named(region_name), expected[region_name])
-		assert_eq(RegionMap.name_of(expected[region_name]), region_name)
-	assert_eq(RegionMap.named("R10"), RegionMap.NONE)
-	assert_eq(RegionMap.at(Vector3(100.0, 0.0, -100.0)), Vector2i.ZERO)
-	assert_eq(RegionMap.at(Vector3(-100.0, 0.0, 100.0)), Vector2i(-1, -1), "south-west of R1")
-	assert_eq(RegionMap.at(Vector3(-201.0, 0.0, 0.0)), RegionMap.NONE, "outside the zone")
-	assert_eq(SectorMap.bounds(), Rect2(-200.0, -200.0, 600.0, 600.0))
-	assert_eq(SectorMap.cell_named("A1"), Vector2i.ZERO, "a plain name means R1")
-	assert_eq(SectorMap.cell_named("R8:T20"), Vector2i(-1, 19), "west of R1")
-	assert_eq(SectorMap.name_of(Vector2i(-1, 19)), "R8:T20")
-	assert_eq(SectorMap.cell_at(Vector3(-5.0, 0.0, 5.0)), Vector2i(-1, -1), "a real cell, not nothing")
-
-
-func test_r1s_land_is_the_same_with_neighbours_around_it() -> void:
-	var points: Array[Vector2] = [Vector2(0.0, -5.0), Vector2(5.0, -100.0), Vector2(100.0, -100.0), Vector2(195.0, -199.0), Vector2(200.0, -60.0)]
-	RegionMap.configure(1, 1)
-	FieldWorld.configure(1)
-	var alone: Array[float] = []
-	for point in points:
-		alone.append(WorldShape.base_height(point))
+func test_the_game_world_is_r1_alone_and_flat() -> void:
 	FieldWorld.configure()
-	for k in points.size():
-		assert_almost_eq(WorldShape.base_height(points[k]), alone[k], 0.0001, "at %s" % points[k])
-	assert_true(absf(WorldShape.base_height(Vector2(-100.0, 100.0))) > 0.0, "the neighbours have hills of their own")
-	WorldShape.configure(0.0)
+	assert_eq(RegionMap.count(), 1)
+	assert_eq(RegionMap.name_of(Vector2i.ZERO), "R1")
+	assert_eq(SectorMap.bounds(), Rect2(0.0, 0.0, 200.0, 200.0))
+	for point: Vector2 in [Vector2(0.0, -5.0), Vector2(100.0, -100.0), Vector2(195.0, -199.0), Vector2(-100.0, 100.0)]:
+		assert_eq(WorldShape.height(point), 0.0, "flat at %s" % point)
 
 
-func test_painting_works_west_and_south_of_r1() -> void:
-	RegionMap.configure_starting_zone()
-	TerrainPaint.start_empty()
-	var brush := PaintBrush.new()
-	brush.apply(Vector2(-50.0, 50.0), 1.0)
-	assert_gt(TerrainPaint.share(-50, -50, 0), 0.9)
-	TerrainPaint.start_empty()
+func test_a_test_world_is_a_square_of_regions_from_r1() -> void:
+	FieldWorld.configure(3)
+	assert_eq(RegionMap.count(), 9)
+	assert_eq(RegionMap.named("R1"), Vector2i.ZERO, "R1 at the south-west corner")
+	assert_eq(RegionMap.named("R9"), Vector2i(2, 2))
+	assert_eq(SectorMap.bounds(), Rect2(0.0, 0.0, 600.0, 600.0))
+	assert_eq(SectorMap.name_of(SectorMap.cell_named("R5:J10")), "R5:J10")
+	FieldWorld.configure()

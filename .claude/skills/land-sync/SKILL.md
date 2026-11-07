@@ -1,6 +1,6 @@
 ---
 name: land-sync
-description: Bring everything standing on the land back in line after the author sculpts terrain, paints roads or changes water - detect floating, buried or drowned props, water cut off or missing, undecorated shores, borders that no longer fit, and propose lowering objects, placing new ones or generating new assets. Use whenever the author says they changed, remodeled or sculpted the terrain, asks to redecorate or fix flying objects, or whenever the land-changed hook reports uncommitted land.
+description: Bring everything standing on the land back in line after the author sculpts terrain, paints roads or changes water - detect floating, buried or drowned props, water cut off or missing, undecorated shores and sculpted land, and propose lowering objects, placing new ones or generating new assets. Use whenever the author says they changed, remodeled or sculpted the terrain, asks to redecorate or fix flying objects, or whenever the land-changed hook reports uncommitted land.
 argument-hint: "[what the author wants done, if anything]"
 ---
 
@@ -23,15 +23,15 @@ Claude session started in this project.
 - **The author asked** ("redecorate", "fix the flying objects"): do the repairs and the
   decoration without asking, and say what you did. New assets too if they said "if
   needed" or "generate"; otherwise propose them.
-- **Always ask first:** deleting or moving a prop the author placed by hand, adding water
-  they didn't mention to a hollow, moving a border by more than following the same rim.
+- **Always ask first:** deleting or moving a prop the author placed by hand, or adding water
+  they didn't mention to a hollow.
 
 ## Rules
 
 1. **The land is theirs.** Sculpt tiles are never changed or overwritten unless the author
    asks for that land to be reshaped. Commit them first, in a commit of their own, so your work
-   can be told from theirs, and commit any reshaping apart too. `tools/relax_hills.gd` is how
-   hills were smoothed once.
+   can be told from theirs, and commit any reshaping apart too. A reshaping is a tool script of
+   its own; `tools/relax_hills.gd` at tag `prototype-final` is how hills were smoothed once.
 2. **Close the editor first.** Check `tasklist` for Godot before touching `field.tscn`;
    an open editor overwrites it. If it's open, say so and wait. Never kill it.
 3. **Their scene edits stay.** Before changing `field.tscn`, compare it with the last
@@ -61,7 +61,6 @@ Claude session started in this project.
    | dug hollow with no water | Propose a `RegionWater` (`lake_seed`, a `lake_level` below where it spills) |
    | shores with no decoration | Add blocks, one per line of the report, to the region's design; new props frozen with `npm run props -- <Block>` |
    | block with no water near | Propose removing it |
-   | border or fog points off the drop | Drag them back on the same rim: `ZoneBorder/Line` about 6 m below the land, `MistBarrier/FogLine` about 15 m |
    | a bridge's ends off the banks (look: settle leaves `PropLibrary.SPANS` alone) | Move or lower it by hand, or propose moving it |
    | undecorated land: steep, high, dug | Propose props, or new assets if nothing suits |
 
@@ -74,7 +73,7 @@ Claude session started in this project.
 6. **Decoration rules.** A region's decoration lives in
    `src/world/field/sectors/<region_theme>/`, and blocks are 5 x 5 sectors at most. Masses rebuild on
    their own from the land at the next bake, so only frozen props need help. Keep props'
-   reach inside their block (`fits(xz, room * 1.7)`), and nothing below the ravine's mist.
+   reach inside their block (`fits(xz, room * 1.7)`).
 7. **Check.** Run `npm run land-check` again, then `npm run verify`, and read the totals. Walk
    the area with `npm run perf -- --seconds=25 --heading=<degrees from north>` if much was added, and
    shoot it again.

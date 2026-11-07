@@ -14,13 +14,18 @@ const SINK := 0.05
 ## how far that reaches for anything but bedrock: a tree's branches overhang.
 const FOOTPRINT := 0.6
 const MOST_REACH := 0.7
-## What stands on the ground right across, not at a foot in the middle.
-const WHOLE_FOOTPRINT: Array[String] = ["outcrop", "farmhouse", "village_house", "village_loft", "village_smithy", "nordic_church", "farm_shed", "farm_barn", "croft_cottage"]
-## Trees stand on the ground at the trunk (TREE_FOOT in r1_roadside.gd), not across their width.
+## Assets that stand on the ground right across, not at a foot in the middle, such
+## as buildings and outcrops, by part of their slug.
+const WHOLE_FOOTPRINT: Array[String] = []
+## Assets that stand on the ground at the trunk, not across their width: trees, by
+## part of their slug.
 const TREE_FOOT := 0.2
-const TREES: Array[String] = ["tall_pine", "forest_spruce", "young_fir", "dead_pine", "forest_hornbeam", "forest_ash", "tall_beech", "white_birch", "field_maple", "big_oak", "apple_tree", "lake_alder", "young_willow", "tall_poplar", "white_poplar"]
+const TREES: Array[String] = []
+## Assets that lie along the ground with their middle on it, such as lengths of
+## fence, by part of their slug, and how far they sink.
+const LIES_ALONG: Array[String] = []
+const ALONG_SINK := 0.02
 const SIDES := 8
-const FENCE_SINK := 0.02
 
 
 func _initialize() -> void:
@@ -59,13 +64,14 @@ static func standing_height(prop: Prop) -> float:
 	if not prop.stands_on_ground():
 		return prop.position.y
 	var xz := Vector2(prop.position.x, prop.position.z)
-	# A length of fence lies along the ground, its middle on it.
-	if prop.asset.resource_path.contains("farm_fence"):
-		return WorldShape.height(xz) - FENCE_SINK
+	# Code-made kinds (bushes, rocks, trees) have no asset, and no slug.
+	var path := prop.asset.resource_path if prop.asset else ""
+	if LIES_ALONG.any(func(part: String) -> bool: return path.contains(part)):
+		return WorldShape.height(xz) - ALONG_SINK
 	var reach := PropLibrary.asset_room(prop.asset) * prop.transform.basis.get_scale().x * FOOTPRINT
-	if not WHOLE_FOOTPRINT.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
+	if not WHOLE_FOOTPRINT.any(func(part: String) -> bool: return path.contains(part)):
 		reach = minf(reach, MOST_REACH)
-	if TREES.any(func(part: String) -> bool: return prop.asset.resource_path.contains(part)):
+	if TREES.any(func(part: String) -> bool: return path.contains(part)):
 		reach = TREE_FOOT
 	var lowest := WorldShape.height(xz)
 	for k in SIDES:

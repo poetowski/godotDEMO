@@ -12,7 +12,7 @@ var _plan: RegionWater
 func before_each() -> void:
 	TerrainSculpt.start_empty()
 	RegionMap.configure(1, 1)
-	WorldShape.configure(0.0)
+	WorldShape.configure()
 	# A basin, with a trench running in from the north and one out to the west.
 	var brush := SculptBrush.new()
 	brush.tool = SculptBrush.Tool.LOWER
@@ -45,7 +45,7 @@ func before_each() -> void:
 func after_each() -> void:
 	WaterField.use_only([] as Array[RegionWater])
 	TerrainSculpt.start_empty()
-	WorldShape.configure(0.0)
+	WorldShape.configure()
 
 
 func _is_wet(xz: Vector2) -> bool:
@@ -135,6 +135,8 @@ func test_wet_sectors_are_named() -> void:
 
 ## The water data the game ships must keep to the rules, whatever it holds.
 func test_saved_water_runs_downhill_and_holds_together() -> void:
+	if WaterField.saved_plans().is_empty():
+		pass_test("no water poured yet")
 	for plan in WaterField.saved_plans():
 		assert_false(plan.brief.is_empty())
 		for course in plan.courses:

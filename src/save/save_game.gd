@@ -6,7 +6,7 @@ extends RefCounted
 ##   version   format number, FORMAT
 ##   saved_at  local date and time, "2026-10-27 10:42"
 ##   sector    the sector the player stood in, "B1"
-##   player    {position: [x, y, z], yaw, sword: "" | "sword" | "flame_katana"}
+##   player    {position: [x, y, z], yaw, sword: "" or the item id of the sword in hand}
 ##   inventory item ids by slot ("" for an empty slot)
 ##   amounts   how many of the item each slot holds
 ##   world     WorldState's record: {stable id: {"taken": true, ...}}

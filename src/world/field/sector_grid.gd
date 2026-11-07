@@ -25,8 +25,6 @@ const HILL_STEP := 2.0
 const LABEL_HALF_SIZE := Vector2(1.1, 0.9)
 const REGION_COLOR := Color(1.0, 0.72, 0.28)
 const REGION_CURTAIN_HEIGHT := 10.0
-const BORDER_COLOR := Color(1.0, 0.12, 0.08)
-const BORDER_CURTAIN_HEIGHT := 7.0
 ## A region's big name in its middle, and how far its small names stand inside
 ## each border, to read on crossing it.
 const REGION_NAME_PIXEL := 0.4
@@ -44,8 +42,6 @@ const MOST_REGIONS_MARKED := 25
 @export var name_designed_sectors: bool = false
 ## Whose region the grid shows; R1 when unset.
 @export var focus: Node3D
-## The player's limit, drawn in red.
-@export var border: ZoneBorder
 
 var _region := RegionMap.NONE
 var _curtains: MeshInstance3D
@@ -63,8 +59,6 @@ func _ready() -> void:
 	add_to_group(&"sector_grids")
 	_show_region(_focus_region())
 	_build_region_marks()
-	if border:
-		border.moved.connect(_build_region_marks)
 
 
 func _process(_delta: float) -> void:
@@ -86,8 +80,8 @@ func _exit_tree() -> void:
 		_task = -1
 
 
-## Shows or hides every mark at once: sector and region curtains, names, the red limit and the
-## lines on the ground. Only the look changes; the limit still holds.
+## Shows or hides every mark at once: sector and region curtains, names and the lines on the
+## ground. Only the look changes.
 func set_marks_shown(shown: bool) -> void:
 	visible = shown
 	FieldTerrain.ground_material().set_shader_parameter(&"show_lines", shown)
@@ -216,41 +210,9 @@ func _build_region_marks() -> void:
 	curtains.material_override = material
 	curtains.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_region_marks.add_child(curtains)
-	if border and ZoneBorder.applies():
-		_add_border_lines()
 	for j in RegionMap.rows:
 		for i in RegionMap.columns:
 			_add_region_names(RegionMap.south_west + Vector2i(i, j))
-
-
-## Red curtains on the two lines of the player's border (ZoneBorder).
-func _add_border_lines() -> void:
-	var vertices := PackedVector3Array()
-	var colors := PackedColorArray()
-	for line: PackedVector2Array in [border.line(), border.return_line()]:
-		for k in line.size() - 1:
-			_add_curtain(vertices, colors, Vector3(line[k].x, _surface(line[k]), line[k].y), Vector3(line[k + 1].x, 0.0, line[k + 1].y), BORDER_CURTAIN_HEIGHT)
-	var arrays := []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	arrays[Mesh.ARRAY_COLOR] = colors
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	var material := ShaderMaterial.new()
-	material.shader = CURTAIN_SHADER
-	material.set_shader_parameter(&"color", BORDER_COLOR)
-	material.set_shader_parameter(&"intensity", 0.9)
-	material.set_shader_parameter(&"falloff", 1.5)
-	material.set_shader_parameter(&"near_fade_start", 0.5)
-	material.set_shader_parameter(&"near_fade_end", 3.0)
-	material.set_shader_parameter(&"far_fade_start", 500.0)
-	material.set_shader_parameter(&"far_fade_end", 1600.0)
-	var lines := MeshInstance3D.new()
-	lines.name = "BorderLines"
-	lines.mesh = mesh
-	lines.material_override = material
-	lines.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_region_marks.add_child(lines)
 
 
 func _add_region_names(shown: Vector2i) -> void:

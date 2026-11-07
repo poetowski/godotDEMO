@@ -4,7 +4,7 @@ extends RefCounted
 ## The ground as sculpted by hand in the editor: metres added to or taken from
 ## the land, on a grid with a sample every metre at whole x and north (-z).
 ## WorldShape adds this last, so everything that asks about the ground (its
-## meshes and collision, sector designs, trees, the sector grid) follows it.
+## meshes and collision, sector designs, the sector grid) follows it.
 ##
 ## Kept in tiles, the same 100 m squares as the near terrain chunks, and only
 ## where something was sculpted: one file per tile in `folder`. A tile back to

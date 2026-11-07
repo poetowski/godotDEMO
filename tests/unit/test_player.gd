@@ -29,13 +29,11 @@ func test_holds_a_sword_in_the_hand() -> void:
 	assert_signal_emitted(player, "sword_equipped")
 
 
-func test_the_hero_keeps_his_animations_without_praying_or_crying() -> void:
+func test_the_hero_has_every_animation() -> void:
 	var player := _spawn_player()
 	var animations := player.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 	for animation: StringName in [&"idle", &"walk", &"run", &"fall", &"hold_sword", &"swing", &"swim"]:
 		assert_true(animations.has_animation(animation), animation)
-	assert_false(animations.has_animation(&"pray"))
-	assert_false(animations.has_animation(&"cry"))
 
 
 func test_interact_does_nothing_with_nothing_on_offer() -> void:

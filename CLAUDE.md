@@ -48,7 +48,7 @@ working title and the game's design is not decided yet.
 | `npm run editor -- [scene]` | Opens the editor, on the given scene if one is named. The MCP tools need it. |
 | `npm run settle` | Sets props under sector designs back on the ground after sculpting; only their height changes. Close the editor first. |
 | `npm run sculpt-check` | Drives the Sculpt and Paint tabs inside the real editor with made-up mouse events, prints what it checked and screenshots the editor into `.shots/sculpt_*.png` and `paint_*.png`. Leaves the project's sculpted and painted ground alone. Close the editor first. |
-| `npm run game -- --regions=5` | A test world of 5 x 5 regions instead of the starting zone. |
+| `npm run game -- --regions=5` | A test world of 5 x 5 regions instead of R1 alone. |
 | `npm run perf -- [scene] [--seconds=60] [--speed=12] [--heading=45] [--regions=20] [--hour=22] [--without=Waters]` | Benchmarks a world (default: the field) in a window; writes `.perf/<world>.json`. It travels in a straight line from the spawn point, `--heading` degrees from north toward east, so aim it at what you mean to measure. `--without` switches nodes off to measure what they cost. Only compare runs made plugged in: on battery the laptop caps at 30 fps and throttles, and one run then took 223 ms a frame. Check first: `powershell -NoProfile -Command "(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus).PowerOnline"`. |
 | `npm run game -- [scene] [--sector=C4] [--hour=21.5]` | Plays until the window is closed, starting in the given sector and at the given time of day. It blocks, so run it in the background when asked to launch the game. |
 
@@ -145,11 +145,6 @@ every stroke.
   its own river: widen it when the author carves a lake further;
   rapids down a slope need `max_depth`, or their surface hangs in the air. Falls are
   `RegionWater.falls`.
-- Borders of the world and of zones use one mechanic (`ZoneBorder`; see "Borders" in
-  `docs/world/README.md`): `field.gd` warns past its line and returns the player to
-  the spawn point 8 m further on, and `SectorGrid` draws both lines in red. The only
-  one so far runs a few metres inside the rim of the western ravine, as draggable
-  points under `ZoneBorder/Line`. `goto` past it bounces back too.
 - The land and its water have one height per x and z. For where someone is, ask
   `LevelMap.at(terrain, point)` with their height, not `height_at` and `water_level_at`,
   or a bridge, a tower or a cave will break it (see "Levels" in `docs/world/README.md`).
@@ -159,12 +154,6 @@ every stroke.
 - After sculpting, follow `/land-sync`: `npm run land-check` reports what the change
   broke or made possible, and
   `npm run settle` sets props under designs back on the ground, changing only their height.
-- Nothing is placed in the ravine below the mist (`r8_falls.gd`, `LOWEST_GROWTH`).
-- `MistBarrier` is the fog over the western drop: a volume filling the polygon
-  beyond the Marker3D points of `MistBarrier/FogLine`, thin at first and thickening
-  with distance from them, with a wall inside. Drag the points to change it.
-  `tools/carve_western_abyss.gd` carved the land under it, once, into the sculpt
-  tiles, at the author's request; it only ever lowers ground.
 
 ## Painting the ground by hand
 
@@ -181,8 +170,9 @@ every stroke.
   All eight places in the two textures are in use; a ninth surface needs a third.
 - Tests start with `TerrainPaint.start_empty()` (`tests/pre_run.gd`).
 - `TerrainPaint.bare_at` says where painted ground is bare, `road_at` where it's a road and
-  `paving_at` where it's paved. R1's plants keep off bare ground the next time content is
-  baked, and `npm run land-check` lists props left standing on a road.
+  `paving_at` where it's paved. A design asks them to keep its plants off bare ground (they
+  follow the paint the next time content is baked), and `npm run land-check` lists props
+  left standing on a road.
 
 ## Sectors
 
@@ -193,7 +183,9 @@ numbers north (-Z). Use `SectorMap` for all sector maths and names, and
 sector gets content, record what was decided for it in
 `docs/DESIGN_DECISIONS.md`, under its name.
 
-The demo's sector designs are at git tag `demo-final`.
+The world is empty: no sector designs yet. The demo's sector designs are at git tag
+`demo-final`, and the prototype's (R1 to R9, with their Blender assets) at
+`prototype-final`.
 Sector content is built with the `/environment-design <sectors> <brief>`
 skill (`.claude/skills/environment-design/`). Each design is a `SectorDesign`
 in `src/world/field/sectors/<slug>/`, registered under the field's `Sectors`
@@ -233,16 +225,20 @@ heights, water and flow stay known everywhere. So:
   Blender (`tools/blender/assets/`) to place as a prop. Shape the regions
   first. `/land-sync` brings them back in line after the author sculpts.
 
-- The world is regions of 20 x 20 sectors (200 m): the starting zone, with R1 in
-  the middle and R2 to R9 clockwise around it from the north (`FieldWorld`,
-  `RegionMap.STARTING_ZONE`). R1's A1 stays at world (0, 0), so its neighbours have
-  negative coordinates: use `SectorMap.bounds()`, never assume the world starts at
-  zero. Sector names carry their region (`R4:J10`); a name without one means R1.
+- The world is regions of 20 x 20 sectors (200 m), numbered R1, R2... from the
+  south-west corner, east along each row and then north (`RegionMap`). The game's
+  world is R1 alone for now (`FieldWorld`); `--regions=N` makes a test world of
+  N x N. R1's A1 is at world (0, 0); ask `SectorMap.bounds()` for the world's extent
+  rather than assuming one region. In a world of several regions sector names carry
+  their region (`R4:J10`); a name without one means R1, and a one-region world
+  names sectors plainly (`C4`).
 - Region borders and names are gold, drawn by the ground shader and `SectorGrid`:
   always in the game; in the editor the names show only when zoomed out, past
   `label_visible_distance`.
-- The hills ease flat around R1's rim (`WorldShape.rim`), which keeps its land as
-  carved. `WaterField`'s grid covers the ground around its plans, so it follows new water.
+- The land is flat at height 0, with no noise, until landforms (`/region-design`) or the
+  author's sculpting shape it; landforms ease flat at the world's edge
+  (`WorldShape.border`). `WaterField`'s grid covers the ground around its plans, so it
+  follows new water.
 - Never loop over the whole world's sectors: at 2 km it would be 40,000. Work per
   region (SectorGrid, the streaming map) or per streamed chunk.
 - Anything slow that a region change triggers runs on a worker thread

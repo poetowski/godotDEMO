@@ -3,8 +3,8 @@ class_name Lake
 extends Resource
 ## A lake in a region design: a basin carved into the land with a flat water
 ## surface at `level`, a bank just above it all round (raised where the land
-## is lower), an optional island in the middle, and thick woods on its
-## shores. Its outline wavers a little. It reaches out to `reach()` from
+## is lower), an optional island in the middle, and banks that stay green.
+## Its outline wavers a little. It reaches out to `reach()` from
 ## `centre`, where it blends back into the land. Positions are world metres,
 ## x east and y north, like Landform's.
 
@@ -20,9 +20,9 @@ extends Resource
 ## none), and how high it rises above the water.
 @export var island_radius: float = 0.0
 @export var island_height: float = 5.0
-## How likely a tree is on its shores (and island), 0 to 1, whatever the
-## woods around do.
-@export_range(0.0, 1.0) var shore_woods: float = 0.85
+## How green its banks (and island) stay on slopes, 0 to 1: at 1, grass holds
+## on them up to the steepest slopes and only cliffs show rock.
+@export_range(0.0, 1.0) var green_banks: float = 0.85
 
 ## Where the bed starts rising to the bank, and how far beyond the shore
 ## (in radii) the land blends back, as fractions of the radius.
@@ -79,8 +79,8 @@ func level_at(xz: Vector2) -> float:
 	return level if north.distance_to(centre) < shore(north) * WATER else SectorDesign.NO_WATER
 
 
-## How far around it the shore woods reach, 0 to 1 at a point.
-func woods_at(xz: Vector2) -> float:
+## How green the ground stays at a point around it, 0 to 1.
+func green_at(xz: Vector2) -> float:
 	var north := Vector2(xz.x, -xz.y)
 	var t := north.distance_to(centre) / shore(north)
-	return shore_woods * (1.0 - smoothstep(1.3, 1.6, t))
+	return green_banks * (1.0 - smoothstep(1.3, 1.6, t))

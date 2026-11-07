@@ -19,9 +19,17 @@ func after_all() -> void:
 	_world.free()
 
 
+## The region designs; with none yet, the test passes as there is nothing to break.
+func _sets() -> Array[LandformSet]:
+	var sets := Landforms.sets()
+	if sets.is_empty():
+		pass_test("no region designs yet")
+	return sets
+
+
 func test_every_region_design_loads_and_fits_the_world() -> void:
 	var ids: Dictionary[String, bool] = {}
-	for landform_set in Landforms.sets():
+	for landform_set in _sets():
 		assert_false(landform_set.id.is_empty(), "every set has an id")
 		assert_false(ids.has(landform_set.id), "ids are unique")
 		ids[landform_set.id] = true
@@ -30,7 +38,7 @@ func test_every_region_design_loads_and_fits_the_world() -> void:
 
 
 func test_landforms_stay_inside_their_regions() -> void:
-	for landform_set in Landforms.sets():
+	for landform_set in _sets():
 		var area := landform_set.area()
 		for landform in landform_set.landforms:
 			assert_true(area.encloses(landform.bounds()), "%s: a landform reaches past %s" % [landform_set.id, ", ".join(landform_set.regions)])
@@ -39,6 +47,10 @@ func test_landforms_stay_inside_their_regions() -> void:
 
 
 func test_landforms_keep_off_designed_sectors() -> void:
+	if _sets().is_empty():
+		return
+	if _terrain.designs().is_empty():
+		pass_test("no sector designs yet")
 	for design in _terrain.designs():
 		for cell in design.cells():
 			var corner := SectorMap.corner_of(cell)

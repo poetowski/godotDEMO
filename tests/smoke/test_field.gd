@@ -1,7 +1,7 @@
 extends GutTest
-## The field builds, the player starts on the ground in A1, sector names are
-## painted where the grass is still flat, and the grass is solid well beyond
-## the grid.
+## The field builds flat and empty, the player starts on the ground in E1,
+## sector names are painted where the grass is still flat, and the grass is
+## solid well beyond the grid.
 
 const SCENE_PATH := "res://src/world/field/field.tscn"
 const FieldScript := preload("res://src/world/field/field.gd")
@@ -18,16 +18,27 @@ func after_all() -> void:
 	_world.free()
 
 
-func test_player_starts_on_the_ground_in_a1() -> void:
+func test_player_starts_on_the_ground_in_e1() -> void:
 	var player := _world.get_node("Player") as Player
 	await wait_until(player.is_on_floor, 5.0)
 	assert_true(player.is_on_floor())
-	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "R1:E1")
+	assert_eq(SectorMap.name_of(SectorMap.cell_at(player.global_position)), "E1")
+
+
+func test_the_world_is_one_flat_empty_region() -> void:
+	assert_eq(RegionMap.count(), 1, "R1 alone")
+	assert_eq(SectorMap.bounds(), Rect2(0.0, 0.0, 200.0, 200.0), "20 x 20 sectors of 10 m")
+	assert_eq(_world.get_node("Sectors").get_child_count(), 0, "no sector designs yet")
+	assert_true(WorldShape.is_flat())
+	var terrain: FieldTerrain = _world.call("terrain")
+	for xz: Vector2 in [Vector2(5.0, -5.0), Vector2(100.0, -100.0), Vector2(195.0, -195.0), Vector2(-300.0, 300.0)]:
+		assert_eq(terrain.height_at(xz), 0.0, "flat at %s" % xz)
+		assert_eq(terrain.water_level_at(xz), SectorDesign.NO_WATER, "dry at %s" % xz)
 
 
 func test_hud_names_the_current_sector() -> void:
 	await wait_process_frames(2)
-	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector R1:E1")
+	assert_eq((_world.get_node("Hud") as Hud).sector_text(), "Sector E1")
 
 
 func test_every_sector_has_a_painted_name() -> void:
@@ -54,38 +65,6 @@ func test_sector_argument_picks_the_start() -> void:
 	assert_eq(FieldScript.requested_sector(PackedStringArray(["--sector=C4"])), "C4")
 	assert_eq(FieldScript.requested_sector(PackedStringArray()), "A1")
 	assert_eq(FieldScript.requested_sector(PackedStringArray(), "J10"), "J10")
-
-
-func test_past_the_line_warns_and_going_on_returns_to_the_spawn_point() -> void:
-	var player: Player = _world.call("player")
-	var hud := _world.get_node("Hud") as Hud
-	hud.notify("")
-	player.global_position = Vector3(-55.0, 5.0, 5.0)
-	await wait_process_frames(2)
-	assert_eq(hud.toast_text(), "", "on the land, nothing")
-	player.global_position = Vector3(-66.0, 5.0, 5.0)
-	await wait_process_frames(2)
-	assert_eq(hud.toast_text(), "I should not be here...")
-	player.global_position = Vector3(-76.0, 5.0, 5.0)
-	await wait_process_frames(2)
-	assert_eq(SectorMap.cell_at(player.global_position), SectorMap.cell_named("E1"), "back at the spawn point")
-
-
-func test_the_border_leaves_the_land_to_the_south_and_north_alone() -> void:
-	var border := _world.get_node("ZoneBorder") as ZoneBorder
-	for free: Vector2 in [Vector2(50.0, 100.0), Vector2(150.0, 180.0), Vector2(-40.0, 60.0), Vector2(-100.0, -300.0)]:
-		assert_eq(border.depth_at(free), 0.0, "free at %s" % free)
-	assert_gt(border.depth_at(Vector2(50.0, 160.0)), 0.0, "the ravine in R6 is past it")
-
-
-func test_the_border_is_drawn_where_it_applies() -> void:
-	assert_true(ZoneBorder.applies())
-	var lines := _world.get_node("SectorGrid/RegionMarks/BorderLines") as MeshInstance3D
-	var box := lines.mesh.get_aabb()
-	var border := _world.get_node("ZoneBorder") as ZoneBorder
-	assert_gt(border.line().size(), 20)
-	assert_lt(box.position.x, -170.0, "out in the north-west")
-	assert_gt(box.end.x, 120.0, "round to the south")
 
 
 func _drop_from(metres: float) -> Player:

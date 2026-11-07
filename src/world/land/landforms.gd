@@ -2,8 +2,8 @@
 class_name Landforms
 extends RefCounted
 ## Every region design in data/world/landforms/ that fits the current world,
-## and what they do to the land: height, how much of a landform covers a
-## point, where trees thin out, and where the ground turns to rock or snow.
+## and what they do to the land: height, the lakes carved into it, and where
+## the ground turns to rock or snow.
 ## Loaded by WorldShape.configure; read-only afterwards, so worker threads
 ## may ask.
 
@@ -14,8 +14,6 @@ const SNOW := Color(0.93, 0.95, 0.98)
 ## How steep (1 - the ground's up component) bare rock begins and takes over.
 const ROCK_FROM := 0.2
 const ROCK_FULL := 0.34
-## Rise per metre up to which jungle grows on tropical landforms.
-const TROPICAL_MAX_SLOPE := 1.7
 
 static var _sets: Array[LandformSet] = []
 static var _all: Array[Landform] = []
@@ -81,43 +79,13 @@ static func lake_level(xz: Vector2) -> float:
 	return SectorDesign.NO_WATER
 
 
-## How likely a tree is at a point on a lake's shores, 0 to 1 (0 away from
-## lakes).
-static func shore_woods(xz: Vector2) -> float:
+## How green a lake's banks stay at a point, 0 to 1 (0 away from lakes).
+static func green_banks(xz: Vector2) -> float:
 	var north := Vector2(xz.x, -xz.y)
 	var most := 0.0
 	for k in _lakes.size():
 		if _lake_boxes[k].has_point(north):
-			most = maxf(most, _lakes[k].woods_at(xz))
-	return most
-
-
-## How thick trees grow here compared with the woods around, 0 to 1, given
-## the ground's height.
-static func tree_factor(xz: Vector2, ground: float) -> float:
-	var north := Vector2(xz.x, -xz.y)
-	var factor := 1.0
-	for k in _all.size():
-		if not _boxes[k].has_point(north):
-			continue
-		var landform := _all[k]
-		var cover := landform.cover_at(xz)
-		if cover <= 0.0:
-			continue
-		factor *= lerpf(1.0, landform.tree_density, cover)
-		if landform.tree_line > 0.0 and ground > landform.tree_line:
-			factor *= 1.0 - cover
-	return factor
-
-
-## How much the woods here are tropical, 0 to 1: the cover of the tropical
-## landforms over the point.
-static func tropical(xz: Vector2) -> float:
-	var north := Vector2(xz.x, -xz.y)
-	var most := 0.0
-	for k in _all.size():
-		if _all[k].tropical and _boxes[k].has_point(north):
-			most = maxf(most, _all[k].cover_at(xz))
+			most = maxf(most, _lakes[k].green_at(xz))
 	return most
 
 
@@ -125,9 +93,8 @@ static func tropical(xz: Vector2) -> float:
 ## shows): grass, rock where it's steep, snow above a landform's snow line.
 ## `up` is the ground's up component (1 flat, 0 a wall).
 static func ground_tint(xz: Vector2, ground: float, up: float) -> Color:
-	# Jungle clings to steeper slopes than temperate grass, and lake banks stay
-	# green: only cliffs show rock there.
-	var lush := maxf(tropical(xz), shore_woods(xz))
+	# Lake banks stay green: only cliffs show rock there.
+	var lush := green_banks(xz)
 	var rock := smoothstep(lerpf(ROCK_FROM, 0.5, lush), lerpf(ROCK_FULL, 0.72, lush), 1.0 - up)
 	var tint := Color(ROCK.r, ROCK.g, ROCK.b, 1.0 - rock)
 	var north := Vector2(xz.x, -xz.y)

@@ -89,7 +89,6 @@ func _steps() -> void:
 	await tree.create_timer(2.0).timeout
 	_shot("sculpt_5_undone")
 	await _check_painting(camera, spot, tile, history)
-	await _check_moving_the_fog()
 	_finish()
 
 
@@ -117,23 +116,6 @@ func _check_painting(camera: Camera3D, spot: Vector2, tile: Vector2i, history: U
 	_expect(tabs.current_tab == 0, "back to the Sculpt tab")
 
 
-## Dragging one of the fog's points in the editor moves the fog, without saving.
-func _check_moving_the_fog() -> void:
-	var barrier := EditorInterface.get_edited_scene_root().get_node("MistBarrier") as MistBarrier
-	var marker := barrier.get_node("FogLine").get_child(22) as Node3D
-	var was := marker.position
-	var spot := Vector2(was.x + 15.0, was.z)
-	_expect(barrier.depth_at(spot) == 0.0, "no fog east of the fog's line")
-	marker.position.x += 40.0
-	await _plugin.get_tree().create_timer(1.0).timeout
-	_expect(barrier.depth_at(spot) > 0.0, "moving a point moved the fog")
-	marker.position = was
-	await _plugin.get_tree().create_timer(1.0).timeout
-	_expect(barrier.depth_at(spot) == 0.0, "moving it back moved the fog back")
-	_shot("fog_1_points")
-
-
-## Presses at `from` and moves to `to` over `seconds`; releases unless `hold`.
 func _drag(camera: Camera3D, from: Vector2, to: Vector2, seconds: float, hold: bool = false) -> void:
 	_button(camera, from, true)
 	var started := Time.get_ticks_msec()

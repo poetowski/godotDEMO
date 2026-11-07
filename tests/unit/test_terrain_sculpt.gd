@@ -10,7 +10,7 @@ func before_each() -> void:
 	TerrainSculpt.folder = FOLDER
 	_empty_folder()
 	RegionMap.configure(10, 10)
-	WorldShape.configure(0.0)
+	WorldShape.configure()
 
 
 func after_each() -> void:

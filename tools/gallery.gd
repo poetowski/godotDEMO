@@ -84,7 +84,7 @@ func _photograph_world(only: PackedStringArray) -> void:
 	quit()
 
 
-## Straight down with north up, at the same scale for all nine so they join into a map. Everything
+## Straight down with north up, at the same scale for every region so they join into a map. Everything
 ## stands at any distance here, and the haze and the short shadow reach are lifted.
 func _photograph_aerials(world: Node, camera: Camera3D, player: Node3D, clock: Node, regions: Array) -> void:
 	for node in world.find_children("*", "GeometryInstance3D", true, false):
@@ -125,7 +125,7 @@ func _wanted(id: String, only: PackedStringArray) -> bool:
 
 
 ## [x east, y north, metres above the ground there] as a point in the world, or with a fourth
-## item, "abs", that many metres above sea level, for hanging over the ravine.
+## item, "abs", that many metres above sea level, for hanging over a drop.
 func _above_ground(terrain: FieldTerrain, point: Array) -> Vector3:
 	var xz := Vector2(float(point[0]), -float(point[1]))
 	var ground := 0.0 if point.size() > 3 else terrain.height_at(xz)

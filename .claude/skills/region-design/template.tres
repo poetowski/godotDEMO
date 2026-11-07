@@ -15,8 +15,6 @@ centre = Vector2(300, 100)
 radius = 50.0
 height = 20.0
 roughness = 0.3
-tree_density = 1.0
-tree_line = 0.0
 snow_line = 0.0
 noise_seed = 1
 
